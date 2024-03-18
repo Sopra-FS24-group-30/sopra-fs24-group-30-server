@@ -53,11 +53,11 @@ bootJar {
     archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 }
 
-sonar {
+sonarqube {
     properties {
         property "sonar.projectKey", "sopra-fs24-group-30"
         property "sonar.organization", "Sopra-FS24-group-30"
-        property "sonar.host.url", "https://sonarcloud.io/organizations/sopra-fs24-group-30"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }
 
