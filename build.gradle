@@ -53,10 +53,6 @@ bootJar {
     archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 }
 
-plugins {
-    id "org.sonarqube" version "4.4.1.3373"
-}
-
 sonar {
     properties {
         property "sonar.projectKey", "Sopra-FS24-group-30_sopra-fs24-group-30-server"
