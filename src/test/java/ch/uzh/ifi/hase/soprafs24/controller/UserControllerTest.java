@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,18 +16,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.web.server.ResponseStatusException;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * UserControllerTest
@@ -82,7 +89,7 @@ public class UserControllerTest {
     userPostDTO.setName("Test User");
     userPostDTO.setUsername("testUsername");
 
-    given(userService.createUser(Mockito.any())).willReturn(user);
+    given(userService.createUser(any())).willReturn(user);
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/users")
@@ -98,6 +105,97 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
   }
 
+  @Test
+  public void createUser_UsernameExists() throws Exception {
+
+    UserPostDTO userPostDTO = new UserPostDTO();
+    userPostDTO.setName("Test existingUser");
+    userPostDTO.setUsername("testExistingUsername");
+
+    given(userService.createUser(any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT, "The username and the name provided are not unique. Therefore, the user could not be created!"));
+
+    // when/then -> do the request + validate the result
+    MockHttpServletRequestBuilder postRequest = post("/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(userPostDTO))
+            .content(asJsonString(userPostDTO));
+
+    // then
+    mockMvc.perform(postRequest)
+            .andExpect(status().isConflict());
+  }
+
+  @Test
+  public void profile_getUser() throws Exception{
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+
+    given(userService.profile(any())).willReturn(user);
+
+    MockHttpServletRequestBuilder getRequest = MockMvcRequestBuilders.get("/profile/{userid}", user.getId())
+            .contentType(MediaType.APPLICATION_JSON);
+
+    // then
+    mockMvc.perform(getRequest)
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").value(user.getId()))
+            .andExpect(jsonPath("$.name").value(user.getName()))
+            .andExpect(jsonPath("$.username").value(user.getUsername()));
+  }
+
+  @Test
+  public void profile_getUser_notExist() throws Exception{
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+
+    given(userService.profile(any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found"));
+
+    MockHttpServletRequestBuilder getRequest = MockMvcRequestBuilders.get("/profile/{userid}", 2)
+            .contentType(MediaType.APPLICATION_JSON);
+
+    // then
+    mockMvc.perform(getRequest)
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void updateUser_success() throws Exception{
+    //given
+    UserPutDTO userPutDTO = new UserPutDTO();
+    userPutDTO.setUsername("testUsername");
+
+    //no given because it doesn't return anything
+
+    MockHttpServletRequestBuilder putRequest = MockMvcRequestBuilders.put("/profile/{userid}/edit", 1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(userPutDTO));
+
+    mockMvc.perform(putRequest)
+            .andExpect(status().isNoContent());
+  }
+
+  @Test
+  public void updateUser_Fail() throws Exception{
+    UserPutDTO userPutDTO = new UserPutDTO();
+    userPutDTO.setUsername("testUsername");
+
+    given(userService.edit(Mockito.any(), Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found"));
+
+    MockHttpServletRequestBuilder putRequest = MockMvcRequestBuilders.put("/profile/{userid}/edit", 4)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(userPutDTO));
+
+    mockMvc.perform(putRequest)
+            .andExpect(status().isNotFound());
+
+  }
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input
    * can be processed

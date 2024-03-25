@@ -5,6 +5,13 @@ import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
+
+
 /**
  * Internal User Representation
  * This class composes the internal representation of the user and defines how
@@ -25,7 +32,7 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String name;
 
   @Column(nullable = false, unique = true)
@@ -33,6 +40,15 @@ public class User implements Serializable {
 
   @Column(nullable = false, unique = true)
   private String token;
+
+  @Column(nullable = false)
+  private String password;
+
+  @Column(nullable = false)
+  private LocalDate creationDate;
+
+  @Column(nullable = true)
+  private LocalDate birthday;
 
   @Column(nullable = false)
   private UserStatus status;
@@ -61,6 +77,8 @@ public class User implements Serializable {
     this.username = username;
   }
 
+  public String getPassword(){return password; }
+  public void setPassword(String password) {this.password = password; }
   public String getToken() {
     return token;
   }
@@ -76,4 +94,13 @@ public class User implements Serializable {
   public void setStatus(UserStatus status) {
     this.status = status;
   }
+
+  public void setBirthday(LocalDate birthday){
+    this.birthday = birthday;
+  }
+  public LocalDate getBirthday(){return birthday; }
+
+  public void setCreationDate(LocalDate creationDate){this.creationDate = creationDate; }
+  public LocalDate getCreationDate(){return creationDate; }
+
 }
