@@ -21,25 +21,25 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface DTOMapper {
 
-  DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+    DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-  @Mapping(source = "name", target = "name")
-  @Mapping(source = "username", target = "username")
-  User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "username", target = "username")
+    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
-  @Mapping(source = "id", target = "id")
-  @Mapping(source = "name", target = "name")
-  @Mapping(source = "username", target = "username")
-  @Mapping(source = "status", target = "status")
-  @Mapping(source = "birthday", target = "birthday")
-  @Mapping(source = "creationDate", target = "creationDate")
-  @Mapping(source = "password", target = "password")
-  @Mapping(source = "token", target = "token")
-  UserGetDTO convertEntityToUserGetDTO(User user);
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "birthday", target = "birthday")
+    @Mapping(source = "creationDate", target = "creationDate")
+    @Mapping(source = "password", target = "password")
+    @Mapping(source = "token", target = "token")
+    UserGetDTO convertEntityToUserGetDTO(User user);
 
-  @Mapping(source = "name", target = "name")
-  @Mapping(source = "username", target = "username")
-  @Mapping(source = "birthday", target = "birthday")
-  @Mapping(source = "password", target = "password")
-  User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "birthday", target = "birthday")
+    @Mapping(source = "password", target = "password")
+    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }
