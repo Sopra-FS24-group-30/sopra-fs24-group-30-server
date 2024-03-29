@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

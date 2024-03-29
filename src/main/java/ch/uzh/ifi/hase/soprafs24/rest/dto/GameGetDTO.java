@@ -16,6 +16,7 @@ public class GameGetDTO {
     private LocalDate creationDate;
     private String token;
 
+
     public Long getId() {
         return id;
     }

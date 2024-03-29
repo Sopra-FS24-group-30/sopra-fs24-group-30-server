@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+
 public class GamePutDTO {
     private GameStatus status;
 

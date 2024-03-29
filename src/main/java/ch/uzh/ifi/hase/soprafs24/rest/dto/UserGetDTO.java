@@ -11,6 +11,7 @@ To get the information of a user
 
 public class UserGetDTO {
 
+
     private Long id;
     private String name;
     private String username;

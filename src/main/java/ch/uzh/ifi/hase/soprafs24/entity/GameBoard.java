@@ -44,6 +44,7 @@ public class GameBoard implements Serializable {
         this.id = id;
     }
 
+
     public String getToken() {
         return token;
     }

@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+
 /**
  * DTOMapper
  * This class is responsible for generating classes that will automatically

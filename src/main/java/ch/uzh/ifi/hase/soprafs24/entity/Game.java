@@ -39,6 +39,7 @@ public class Game implements Serializable {
     @Column(nullable = false)
     private LocalDate creationDate;
 
+
     @Column(nullable = false)
     private GameStatus status;
 
