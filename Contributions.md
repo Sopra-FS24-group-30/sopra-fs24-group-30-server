@@ -4,7 +4,7 @@
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
-| 01.01 | Lorem Ipsum | Example.org | Wow |
+|31.03.2024 | Céline Ziegler | https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/4, https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/3 |  |
 |   |   |   |   |
 |   |   |   |   |
 
