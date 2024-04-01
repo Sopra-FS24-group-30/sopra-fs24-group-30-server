@@ -7,11 +7,11 @@
 |   |   |   |   |
 |   |   |   |   |
 ## Week 1½ *(01.04 – 07.04)*
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
-| 01.01 | Lorem Ipsum | Example.org | Wow |
-|   |   |   |   |
-|   |   |   |   |
+| Date | Name     | Links to Github Issues | Comments        |
+|---|----------|---|-----------------|
+| 01.01 | Tam Gian | https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/116 | One space class |
+|   |          |   |                 |
+|   |          |   |                 |
 ## <font style="color: #00d7ff">Week 2 *(08.04 – 14.04)*</font>
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
