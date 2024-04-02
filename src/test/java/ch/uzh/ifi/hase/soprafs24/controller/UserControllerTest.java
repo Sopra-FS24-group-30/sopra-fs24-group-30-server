@@ -54,7 +54,6 @@ public class UserControllerTest {
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
         User user = new User();
-        user.setName("Firstname Lastname");
         user.setUsername("firstname@lastname");
         user.setStatus(UserStatus.OFFLINE);
 
@@ -70,7 +69,6 @@ public class UserControllerTest {
         // then
         mockMvc.perform(getRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(user.getName())))
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())))
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
     }
@@ -80,13 +78,11 @@ public class UserControllerTest {
         // given
         User user = new User();
         user.setId(1L);
-        user.setName("Test User");
         user.setUsername("testUsername");
         user.setToken("1");
         user.setStatus(UserStatus.ONLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setName("Test User");
         userPostDTO.setUsername("testUsername");
 
         given(userService.createUser(any())).willReturn(user);
@@ -100,7 +96,6 @@ public class UserControllerTest {
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(user.getName())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
@@ -109,10 +104,9 @@ public class UserControllerTest {
     public void createUser_UsernameExists() throws Exception {
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setName("Test existingUser");
         userPostDTO.setUsername("testExistingUsername");
 
-        given(userService.createUser(any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT, "The username and the name provided are not unique. Therefore, the user could not be created!"));
+        given(userService.createUser(any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT, "The username provided is not unique. Therefore, the user could not be created!"));
 
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/users")
@@ -129,7 +123,6 @@ public class UserControllerTest {
     public void profile_getUser() throws Exception {
         User user = new User();
         user.setId(1L);
-        user.setName("Test User");
         user.setUsername("testUsername");
         user.setToken("1");
 
@@ -143,7 +136,6 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(user.getId()))
-                .andExpect(jsonPath("$.name").value(user.getName()))
                 .andExpect(jsonPath("$.username").value(user.getUsername()));
     }
 
@@ -151,7 +143,6 @@ public class UserControllerTest {
     public void profile_getUser_notExist() throws Exception {
         User user = new User();
         user.setId(1L);
-        user.setName("Test User");
         user.setUsername("testUsername");
         user.setToken("1");
 
