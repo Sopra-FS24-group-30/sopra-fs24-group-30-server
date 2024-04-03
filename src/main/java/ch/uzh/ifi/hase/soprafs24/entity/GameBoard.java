@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,8 +26,8 @@ public class GameBoard implements Serializable {
     private String token;
 
     // One-to-many relationship with Player
-    //@OneToMany(mappedBy = "GameBoard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //private Set<User> players;
+    @OneToMany(mappedBy = "GameBoard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<User> players;
 
     @Column(nullable = false)
     private LocalDate creationDate;
@@ -58,18 +57,18 @@ public class GameBoard implements Serializable {
         return status;
     }
 
-    public void setStatus(GameBoardStatus status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
 
-    //public Set<User> getPlayers(){
-      //  return players;
-    //}
+    public Set<User> getPlayers(){
+        return players;
+    }
 
-    //public void setPlayers(Set<Player> players){
-      //  this.players = players;
-    //}
+    public void setPlayers(Set<Player> players){
+        this.players = players;
+    }
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
