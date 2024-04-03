@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,11 +9,11 @@ import java.time.format.DateTimeFormatter;
 public class GamePutDTO {
     private GameStatus status;
 
-    public UserStatus getStatus() {
+    public GameStatus getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void setStatus(GameStatus status) {
         this.status = status;
     }
 

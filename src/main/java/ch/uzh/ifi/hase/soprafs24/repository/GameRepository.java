@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository("GameRepository")
-public interface GameRepository extends JpaRepository<Game, Long> {
-    User findById(Long Id);
+//@Repository("GameRepository")
+//public interface GameRepository extends JpaRepository<Game, Long> {
+    //User findById(Long Id);
 
-}
+//}

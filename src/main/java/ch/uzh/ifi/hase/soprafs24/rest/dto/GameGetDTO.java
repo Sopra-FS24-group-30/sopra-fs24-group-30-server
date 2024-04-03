@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDate;
@@ -11,10 +12,11 @@ To get the information of a user
 
 public class GameGetDTO {
 
-    private Game id;
+    //private Game id;
     private GameStatus status;
     private LocalDate creationDate;
     private String token;
+    private Long id;
 
 
     public Long getId() {
@@ -25,11 +27,11 @@ public class GameGetDTO {
         this.id = id;
     }
 
-    public UserStatus getStatus() {
+    public GameStatus getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void GameStatus(GameStatus status) {
         this.status = status;
     }
 
