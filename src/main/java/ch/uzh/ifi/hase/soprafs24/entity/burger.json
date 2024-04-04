@@ -2,8 +2,8 @@
   "hybridSpace": {
     "1" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.17012894,
-      "yCoord" : 0.36747851,
+      "xCoord" : 0.17012893982808,
+      "yCoord" : 0.440532417346501,
       "next" : ["25"],
       "prev" : ["23"],
       "playerOn" : false,
@@ -13,8 +13,8 @@
     },
     "2" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.641833811,
-      "yCoord" : 0.559097421,
+      "xCoord" : 0.641833810888252,
+      "yCoord" : 0.670244740231859,
       "next" : ["35"],
       "prev" : ["103"],
       "playerOn" : false,
@@ -24,8 +24,8 @@
     },
     "3" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.327722063,
-      "yCoord" : 0.420845272,
+      "xCoord" : 0.327722063037249,
+      "yCoord" : 0.504508372692143,
       "next" : ["48"],
       "prev" : ["106"],
       "playerOn" : false,
@@ -35,8 +35,8 @@
     },
     "4" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.600286533,
-      "yCoord" : 0.398280802,
+      "xCoord" : 0.600286532951289,
+      "yCoord" : 0.477458136539287,
       "next" : ["46"],
       "prev" : ["44"],
       "playerOn" : false,
@@ -46,8 +46,8 @@
     },
     "5" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.900787966,
-      "yCoord" : 0.51217765,
+      "xCoord" : 0.900787965616046,
+      "yCoord" : 0.613997423787033,
       "next" : ["12"],
       "prev" : ["10"],
       "playerOn" : false,
@@ -57,8 +57,8 @@
     },
     "6" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.32234957,
-      "yCoord" : 0.704512894,
+      "xCoord" : 0.322349570200573,
+      "yCoord" : 0.844568484328038,
       "next" : ["45"],
       "prev" : ["34"],
       "playerOn" : false,
@@ -68,8 +68,8 @@
     },
     "7" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.403295129,
-      "yCoord" : 0.244627507,
+      "xCoord" : 0.403295128939828,
+      "yCoord" : 0.293258909403177,
       "next" : ["49"],
       "prev" : ["56"],
       "playerOn" : false,
@@ -79,8 +79,8 @@
     },
     "8" : {
       "color" : "BlueGoal",
-      "xCoord" : 0.333810888,
-      "yCoord" : 0.106017192,
+      "xCoord" : 0.333810888252149,
+      "yCoord" : 0.127093173035638,
       "next" : ["20"],
       "prev" : ["18"],
       "playerOn" : false,
@@ -92,8 +92,8 @@
   "onSpace": {
     "9":{
       "color": "Yellow",
-      "xCoord": 0.827722063,
-      "yCoord": 0.644340974,
+      "xCoord": 0.827722063037249,
+      "yCoord": 0.772434521253757,
       "next" : ["10"],
       "prev" : ["47"],
       "playerOn": false,
@@ -101,8 +101,8 @@
     },
     "10": {
       "color": "Yellow",
-      "xCoord": 0.876074499,
-      "yCoord": 0.585601719,
+      "xCoord": 0.876074498567335,
+      "yCoord": 0.702018033490768,
       "next" : ["5"],
       "prev" : ["9"],
       "playerOn": false,
@@ -110,8 +110,8 @@
     },
     "11": {
       "color": "Gambling",
-      "xCoord": 0.46991404,
-      "yCoord": 0.709527221,
+      "xCoord": 0.469914040114613,
+      "yCoord": 0.850579647917561,
       "next" : ["19"],
       "prev" : ["45", "32"],
       "playerOn": false,
@@ -119,8 +119,8 @@
     },
     "12": {
       "color": "Item",
-      "xCoord": 0.893624642,
-      "yCoord": 0.436246418,
+      "xCoord": 0.893624641833811,
+      "yCoord": 0.522971232288536,
       "next" : ["13"],
       "prev" : ["5"],
       "playerOn": false,
@@ -128,8 +128,8 @@
     },
     "13": {
       "color": "Yellow",
-      "xCoord": 0.846704871,
-      "yCoord": 0.367120344,
+      "xCoord": 0.846704871060172,
+      "yCoord": 0.440103048518678,
       "next" : ["14"],
       "prev" : ["12"],
       "playerOn": false,
@@ -137,8 +137,8 @@
     },
     "14": {
       "color": "Red",
-      "xCoord": 0.790472779,
-      "yCoord": 0.313037249,
+      "xCoord": 0.790472779369627,
+      "yCoord": 0.375268355517389,
       "next" : ["15"],
       "prev" : ["13"],
       "playerOn": false,
@@ -146,8 +146,8 @@
     },
     "15": {
       "color": "Blue",
-      "xCoord": 0.723853868,
-      "yCoord": 0.268266476,
+      "xCoord": 0.723853868194842,
+      "yCoord": 0.321597252039502,
       "next" : ["104"],
       "prev" : ["14", "39"],
       "playerOn": false,
@@ -155,8 +155,8 @@
     },
     "16": {
       "color": "Card",
-      "xCoord": 0.660458453,
-      "yCoord": 0.150429799,
+      "xCoord": 0.660458452722063,
+      "yCoord": 0.180334907685702,
       "next" : ["17"],
       "prev" : ["104"],
       "playerOn": false,
@@ -164,8 +164,8 @@
     },
     "17": {
       "color": "Yellow",
-      "xCoord": 0.599212034,
-      "yCoord": 0.111389685,
+      "xCoord": 0.599212034383954,
+      "yCoord": 0.133533705452984,
       "next" : ["105"],
       "prev" : ["16"],
       "playerOn": false,
@@ -173,8 +173,8 @@
     },
     "18": {
       "color": "Yellow",
-      "xCoord": 0.413323782,
-      "yCoord": 0.10530086,
+      "xCoord": 0.413323782234957,
+      "yCoord": 0.126234435379991,
       "next" : ["8"],
       "prev" : ["105"],
       "playerOn": false,
@@ -182,8 +182,8 @@
     },
     "19": {
       "color": "Blue",
-      "xCoord": 0.53474212,
-      "yCoord": 0.710243553,
+      "xCoord": 0.53474212034384,
+      "yCoord": 0.851438385573207,
       "next" : ["52"],
       "prev" : ["11"],
       "playerOn": false,
@@ -191,8 +191,8 @@
     },
     "20": {
       "color": "Item",
-      "xCoord": 0.285100287,
-      "yCoord": 0.156518625,
+      "xCoord": 0.285100286532951,
+      "yCoord": 0.187634177758695,
       "next" : ["21"],
       "prev" : ["8", "50"],
       "playerOn": false,
@@ -200,8 +200,8 @@
     },
     "21": {
       "color": "Yellow",
-      "xCoord": 0.21239255,
-      "yCoord": 0.173352436,
+      "xCoord": 0.212392550143266,
+      "yCoord": 0.20781451266638,
       "next" : ["22"],
       "prev" : ["20"],
       "playerOn": false,
@@ -209,8 +209,8 @@
     },
     "22": {
       "color": "Yellow",
-      "xCoord": 0.169054441,
-      "yCoord": 0.232808023,
+      "xCoord": 0.169054441260745,
+      "yCoord": 0.279089738085015,
       "next" : ["23"],
       "prev" : ["21"],
       "playerOn": false,
@@ -218,8 +218,8 @@
     },
     "23": {
       "color": "Card",
-      "xCoord": 0.170845272,
-      "yCoord": 0.301575931,
+      "xCoord": 0.170845272206304,
+      "yCoord": 0.36152855302705,
       "next" : ["1"],
       "prev" : ["22"],
       "playerOn": false,
@@ -227,8 +227,8 @@
     },
     "24": {
       "color": "Yellow",
-      "xCoord": 0.192335244,
-      "yCoord": 0.665114613,
+      "xCoord": 0.192335243553009,
+      "yCoord": 0.797337913267497,
       "next" : ["34"],
       "prev" : ["101"],
       "playerOn": false,
@@ -236,8 +236,8 @@
     },
     "25": {
       "color": "Red",
-      "xCoord": 0.170487106,
-      "yCoord": 0.436246418,
+      "xCoord": 0.170487106017192,
+      "yCoord": 0.522971232288536,
       "next" : ["26"],
       "prev" : ["1"],
       "playerOn": false,
@@ -245,8 +245,8 @@
     },
     "26": {
       "color": "Item",
-      "xCoord": 0.169770774,
-      "yCoord": 0.505372493,
+      "xCoord": 0.169770773638968,
+      "yCoord": 0.605839416058394,
       "next" : ["101"],
       "prev" : ["25"],
       "playerOn": false,
@@ -254,8 +254,8 @@
     },
     "27": {
       "color": "Yellow",
-      "xCoord": 0.242836676,
-      "yCoord": 0.578438395,
+      "xCoord": 0.242836676217765,
+      "yCoord": 0.693430656934307,
       "next" : ["28"],
       "prev" : ["101"],
       "playerOn": false,
@@ -263,8 +263,8 @@
     },
     "28": {
       "color": "Yellow",
-      "xCoord": 0.264326648,
-      "yCoord": 0.517550143,
+      "xCoord": 0.26432664756447,
+      "yCoord": 0.62043795620438,
       "next" : ["106"],
       "prev" : ["27"],
       "playerOn": false,
@@ -272,8 +272,8 @@
     },
     "29": {
       "color": "Blue",
-      "xCoord": 0.398638968,
-      "yCoord": 0.488538682,
+      "xCoord": 0.398638968481375,
+      "yCoord": 0.585659081150708,
       "next" : ["30"],
       "prev" : ["106"],
       "playerOn": false,
@@ -281,8 +281,8 @@
     },
     "30": {
       "color": "Red",
-      "xCoord": 0.459169054,
-      "yCoord": 0.511103152,
+      "xCoord": 0.459169054441261,
+      "yCoord": 0.612709317303564,
       "next" : ["31"],
       "prev" : ["29", "107"],
       "playerOn": false,
@@ -290,8 +290,8 @@
     },
     "31": {
       "color": "Yellow",
-      "xCoord": 0.434813754,
-      "yCoord": 0.563753582,
+      "xCoord": 0.434813753581662,
+      "yCoord": 0.67582653499356,
       "next" : ["55"],
       "prev" : ["30", "36"],
       "playerOn": false,
@@ -299,8 +299,8 @@
     },
     "32": {
       "color": "Yellow",
-      "xCoord": 0.421919771,
-      "yCoord": 0.652936963,
+      "xCoord": 0.421919770773639,
+      "yCoord": 0.782739373121511,
       "next" : ["11"],
       "prev" : ["55"],
       "playerOn": false,
@@ -308,8 +308,8 @@
     },
     "33": {
       "color": "Black",
-      "xCoord": 0.709885387,
-      "yCoord": 0.618911175,
+      "xCoord": 0.709885386819484,
+      "yCoord": 0.741949334478317,
       "next" : ["103"],
       "prev" : ["102"],
       "playerOn": false,
@@ -317,17 +317,17 @@
     },
     "34": {
       "color": "Card",
-      "xCoord": 0.253939828,
-      "yCoord": 0.707378223,
+      "xCoord": 0.253939828080229,
+      "yCoord": 0.848003434950623,
       "next" : ["6"],
       "prev" : ["24"],
       "playerOn": false,
       "onSpace" : "4"
     },
-    "35":	{
+    "35":       {
       "color": "Yellow",
-      "xCoord": 0.573424069,
-      "yCoord": 0.559097421,
+      "xCoord": 0.573424068767908,
+      "yCoord": 0.670244740231859,
       "next" : ["36"],
       "prev" : ["2"],
       "playerOn": false,
@@ -335,170 +335,170 @@
     },
     "36": {
       "color": "Card",
-      "xCoord": 0.507879656,
-      "yCoord": 0.56482808,
+      "xCoord": 0.507879656160459,
+      "yCoord": 0.677114641477029,
       "next" : ["31"],
       "prev" : ["35"],
       "playerOn": false,
       "onSpace" : "22"
     },
-    "37":	{
+    "37":       {
       "color": "Card",
-      "xCoord": 0.744985673,
-      "yCoord": 0.48495702,
+      "xCoord": 0.744985673352435,
+      "yCoord": 0.581365392872477,
       "next" : ["38"],
       "prev" : ["103"],
       "playerOn": false,
       "onSpace" : "4"
     },
-    "38":	{
+    "38":       {
       "color": "Item",
-      "xCoord": 0.727793696,
-      "yCoord": 0.417621777,
+      "xCoord": 0.727793696275072,
+      "yCoord": 0.500644053241735,
       "next" : ["39"],
       "prev" : ["37"],
       "playerOn": false,
       "onSpace" : "3"
     },
-    "39":	{
+    "39":       {
       "color": "Yellow",
-      "xCoord": 0.726361032,
-      "yCoord": 0.339899713,
+      "xCoord": 0.726361031518625,
+      "yCoord": 0.407471017604122,
       "next" : ["15"],
       "prev" : ["38", "46"],
       "playerOn": false,
       "onSpace" : "17"
     },
-    "40":	{
+    "40":       {
       "color": "Card",
-      "xCoord": 0.613538682,
-      "yCoord": 0.238538682,
+      "xCoord": 0.613538681948424,
+      "yCoord": 0.285959639330185,
       "next" : ["41"],
       "prev" : ["104"],
       "playerOn": false,
       "onSpace" : "4"
     },
-    "41":	{
+    "41":       {
       "color": "Yellow",
-      "xCoord": 0.549426934,
-      "yCoord": 0.267908309,
+      "xCoord": 0.549426934097421,
+      "yCoord": 0.321167883211679,
       "next" : ["42"],
       "prev" : ["40"],
       "playerOn": false,
       "onSpace" : "23"
     },
-    "42":	{
+    "42":       {
       "color": "Yellow",
-      "xCoord": 0.492836676,
-      "yCoord": 0.306948424,
+      "xCoord": 0.492836676217765,
+      "yCoord": 0.367969085444397,
       "next" : ["43"],
       "prev" : ["41"],
       "playerOn": false,
       "onSpace" : "14"
     },
-    "43":	{
+    "43":       {
       "color": "Black",
-      "xCoord": 0.456661891,
-      "yCoord": 0.361389685,
+      "xCoord": 0.456661891117478,
+      "yCoord": 0.433233147273508,
       "next" : ["107"],
       "prev" : ["42"],
       "playerOn": false,
       "onSpace" : "7"
     },
-    "44":	{
+    "44":       {
       "color": "Item",
-      "xCoord": 0.543696275,
-      "yCoord": 0.423710602,
+      "xCoord": 0.543696275071633,
+      "yCoord": 0.507943323314727,
       "next" : ["4"],
       "prev" : ["107"],
       "playerOn": false,
       "onSpace" : "3"
     },
-    "45":	{
+    "45":       {
       "color": "Item",
-      "xCoord": 0.389326648,
-      "yCoord": 0.707020057,
+      "xCoord": 0.38932664756447,
+      "yCoord": 0.8475740661228,
       "next" : ["11"],
       "prev" : ["6"],
       "playerOn": false,
       "onSpace" : "3"
     },
-    "46":	{
+    "46":       {
       "color": "Gambling",
-      "xCoord": 0.660458453,
-      "yCoord": 0.35995702,
+      "xCoord": 0.660458452722063,
+      "yCoord": 0.431515671962216,
       "next" : ["39"],
       "prev" : ["4"],
       "playerOn": false,
       "onSpace" : "5"
     },
-    "47":	{
+    "47":       {
       "color": "Catnami",
-      "xCoord": 0.764326648,
-      "yCoord": 0.689469914,
+      "xCoord": 0.76432664756447,
+      "yCoord": 0.826534993559468,
       "next" : ["9"],
       "prev" : ["102"],
       "playerOn": false,
       "onSpace" : "6"
     },
-    "48":	{
+    "48":       {
       "color": "Catnami",
-      "xCoord": 0.338825215,
-      "yCoord": 0.348853868,
+      "xCoord": 0.338825214899713,
+      "yCoord": 0.418205238299699,
       "next" : ["49"],
       "prev" : ["3"],
       "playerOn": false,
       "onSpace" : "6"
     },
-    "49":	{
+    "49":       {
       "color": "Yellow",
-      "xCoord": 0.352793696,
-      "yCoord": 0.281160458,
+      "xCoord": 0.352793696275072,
+      "yCoord": 0.337054529841133,
       "next" : ["50"],
       "prev" : ["48", "7"],
       "playerOn": false,
       "onSpace" : "13"
     },
-    "50":	{
+    "50":       {
       "color": "Black",
-      "xCoord": 0.314469914,
-      "yCoord": 0.216690544,
+      "xCoord": 0.314469914040115,
+      "yCoord": 0.259768140832975,
       "next" : ["20"],
       "prev" : ["49"],
       "playerOn": false,
       "onSpace" : "7"
     },
-    "51":	{
+    "51":       {
       "color": "Gambling",
-      "xCoord": 0.484598854,
-      "yCoord": 0.156160458,
+      "xCoord": 0.484598853868195,
+      "yCoord": 0.187204808930872,
       "next" : ["56"],
       "prev" : ["105"],
       "playerOn": false,
       "onSpace" : "5"
     },
-    "52":	{
+    "52":       {
       "color": "Yellow",
-      "xCoord": 0.612464183,
-      "yCoord": 0.701289398,
+      "xCoord": 0.612464183381089,
+      "yCoord": 0.84070416487763,
       "next" : ["102"],
       "prev" : ["19"],
       "playerOn": false,
       "onSpace" : "27"
     },
-    "53":	{
+    "53":       {
       "color": "StartLeft",
-      "xCoord": 0.074498567,
-      "yCoord": 0.42765043,
+      "xCoord": 0.0744985673352436,
+      "yCoord": 0.512666380420782,
       "next" : ["25"],
       "prev" : [],
       "playerOn": false,
       "onSpace" : "28"
     },
-    "54":	{
+    "54":       {
       "color": "StartRight",
-      "xCoord": 0.819842407,
-      "yCoord": 0.510744986,
+      "xCoord": 0.819842406876791,
+      "yCoord": 0.612279948475741,
       "next" : ["37"],
       "prev1" : [],
       "playerOn": false,
@@ -508,8 +508,8 @@
   "overSpace": {
     "55" : {
       "color" : "SpecialItem",
-      "xCoord" : 0.427292264,
-      "yCoord" : 0.607449857,
+      "xCoord" : 0.427292263610315,
+      "yCoord" : 0.728209531987978,
       "next" : ["32"],
       "prev" : ["31"],
       "playerOn" : false,
@@ -517,8 +517,8 @@
     },
     "56" : {
       "color" : "SpecialItem",
-      "xCoord" : 0.443409742,
-      "yCoord" : 0.209885387,
+      "xCoord" : 0.443409742120344,
+      "yCoord" : 0.251610133104337,
       "next" : ["7"],
       "prev" : ["51"],
       "playerOn" : false,
@@ -526,8 +526,8 @@
     },
     "101" : {
       "color" : "Junction",
-      "xCoord" : 0.175143266,
-      "yCoord" : 0.591690544,
+      "xCoord" : 0.175143266475645,
+      "yCoord" : 0.709317303563761,
       "next" : ["24", "27"],
       "prev" : ["26"],
       "playerOn" : false,
@@ -535,8 +535,8 @@
     },
     "102" : {
       "color" : "Junction",
-      "xCoord" : 0.686962751,
-      "yCoord" : 0.698424069,
+      "xCoord" : 0.686962750716332,
+      "yCoord" : 0.837269214255045,
       "next" : ["47", "33"],
       "prev" : ["52"],
       "playerOn" : false,
@@ -544,8 +544,8 @@
     },
     "103" : {
       "color" : "Junction",
-      "xCoord" : 0.724570201,
-      "yCoord" : 0.555873926,
+      "xCoord" : 0.724570200573066,
+      "yCoord" : 0.666380420781451,
       "next" : ["37", "2"],
       "prev" : ["33"],
       "playerOn" : false,
@@ -553,8 +553,8 @@
     },
     "104" : {
       "color" : "Junction",
-      "xCoord" : 0.691618911,
-      "yCoord" : 0.20773639,
+      "xCoord" : 0.691618911174785,
+      "yCoord" : 0.249033920137398,
       "next" : ["16", "40"],
       "prev" : ["15"],
       "playerOn" : false,
@@ -562,8 +562,8 @@
     },
     "105" : {
       "color" : "Junction",
-      "xCoord" : 0.514326648,
-      "yCoord" : 0.114613181,
+      "xCoord" : 0.51432664756447,
+      "yCoord" : 0.137398024903392,
       "next" : ["18", "51"],
       "prev" : ["17"],
       "playerOn" : false,
@@ -571,8 +571,8 @@
     },
     "106" : {
       "color" : "Gate",
-      "xCoord" : 0.325573066,
-      "yCoord" : 0.490687679,
+      "xCoord" : 0.325573065902579,
+      "yCoord" : 0.588235294117647,
       "next" : ["29", "3"],
       "prev" : ["28"],
       "playerOn" : false,
@@ -580,13 +580,12 @@
     },
     "107" : {
       "color" : "Gate",
-      "xCoord" : 0.453080229,
-      "yCoord" : 0.433022923,
+      "xCoord" : 0.453080229226361,
+      "yCoord" : 0.519106912838128,
       "next" : ["30", "44"],
       "prev" : ["43"],
       "playerOn" : false,
       "overSpace" : "10"
     }
-  }  
+  }
 }
-
