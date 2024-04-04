@@ -31,7 +31,7 @@ public class Game implements Serializable {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long gameid;
 
 
     @Column(nullable = false, unique = true)
@@ -44,12 +44,15 @@ public class Game implements Serializable {
     @Column(nullable = false)
     private GameStatus status;
 
+    @Column(nullable = false)
+    private Integer roundNum;
+
     public Long getId() {
-        return id;
+        return gameid;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.gameid = gameid;
     }
 
     public String getToken() {
@@ -70,6 +73,14 @@ public class Game implements Serializable {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public void startGame() {
+        this.roundNum = 1;
+    }
+
+    public void nextRound() {
+        this.roundNum++;
     }
 
     public LocalDate getCreationDate() {
