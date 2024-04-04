@@ -12,7 +12,7 @@
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
-|   |   |   |   |
+| 04.04.2024 | Marius Decurtins | [#79](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/79), [#80](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/80), [#81](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/81) |  |
 |   |   |   |   |
 |   |   |   |   |
 
