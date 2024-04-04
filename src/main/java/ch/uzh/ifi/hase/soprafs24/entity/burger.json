@@ -1,632 +1,592 @@
 {
-  "1": {
-    "spaceType" : "overSpace",
-    "color" : "BlueGoal",
-    "xCoord" : 0.17012894,
-    "yCoord" : 0.36747851,
-    "next1" : 25,
-    "next2" : null,
-    "prev1" : 23,
-    "prev2" : null
+  "hybridSpace": {
+    "1" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.17012894,
+      "yCoord" : 0.36747851,
+      "next" : ["25"],
+      "prev" : ["23"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "2" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.641833811,
+      "yCoord" : 0.559097421,
+      "next" : ["35"],
+      "prev" : ["103"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "3" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.327722063,
+      "yCoord" : 0.420845272,
+      "next" : ["48"],
+      "prev" : ["106"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "4" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.600286533,
+      "yCoord" : 0.398280802,
+      "next" : ["46"],
+      "prev" : ["44"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "5" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.900787966,
+      "yCoord" : 0.51217765,
+      "next" : ["12"],
+      "prev" : ["10"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "6" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.32234957,
+      "yCoord" : 0.704512894,
+      "next" : ["45"],
+      "prev" : ["34"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "7" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.403295129,
+      "yCoord" : 0.244627507,
+      "next" : ["49"],
+      "prev" : ["56"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    },
+    "8" : {
+      "color" : "BlueGoal",
+      "xCoord" : 0.333810888,
+      "yCoord" : 0.106017192,
+      "next" : ["20"],
+      "prev" : ["18"],
+      "playerOn" : false,
+      "isGoal" : false,
+      "onSpace" : "2",
+      "overSpace" : "1"
+    }
   },
-  "2": {
-    "spaceType" : "overSpace",
-    "color" : "BlueGoal",
-    "xCoord" : 0.641833811,
-    "yCoord" : 0.559097421,
-    "next1" : 35,
-    "next2" : null,
-    "prev1" : 33,
-    "prev2" : null
+  "onSpace": {
+    "9":{
+      "color": "Yellow",
+      "xCoord": 0.827722063,
+      "yCoord": 0.644340974,
+      "next" : ["10"],
+      "prev" : ["47"],
+      "playerOn": false,
+      "onSpace" : "15"
+    },
+    "10": {
+      "color": "Yellow",
+      "xCoord": 0.876074499,
+      "yCoord": 0.585601719,
+      "next" : ["5"],
+      "prev" : ["9"],
+      "playerOn": false,
+      "onSpace" : "24"
+    },
+    "11": {
+      "color": "Gambling",
+      "xCoord": 0.46991404,
+      "yCoord": 0.709527221,
+      "next" : ["19"],
+      "prev" : ["45", "32"],
+      "playerOn": false,
+      "onSpace" : "5"
+    },
+    "12": {
+      "color": "Item",
+      "xCoord": 0.893624642,
+      "yCoord": 0.436246418,
+      "next" : ["13"],
+      "prev" : ["5"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "13": {
+      "color": "Yellow",
+      "xCoord": 0.846704871,
+      "yCoord": 0.367120344,
+      "next" : ["14"],
+      "prev" : ["12"],
+      "playerOn": false,
+      "onSpace" : "12"
+    },
+    "14": {
+      "color": "Red",
+      "xCoord": 0.790472779,
+      "yCoord": 0.313037249,
+      "next" : ["15"],
+      "prev" : ["13"],
+      "playerOn": false,
+      "onSpace" : "8"
+    },
+    "15": {
+      "color": "Blue",
+      "xCoord": 0.723853868,
+      "yCoord": 0.268266476,
+      "next" : ["104"],
+      "prev" : ["14", "39"],
+      "playerOn": false,
+      "onSpace" : "2"
+    },
+    "16": {
+      "color": "Card",
+      "xCoord": 0.660458453,
+      "yCoord": 0.150429799,
+      "next" : ["17"],
+      "prev" : ["104"],
+      "playerOn": false,
+      "onSpace" : "4"
+    },
+    "17": {
+      "color": "Yellow",
+      "xCoord": 0.599212034,
+      "yCoord": 0.111389685,
+      "next" : ["105"],
+      "prev" : ["16"],
+      "playerOn": false,
+      "onSpace" : "22"
+    },
+    "18": {
+      "color": "Yellow",
+      "xCoord": 0.413323782,
+      "yCoord": 0.10530086,
+      "next" : ["8"],
+      "prev" : ["105"],
+      "playerOn": false,
+      "onSpace" : "26"
+    },
+    "19": {
+      "color": "Blue",
+      "xCoord": 0.53474212,
+      "yCoord": 0.710243553,
+      "next" : ["52"],
+      "prev" : ["11"],
+      "playerOn": false,
+      "onSpace" : "2"
+    },
+    "20": {
+      "color": "Item",
+      "xCoord": 0.285100287,
+      "yCoord": 0.156518625,
+      "next" : ["21"],
+      "prev" : ["8", "50"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "21": {
+      "color": "Yellow",
+      "xCoord": 0.21239255,
+      "yCoord": 0.173352436,
+      "next" : ["22"],
+      "prev" : ["20"],
+      "playerOn": false,
+      "onSpace" : "25"
+    },
+    "22": {
+      "color": "Yellow",
+      "xCoord": 0.169054441,
+      "yCoord": 0.232808023,
+      "next" : ["23"],
+      "prev" : ["21"],
+      "playerOn": false,
+      "onSpace" : "16"
+    },
+    "23": {
+      "color": "Card",
+      "xCoord": 0.170845272,
+      "yCoord": 0.301575931,
+      "next" : ["1"],
+      "prev" : ["22"],
+      "playerOn": false,
+      "onSpace" : "4"
+    },
+    "24": {
+      "color": "Yellow",
+      "xCoord": 0.192335244,
+      "yCoord": 0.665114613,
+      "next" : ["34"],
+      "prev" : ["101"],
+      "playerOn": false,
+      "onSpace" : "17"
+    },
+    "25": {
+      "color": "Red",
+      "xCoord": 0.170487106,
+      "yCoord": 0.436246418,
+      "next" : ["26"],
+      "prev" : ["1"],
+      "playerOn": false,
+      "onSpace" : "8"
+    },
+    "26": {
+      "color": "Item",
+      "xCoord": 0.169770774,
+      "yCoord": 0.505372493,
+      "next" : ["101"],
+      "prev" : ["25"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "27": {
+      "color": "Yellow",
+      "xCoord": 0.242836676,
+      "yCoord": 0.578438395,
+      "next" : ["28"],
+      "prev" : ["101"],
+      "playerOn": false,
+      "onSpace" : "18"
+    },
+    "28": {
+      "color": "Yellow",
+      "xCoord": 0.264326648,
+      "yCoord": 0.517550143,
+      "next" : ["106"],
+      "prev" : ["27"],
+      "playerOn": false,
+      "onSpace" : "19"
+    },
+    "29": {
+      "color": "Blue",
+      "xCoord": 0.398638968,
+      "yCoord": 0.488538682,
+      "next" : ["30"],
+      "prev" : ["106"],
+      "playerOn": false,
+      "onSpace" : "2"
+    },
+    "30": {
+      "color": "Red",
+      "xCoord": 0.459169054,
+      "yCoord": 0.511103152,
+      "next" : ["31"],
+      "prev" : ["29", "107"],
+      "playerOn": false,
+      "onSpace" : "8"
+    },
+    "31": {
+      "color": "Yellow",
+      "xCoord": 0.434813754,
+      "yCoord": 0.563753582,
+      "next" : ["55"],
+      "prev" : ["30", "36"],
+      "playerOn": false,
+      "onSpace" : "21"
+    },
+    "32": {
+      "color": "Yellow",
+      "xCoord": 0.421919771,
+      "yCoord": 0.652936963,
+      "next" : ["11"],
+      "prev" : ["55"],
+      "playerOn": false,
+      "onSpace" : "20"
+    },
+    "33": {
+      "color": "Black",
+      "xCoord": 0.709885387,
+      "yCoord": 0.618911175,
+      "next" : ["103"],
+      "prev" : ["102"],
+      "playerOn": false,
+      "onSpace" : "7"
+    },
+    "34": {
+      "color": "Card",
+      "xCoord": 0.253939828,
+      "yCoord": 0.707378223,
+      "next" : ["6"],
+      "prev" : ["24"],
+      "playerOn": false,
+      "onSpace" : "4"
+    },
+    "35":	{
+      "color": "Yellow",
+      "xCoord": 0.573424069,
+      "yCoord": 0.559097421,
+      "next" : ["36"],
+      "prev" : ["2"],
+      "playerOn": false,
+      "onSpace" : "22"
+    },
+    "36": {
+      "color": "Card",
+      "xCoord": 0.507879656,
+      "yCoord": 0.56482808,
+      "next" : ["31"],
+      "prev" : ["35"],
+      "playerOn": false,
+      "onSpace" : "22"
+    },
+    "37":	{
+      "color": "Card",
+      "xCoord": 0.744985673,
+      "yCoord": 0.48495702,
+      "next" : ["38"],
+      "prev" : ["103"],
+      "playerOn": false,
+      "onSpace" : "4"
+    },
+    "38":	{
+      "color": "Item",
+      "xCoord": 0.727793696,
+      "yCoord": 0.417621777,
+      "next" : ["39"],
+      "prev" : ["37"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "39":	{
+      "color": "Yellow",
+      "xCoord": 0.726361032,
+      "yCoord": 0.339899713,
+      "next" : ["15"],
+      "prev" : ["38", "46"],
+      "playerOn": false,
+      "onSpace" : "17"
+    },
+    "40":	{
+      "color": "Card",
+      "xCoord": 0.613538682,
+      "yCoord": 0.238538682,
+      "next" : ["41"],
+      "prev" : ["104"],
+      "playerOn": false,
+      "onSpace" : "4"
+    },
+    "41":	{
+      "color": "Yellow",
+      "xCoord": 0.549426934,
+      "yCoord": 0.267908309,
+      "next" : ["42"],
+      "prev" : ["40"],
+      "playerOn": false,
+      "onSpace" : "23"
+    },
+    "42":	{
+      "color": "Yellow",
+      "xCoord": 0.492836676,
+      "yCoord": 0.306948424,
+      "next" : ["43"],
+      "prev" : ["41"],
+      "playerOn": false,
+      "onSpace" : "14"
+    },
+    "43":	{
+      "color": "Black",
+      "xCoord": 0.456661891,
+      "yCoord": 0.361389685,
+      "next" : ["107"],
+      "prev" : ["42"],
+      "playerOn": false,
+      "onSpace" : "7"
+    },
+    "44":	{
+      "color": "Item",
+      "xCoord": 0.543696275,
+      "yCoord": 0.423710602,
+      "next" : ["4"],
+      "prev" : ["107"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "45":	{
+      "color": "Item",
+      "xCoord": 0.389326648,
+      "yCoord": 0.707020057,
+      "next" : ["11"],
+      "prev" : ["6"],
+      "playerOn": false,
+      "onSpace" : "3"
+    },
+    "46":	{
+      "color": "Gambling",
+      "xCoord": 0.660458453,
+      "yCoord": 0.35995702,
+      "next" : ["39"],
+      "prev" : ["4"],
+      "playerOn": false,
+      "onSpace" : "5"
+    },
+    "47":	{
+      "color": "Catnami",
+      "xCoord": 0.764326648,
+      "yCoord": 0.689469914,
+      "next" : ["9"],
+      "prev" : ["102"],
+      "playerOn": false,
+      "onSpace" : "6"
+    },
+    "48":	{
+      "color": "Catnami",
+      "xCoord": 0.338825215,
+      "yCoord": 0.348853868,
+      "next" : ["49"],
+      "prev" : ["3"],
+      "playerOn": false,
+      "onSpace" : "6"
+    },
+    "49":	{
+      "color": "Yellow",
+      "xCoord": 0.352793696,
+      "yCoord": 0.281160458,
+      "next" : ["50"],
+      "prev" : ["48", "7"],
+      "playerOn": false,
+      "onSpace" : "13"
+    },
+    "50":	{
+      "color": "Black",
+      "xCoord": 0.314469914,
+      "yCoord": 0.216690544,
+      "next" : ["20"],
+      "prev" : ["49"],
+      "playerOn": false,
+      "onSpace" : "7"
+    },
+    "51":	{
+      "color": "Gambling",
+      "xCoord": 0.484598854,
+      "yCoord": 0.156160458,
+      "next" : ["56"],
+      "prev" : ["105"],
+      "playerOn": false,
+      "onSpace" : "5"
+    },
+    "52":	{
+      "color": "Yellow",
+      "xCoord": 0.612464183,
+      "yCoord": 0.701289398,
+      "next" : ["102"],
+      "prev" : ["19"],
+      "playerOn": false,
+      "onSpace" : "27"
+    },
+    "53":	{
+      "color": "StartLeft",
+      "xCoord": 0.074498567,
+      "yCoord": 0.42765043,
+      "next" : ["25"],
+      "prev" : [],
+      "playerOn": false,
+      "onSpace" : "28"
+    },
+    "54":	{
+      "color": "StartRight",
+      "xCoord": 0.819842407,
+      "yCoord": 0.510744986,
+      "next" : ["37"],
+      "prev1" : [],
+      "playerOn": false,
+      "onSpace" : "28"
+    }
   },
-  "3": {
-    "spaceType" : "overSpace",
-    "color" : "BlueGoal",
-    "xCoord" : 0.327722063,
-    "yCoord" : 0.420845272,
-    "next1" : 48,
-    "next2" : null,
-    "prev1" : 28,
-    "prev2" : null
-  },
-  "4":{
-    "spaceType" : "overSpace",
-    "color": "BlueGoal",
-    "xCoord": 0.600286533,
-    "yCoord": 0.398280802,
-    "next1" : 46,
-    "next2" : null,
-    "prev1" : 44,
-    "prev2" : null
-  },
-  "5": {
-    "spaceType" : "overSpace",
-    "color": "BlueGoal",
-    "xCoord": 0.900787966,
-    "yCoord": 0.51217765,
-    "next1" : 12,
-    "next2" : null,
-    "prev1" : 10,
-    "prev2" : null
-  },
-  "6": {
-    "spaceType" : "overSpace",
-    "color": "BlueGoal",
-    "xCoord": 0.32234957,
-    "yCoord": 0.704512894,
-    "next1" : 45,
-    "next2" : null,
-    "prev1" : 32,
-    "prev2" : null
-  },
-  "7": {
-    "spaceType" : "overSpace",
-    "color": "BlueGoal",
-    "xCoord": 0.403295129,
-    "yCoord": 0.244627507,
-    "next1" : 49,
-    "next2" : null,
-    "prev1" : 51,
-    "prev2" : null
-  },
-  "8": {
-    "spaceType" : "overSpace",
-    "color": "BlueGoal",
-    "xCoord": 0.333810888,
-    "yCoord": 0.106017192,
-    "next1" : 20,
-    "next2" : null,
-    "prev1" : 18,
-    "prev2" : null
-  },
-  "9":{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.827722063,
-    "yCoord": 0.644340974,
-    "next1" : 10,
-    "next2" : null,
-    "prev1" : 47,
-    "prev2" : null
-  },
-  "10": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.876074499,
-    "yCoord": 0.585601719,
-    "next1" : 5,
-    "next2" : null,
-    "prev1" : 9,
-    "prev2" : null
-  },
-  "11": {
-    "spaceType" : "onSpace",
-    "color": "Gambling",
-    "xCoord": 0.46991404,
-    "yCoord": 0.709527221,
-    "next1" : 19,
-    "next2" : null,
-    "prev1" : 45,
-    "prev2" : 32
-  },
-  "12": {
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.893624642,
-    "yCoord": 0.436246418,
-    "next1" : 13,
-    "next2" : null,
-    "prev1" : 5,
-    "prev2" : null
-  },
-  "13": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.846704871,
-    "yCoord": 0.367120344,
-    "next1" : 14,
-    "next2" : null,
-    "prev1" : 12,
-    "prev2" : null
-  },
-  "14": {
-    "spaceType" : "onSpace",
-    "color": "Red",
-    "xCoord": 0.790472779,
-    "yCoord": 0.313037249,
-    "next1" : 15,
-    "next2" : null,
-    "prev1" : 13,
-    "prev2" : null
-  },
-  "15": {
-    "spaceType" : "onSpace",
-    "color": "Blue",
-    "xCoord": 0.723853868,
-    "yCoord": 0.268266476,
-    "next1" : 16,
-    "next2" : 40,
-    "prev1" : 14,
-    "prev2" : 39
-  },
-  "16": {
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.660458453,
-    "yCoord": 0.150429799,
-    "next1" : 17,
-    "next2" : null,
-    "prev1" : 15,
-    "prev2" : null
-  },
-  "17": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.599212034,
-    "yCoord": 0.111389685,
-    "next1" : 18,
-    "next2" : 51,
-    "prev1" : 16,
-    "prev2" : null
-  },
-  "18": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.413323782,
-    "yCoord": 0.10530086,
-    "next1" : 8,
-    "next2" : null,
-    "prev1" : 17,
-    "prev2" : null
-  },
-  "19": {
-    "spaceType" : "onSpace",
-    "color": "Blue",
-    "xCoord": 0.53474212,
-    "yCoord": 0.710243553,
-    "next1" : 52,
-    "next2" : null,
-    "prev1" : 11,
-    "prev2" : null
-  },
-  "20": {
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.285100287,
-    "yCoord": 0.156518625,
-    "next1" : 21,
-    "next2" : null,
-    "prev1" : 8,
-    "prev2" : 50
-  },
-  "21": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.21239255,
-    "yCoord": 0.173352436,
-    "next1" : 22,
-    "next2" : null,
-    "prev1" : 20,
-    "prev2" : null
-  },
-  "22": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.169054441,
-    "yCoord": 0.232808023,
-    "next1" : 23,
-    "next2" : null,
-    "prev1" : 21,
-    "prev2" : null
-  },
-  "23": {
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.170845272,
-    "yCoord": 0.301575931,
-    "next1" : 1,
-    "next2" : null,
-    "prev1" : 22,
-    "prev2" : null
-  },
-  "24": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.192335244,
-    "yCoord": 0.665114613,
-    "next1" : 34,
-    "next2" : null,
-    "prev1" : 26,
-    "prev2" : null
-  },
-  "25": {
-    "spaceType" : "onSpace",
-    "color": "Red",
-    "xCoord": 0.170487106,
-    "yCoord": 0.436246418,
-    "next1" : 26,
-    "next2" : null,
-    "prev1" : 1,
-    "prev2" : 53
-  },
-  "26": {
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.169770774,
-    "yCoord": 0.505372493,
-    "next1" : 24,
-    "next2" : 27,
-    "prev1" : 25,
-    "prev2" : null
-  },
-  "27": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.242836676,
-    "yCoord": 0.578438395,
-    "next1" : 28,
-    "next2" : null,
-    "prev1" : 26,
-    "prev2" : null
-  },
-  "28": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.264326648,
-    "yCoord": 0.517550143,
-    "next1" : 29,
-    "next2" : 3,
-    "prev1" : 27,
-    "prev2" : null
-  },
-  "29": {
-    "spaceType" : "onSpace",
-    "color": "Blue",
-    "xCoord": 0.398638968,
-    "yCoord": 0.488538682,
-    "next1" : 30,
-    "next2" : null,
-    "prev1" : 28,
-    "prev2" : null
-  },
-  "30": {
-    "spaceType" : "onSpace",
-    "color": "Red",
-    "xCoord": 0.459169054,
-    "yCoord": 0.511103152,
-    "next1" : 31,
-    "next2" : null,
-    "prev1" : 29,
-    "prev2" : 43
-  },
-  "31": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.434813754,
-    "yCoord": 0.563753582,
-    "next1" : 32,
-    "next2" : null,
-    "prev1" : 30,
-    "prev2" : 36
-  },
-  "32": {
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.421919771,
-    "yCoord": 0.652936963,
-    "next1" : 11,
-    "next2" : null,
-    "prev1" : 31,
-    "prev2" : null
-  },
-  "33": {
-    "spaceType" : "onSpace",
-    "color": "Black",
-    "xCoord": 0.709885387,
-    "yCoord": 0.618911175,
-    "next1" : 2,
-    "next2" : 37,
-    "prev1" : 52,
-    "prev2" : null
-  },
-  "34": {
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.253939828,
-    "yCoord": 0.707378223,
-    "next1" : 6,
-    "next2" : null,
-    "prev1" : 24,
-    "prev2" : null
-  },
-  "35":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.573424069,
-    "yCoord": 0.559097421,
-    "next1" : 36,
-    "next2" : null,
-    "prev1" : 2,
-    "prev2" : null
-  },
-  "36": {
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.507879656,
-    "yCoord": 0.56482808,
-    "next1" : 31,
-    "next2" : null,
-    "prev1" : 35,
-    "prev2" : null
-  },
-  "37":	{
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.744985673,
-    "yCoord": 0.48495702,
-    "next1" : 38,
-    "next2" : null,
-    "prev1" : 33,
-    "prev2" : 54
-  },
-  "38":	{
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.727793696,
-    "yCoord": 0.417621777,
-    "next1" : 39,
-    "next2" : null,
-    "prev1" : 37,
-    "prev2" : null
-  },
-  "39":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.726361032,
-    "yCoord": 0.339899713,
-    "next1" : 15,
-    "next2" : null,
-    "prev1" : 38,
-    "prev2" : 46
-  },
-  "40":	{
-    "spaceType" : "onSpace",
-    "color": "Card",
-    "xCoord": 0.613538682,
-    "yCoord": 0.238538682,
-    "next1" : 41,
-    "next2" : null,
-    "prev1" : 15,
-    "prev2" : null
-  },
-  "41":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.549426934,
-    "yCoord": 0.267908309,
-    "next1" : 42,
-    "next2" : null,
-    "prev1" : 40,
-    "prev2" : null
-  },
-  "42":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.492836676,
-    "yCoord": 0.306948424,
-    "next1" : 43,
-    "next2" : null,
-    "prev1" : 41,
-    "prev2" : null
-  },
-  "43":	{
-    "spaceType" : "onSpace",
-    "color": "Black",
-    "xCoord": 0.456661891,
-    "yCoord": 0.361389685,
-    "next1" : 30,
-    "next2" : 44,
-    "prev1" : 42,
-    "prev2" : null
-  },
-  "44":	{
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.543696275,
-    "yCoord": 0.423710602,
-    "next1" : 43,
-    "next2" : null,
-    "prev1" : 4,
-    "prev2" : null
-  },
-  "45":	{
-    "spaceType" : "onSpace",
-    "color": "Item",
-    "xCoord": 0.389326648,
-    "yCoord": 0.707020057,
-    "next1" : 11,
-    "next2" : null,
-    "prev1" : 6,
-    "prev2" : null
-  },
-  "46":	{
-    "spaceType" : "onSpace",
-    "color": "Gambling",
-    "xCoord": 0.660458453,
-    "yCoord": 0.35995702,
-    "next1" : 39,
-    "next2" : null,
-    "prev1" : 4,
-    "prev2" : null
-  },
-  "47":	{
-    "spaceType" : "onSpace",
-    "color": "Catnami",
-    "xCoord": 0.764326648,
-    "yCoord": 0.689469914,
-    "next1" : 9,
-    "next2" : null,
-    "prev1" : 52,
-    "prev2" : null
-  },
-  "48":	{
-    "spaceType" : "onSpace",
-    "color": "Catnami",
-    "xCoord": 0.338825215,
-    "yCoord": 0.348853868,
-    "next1" : 49,
-    "next2" : null,
-    "prev1" : 3,
-    "prev2" : null
-  },
-  "49":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.352793696,
-    "yCoord": 0.281160458,
-    "next1" : 50,
-    "next2" : null,
-    "prev1" : 48,
-    "prev2" : 7
-  },
-  "50":	{
-    "spaceType" : "onSpace",
-    "color": "Black",
-    "xCoord": 0.314469914,
-    "yCoord": 0.216690544,
-    "next1" : 20,
-    "next2" : null,
-    "prev1" : 49,
-    "prev2" : null
-  },
-  "51":	{
-    "spaceType" : "onSpace",
-    "color": "Gambling",
-    "xCoord": 0.484598854,
-    "yCoord": 0.156160458,
-    "next1" : 7,
-    "next2" : null,
-    "prev1" : 17,
-    "prev2" : null
-  },
-  "52":	{
-    "spaceType" : "onSpace",
-    "color": "Yellow",
-    "xCoord": 0.612464183,
-    "yCoord": 0.701289398,
-    "next1" : 47,
-    "next2" : 33,
-    "prev1" : 19,
-    "prev2" : null
-  },
-  "53":	{
-    "spaceType" : "onSpace",
-    "color": "StartLeft",
-    "xCoord": 0.074498567,
-    "yCoord": 0.42765043,
-    "next1" : 25,
-    "next2" : null,
-    "prev1" : null,
-    "prev2" : null
-  },
-  "54":	{
-    "spaceType" : "onSpace",
-    "color": "StartRight",
-    "xCoord": 0.819842407,
-    "yCoord": 0.510744986,
-    "next1" : 37,
-    "next2" : null,
-    "prev1" : null,
-    "prev2" : null
-  },
-  "55":	{
-    "spaceType" : "overSpace",
-    "color": "SpecialItem",
-    "xCoord": 0.427292264,
-    "yCoord": 0.607449857,
-    "next1" : 32,
-    "next2" : null,
-    "prev1" : 31,
-    "prev2" : null
-  },
-  "56":	{
-    "spaceType" : "overSpace",
-    "color": "SpecialItem",
-    "xCoord": 0.443409742,
-    "yCoord": 0.209885387,
-    "next1" : 7,
-    "next2" : null,
-    "prev1" : 51,
-    "prev2" : null
-  },
-  "A": {
-    "spaceType" : "overSpace",
-    "color": "Junction",
-    "xCoord": 0.175143266,
-    "yCoord": 0.591690544,
-    "next1" : 24,
-    "next2" : 27,
-    "prev1" : 26,
-    "prev2" : null
-  },
-  "B": {
-    "spaceType" : "overSpace",
-    "color": "Junction",
-    "xCoord": 0.686962751,
-    "yCoord": 0.698424069,
-    "next1" : 47,
-    "next2" : 33,
-    "prev1" : 52,
-    "prev2" : null
-  },
-  "C": {
-    "spaceType" : "overSpace",
-    "color": "Junction",
-    "xCoord": 0.724570201,
-    "yCoord": 0.555873926,
-    "next1" : 37,
-    "next2" : 2,
-    "prev1" : 33,
-    "prev2" : null
-  },
-  "D": {
-    "spaceType" : "overSpace",
-    "color": "Junction",
-    "xCoord": 0.691618911,
-    "yCoord": 0.20773639,
-    "next1" : 16,
-    "next2" : 40,
-    "prev1" : 15,
-    "prev2" : null
-  },
-  "E": {
-    "spaceType" : "overSpace",
-    "color": "Junction",
-    "xCoord": 0.514326648,
-    "yCoord": 0.114613181,
-    "next1" : 18,
-    "next2" : 51,
-    "prev1" : 17,
-    "prev2" : null
-  },
-  "F": {
-    "spaceType" : "overSpace",
-    "color": "Gate",
-    "xCoord": 0.325573066,
-    "yCoord": 0.490687679,
-    "next1" : 29,
-    "next2" : 3,
-    "prev1" : 28,
-    "prev2" : null
-  },
-  "G": {
-    "color": "Gate",
-    "xCoord": 0.453080229,
-    "yCoord": 0.433022923,
-    "next1" : 30,
-    "next2" : 44,
-    "prev1" : 43,
-    "prev2" : null
-  }
+  "overSpace": {
+    "55" : {
+      "color" : "SpecialItem",
+      "xCoord" : 0.427292264,
+      "yCoord" : 0.607449857,
+      "next" : ["32"],
+      "prev" : ["31"],
+      "playerOn" : false,
+      "overSpace" : "11"
+    },
+    "56" : {
+      "color" : "SpecialItem",
+      "xCoord" : 0.443409742,
+      "yCoord" : 0.209885387,
+      "next" : ["7"],
+      "prev" : ["51"],
+      "playerOn" : false,
+      "overSpace" : "11"
+    },
+    "101" : {
+      "color" : "Junction",
+      "xCoord" : 0.175143266,
+      "yCoord" : 0.591690544,
+      "next" : ["24", "27"],
+      "prev" : ["26"],
+      "playerOn" : false,
+      "overSpace" : "9"
+    },
+    "102" : {
+      "color" : "Junction",
+      "xCoord" : 0.686962751,
+      "yCoord" : 0.698424069,
+      "next" : ["47", "33"],
+      "prev" : ["52"],
+      "playerOn" : false,
+      "overSpace" : "9"
+    },
+    "103" : {
+      "color" : "Junction",
+      "xCoord" : 0.724570201,
+      "yCoord" : 0.555873926,
+      "next" : ["37", "2"],
+      "prev" : ["33"],
+      "playerOn" : false,
+      "overSpace" : "9"
+    },
+    "104" : {
+      "color" : "Junction",
+      "xCoord" : 0.691618911,
+      "yCoord" : 0.20773639,
+      "next" : ["16", "40"],
+      "prev" : ["15"],
+      "playerOn" : false,
+      "overSpace" : "9"
+    },
+    "105" : {
+      "color" : "Junction",
+      "xCoord" : 0.514326648,
+      "yCoord" : 0.114613181,
+      "next" : ["18", "51"],
+      "prev" : ["17"],
+      "playerOn" : false,
+      "overSpace" : "9"
+    },
+    "106" : {
+      "color" : "Gate",
+      "xCoord" : 0.325573066,
+      "yCoord" : 0.490687679,
+      "next" : ["29", "3"],
+      "prev" : ["28"],
+      "playerOn" : false,
+      "overSpace" : "10"
+    },
+    "107" : {
+      "color" : "Gate",
+      "xCoord" : 0.453080229,
+      "yCoord" : 0.433022923,
+      "next" : ["30", "44"],
+      "prev" : ["43"],
+      "playerOn" : false,
+      "overSpace" : "10"
+    }
+  }  
 }
 
