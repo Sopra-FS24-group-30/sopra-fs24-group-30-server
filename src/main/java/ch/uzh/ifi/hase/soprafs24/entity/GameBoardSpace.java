@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "GAMEBOARDSPACE")
@@ -9,37 +10,32 @@ public class GameBoardSpace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long spaceId;
 
-    private String spaceType;
-    private Double xCoordinate;
-    private Double yCoordinate;
+    private Double xCoord;
+    private Double yCoord;
     private Boolean playerON;
+    private String color;
+    private Boolean isGoal;
+    private String onSpace;
+    private String overSpace;
+    //possible error beacuse of the Element leads to non-entitiy elements
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<String>next;
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<String>prev;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gameBoard_id", nullable = true) // Allowing null for cases without a gameBoard
     private GameBoard gameBoard;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "prev1Space_id", referencedColumnName = "spaceId")
-    private GameBoardSpace prev1Space;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "prev2Space_id", referencedColumnName = "spaceId")
-    private GameBoardSpace prev2Space;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "next1Space_id", referencedColumnName = "spaceId")
-    private GameBoardSpace next1Space;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "next2Space_id", referencedColumnName = "spaceId")
-    private GameBoardSpace next2Space;
 
     // Constructor for initial setup without relational fields
-    public GameBoardSpace(Long spaceId, String spaceType, Double xCoordinate, Double yCoordinate) {
+    public GameBoardSpace(Long spaceId, Double xCoord, Double yCoord) {
         this.spaceId = spaceId;
-        this.spaceType = spaceType;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.xCoord = xCoord;
+        this.yCoord = yCoord;
     }
 
     // Default constructor required by JPA
@@ -50,33 +46,69 @@ public class GameBoardSpace {
     public Long getSpaceId() {
         return spaceId;
     }
+    public List<String> getNext() {
+        return next;
+    }
+    public List<String> getPrev() {
+        return prev;
+    }
+
+    public void setNext(List<String> next) {
+        this.next = next;
+    }
+
+    public String getOnSpace() {
+        return onSpace;
+    }
+    public String getOverSpace() {
+        return overSpace;
+    }
+    public void setOnSpace(String onSpace) {
+        this.onSpace = onSpace;
+    }
+    public void setOverSpace(String overSpace) {
+        this.overSpace = overSpace;
+    }
+
+    public void setPrev(List<String> prev) {
+        this.prev = prev;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Boolean getIsGoal() {
+        return isGoal;
+    }
+
+    public void setIsGoal(Boolean isGoal) {
+        this.isGoal = isGoal;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 
     public void setSpaceId(Long spaceId) {
         this.spaceId = spaceId;
     }
 
-    public String getSpaceType() {
-        return spaceType;
+
+    public Double getxCoord() {
+        return xCoord;
     }
 
-    public void setSpaceType(String spaceType) {
-        this.spaceType = spaceType;
+    public void setxCoord(Double xCoord) {
+        this.xCoord = xCoord;
     }
 
-    public Double getXCoordinate() {
-        return xCoordinate;
+    public Double getyCoord() {
+        return yCoord;
     }
 
-    public void setXCoordinate(Double xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
-    public Double getYCoordinate() {
-        return yCoordinate;
-    }
-
-    public void setYCoordinate(Double yCoordinate) {
-        this.yCoordinate = yCoordinate;
+    public void setyCoord(Double yCoord) {
+        this.yCoord = yCoord;
     }
 
     public Boolean getPlayerON() {
@@ -95,35 +127,5 @@ public class GameBoardSpace {
         this.gameBoard = gameBoard;
     }
 
-    public GameBoardSpace getPrev1Space() {
-        return prev1Space;
-    }
 
-    public void setPrev1Space(GameBoardSpace prev1Space) {
-        this.prev1Space = prev1Space;
-    }
-
-    public GameBoardSpace getPrev2Space() {
-        return prev2Space;
-    }
-
-    public void setPrev2Space(GameBoardSpace prev2Space) {
-        this.prev2Space = prev2Space;
-    }
-
-    public GameBoardSpace getNext1Space() {
-        return next1Space;
-    }
-
-    public void setNext1Space(GameBoardSpace next1Space) {
-        this.next1Space = next1Space;
-    }
-
-    public GameBoardSpace getNext2Space() {
-        return next2Space;
-    }
-
-    public void setNext2Space(GameBoardSpace next2Space) {
-        this.next2Space = next2Space;
-    }
 }

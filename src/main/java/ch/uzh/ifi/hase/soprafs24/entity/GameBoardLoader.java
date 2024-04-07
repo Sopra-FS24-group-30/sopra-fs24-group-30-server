@@ -8,21 +8,27 @@ import java.util.*;
 public class GameBoardLoader {
 
     private static final String FILE_PATH = "src/main/java/ch/uzh/ifi/hase/soprafs24/entity/burger.json";
+    // Adjusted path for resources
 
     public static List<GameBoardSpace> createGameBoardSpacesFromFile() {
         List<GameBoardSpace> gameBoardSpaces = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            // Read the file and convert it into a map
-            Map<String, Map<String, Object>> data = mapper.readValue(new File(FILE_PATH),
-                    new TypeReference<Map<String, Map<String, Object>>>() {});
+            // Adjusted to reflect the actual nested structure of your JSON
+            Map<String, Map<String, Map<String, Object>>> topLevelData = mapper.readValue(new File(FILE_PATH),
+                    new TypeReference<>() {});
 
-            // For each key in the map, create a GameBoardSpace object
-            for (Map.Entry<String, Map<String, Object>> entry : data.entrySet()) {
-                // Use Jackson's convertValue to map the inner map to a GameBoardSpace object
-                GameBoardSpace space = mapper.convertValue(entry.getValue(), GameBoardSpace.class);
-                gameBoardSpaces.add(space);
+            // Iterating through each space type ("hybridSpace", etc.)
+            for (Map.Entry<String, Map<String, Map<String, Object>>> spaceTypeEntry : topLevelData.entrySet()) {
+                String spaceType = spaceTypeEntry.getKey(); // Not directly used in this snippet, but you might want to
+
+                // Iterating through each space within this type
+                for (Map.Entry<String, Map<String, Object>> spaceEntry : spaceTypeEntry.getValue().entrySet()) {
+                    GameBoardSpace space = mapper.convertValue(spaceEntry.getValue(), GameBoardSpace.class);
+                    // Here you could set the spaceType or any other properties if needed
+                    gameBoardSpaces.add(space);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
