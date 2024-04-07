@@ -16,7 +16,7 @@
       "xCoord" : 0.641833810888252,
       "yCoord" : 0.670244740231859,
       "next" : ["35"],
-      "prev" : ["103"],
+      "prev" : ["59"],
       "playerON" : false,
       "isGoal" : false,
       "onSpace" : "2",
@@ -27,7 +27,7 @@
       "xCoord" : 0.327722063037249,
       "yCoord" : 0.504508372692143,
       "next" : ["48"],
-      "prev" : ["106"],
+      "prev" : ["62"],
       "playerON" : false,
       "isGoal" : false,
       "onSpace" : "2",
@@ -148,7 +148,7 @@
       "color": "Blue",
       "xCoord": 0.723853868194842,
       "yCoord": 0.321597252039502,
-      "next" : ["104"],
+      "next" : ["60"],
       "prev" : ["14", "39"],
       "playerON": false,
       "onSpace" : "2"
@@ -158,7 +158,7 @@
       "xCoord": 0.660458452722063,
       "yCoord": 0.180334907685702,
       "next" : ["17"],
-      "prev" : ["104"],
+      "prev" : ["60"],
       "playerON": false,
       "onSpace" : "4"
     },
@@ -166,7 +166,7 @@
       "color": "Yellow",
       "xCoord": 0.599212034383954,
       "yCoord": 0.133533705452984,
-      "next" : ["105"],
+      "next" : ["61"],
       "prev" : ["16"],
       "playerON": false,
       "onSpace" : "22"
@@ -176,7 +176,7 @@
       "xCoord": 0.413323782234957,
       "yCoord": 0.126234435379991,
       "next" : ["8"],
-      "prev" : ["105"],
+      "prev" : ["61"],
       "playerON": false,
       "onSpace" : "26"
     },
@@ -230,7 +230,7 @@
       "xCoord": 0.192335243553009,
       "yCoord": 0.797337913267497,
       "next" : ["34"],
-      "prev" : ["101"],
+      "prev" : ["57"],
       "playerON": false,
       "onSpace" : "17"
     },
@@ -247,7 +247,7 @@
       "color": "Item",
       "xCoord": 0.169770773638968,
       "yCoord": 0.605839416058394,
-      "next" : ["101"],
+      "next" : ["57"],
       "prev" : ["25"],
       "playerON": false,
       "onSpace" : "3"
@@ -257,7 +257,7 @@
       "xCoord": 0.242836676217765,
       "yCoord": 0.693430656934307,
       "next" : ["28"],
-      "prev" : ["101"],
+      "prev" : ["57"],
       "playerON": false,
       "onSpace" : "18"
     },
@@ -265,7 +265,7 @@
       "color": "Yellow",
       "xCoord": 0.26432664756447,
       "yCoord": 0.62043795620438,
-      "next" : ["106"],
+      "next" : ["62"],
       "prev" : ["27"],
       "playerON": false,
       "onSpace" : "19"
@@ -275,7 +275,7 @@
       "xCoord": 0.398638968481375,
       "yCoord": 0.585659081150708,
       "next" : ["30"],
-      "prev" : ["106"],
+      "prev" : ["62"],
       "playerON": false,
       "onSpace" : "2"
     },
@@ -284,7 +284,7 @@
       "xCoord": 0.459169054441261,
       "yCoord": 0.612709317303564,
       "next" : ["31"],
-      "prev" : ["29", "107"],
+      "prev" : ["29", "63"],
       "playerON": false,
       "onSpace" : "8"
     },
@@ -310,8 +310,8 @@
       "color": "Black",
       "xCoord": 0.709885386819484,
       "yCoord": 0.741949334478317,
-      "next" : ["103"],
-      "prev" : ["102"],
+      "next" : ["59"],
+      "prev" : ["58"],
       "playerON": false,
       "onSpace" : "7"
     },
@@ -347,7 +347,7 @@
       "xCoord": 0.744985673352435,
       "yCoord": 0.581365392872477,
       "next" : ["38"],
-      "prev" : ["103"],
+      "prev" : ["59"],
       "playerON": false,
       "onSpace" : "4"
     },
@@ -374,7 +374,7 @@
       "xCoord": 0.613538681948424,
       "yCoord": 0.285959639330185,
       "next" : ["41"],
-      "prev" : ["104"],
+      "prev" : ["60"],
       "playerON": false,
       "onSpace" : "4"
     },
@@ -400,7 +400,7 @@
       "color": "Black",
       "xCoord": 0.456661891117478,
       "yCoord": 0.433233147273508,
-      "next" : ["107"],
+      "next" : ["63"],
       "prev" : ["42"],
       "playerON": false,
       "onSpace" : "7"
@@ -410,7 +410,7 @@
       "xCoord": 0.543696275071633,
       "yCoord": 0.507943323314727,
       "next" : ["4"],
-      "prev" : ["107"],
+      "prev" : ["63"],
       "playerON": false,
       "onSpace" : "3"
     },
@@ -437,7 +437,7 @@
       "xCoord": 0.76432664756447,
       "yCoord": 0.826534993559468,
       "next" : ["9"],
-      "prev" : ["102"],
+      "prev" : ["58"],
       "playerON": false,
       "onSpace" : "6"
     },
@@ -473,7 +473,7 @@
       "xCoord": 0.484598853868195,
       "yCoord": 0.210390725633319,
       "next" : ["56"],
-      "prev" : ["105"],
+      "prev" : ["61"],
       "playerON": false,
       "onSpace" : "5"
     },
@@ -481,7 +481,7 @@
       "color": "Yellow",
       "xCoord": 0.612464183381089,
       "yCoord": 0.84070416487763,
-      "next" : ["102"],
+      "next" : ["58"],
       "prev" : ["19"],
       "playerON": false,
       "onSpace" : "27"
@@ -524,7 +524,7 @@
       "playerON" : false,
       "overSpace" : "11"
     },
-    "101" : {
+    "57" : {
       "color" : "Junction",
       "xCoord" : 0.175143266475645,
       "yCoord" : 0.709317303563761,
@@ -533,7 +533,7 @@
       "playerON" : false,
       "overSpace" : "9"
     },
-    "102" : {
+    "58" : {
       "color" : "Junction",
       "xCoord" : 0.686962750716332,
       "yCoord" : 0.837269214255045,
@@ -542,7 +542,7 @@
       "playerON" : false,
       "overSpace" : "9"
     },
-    "103" : {
+    "59" : {
       "color" : "Junction",
       "xCoord" : 0.726570200573066,
       "yCoord" : 0.673380420781451,
@@ -551,7 +551,7 @@
       "playerON" : false,
       "overSpace" : "9"
     },
-    "104" : {
+    "60" : {
       "color" : "Junction",
       "xCoord" : 0.691618911174785,
       "yCoord" : 0.249033920137398,
@@ -560,7 +560,7 @@
       "playerON" : false,
       "overSpace" : "9"
     },
-    "105" : {
+    "61" : {
       "color" : "Junction",
       "xCoord" : 0.51432664756447,
       "yCoord" : 0.137398024903392,
@@ -569,7 +569,7 @@
       "playerON" : false,
       "overSpace" : "9"
     },
-    "106" : {
+    "62" : {
       "color" : "Gate",
       "xCoord" : 0.325573065902579,
       "yCoord" : 0.588235294117647,
@@ -578,7 +578,7 @@
       "playerON" : false,
       "overSpace" : "10"
     },
-    "107" : {
+    "63" : {
       "color" : "Gate",
       "xCoord" : 0.453080229226361,
       "yCoord" : 0.519106912838128,

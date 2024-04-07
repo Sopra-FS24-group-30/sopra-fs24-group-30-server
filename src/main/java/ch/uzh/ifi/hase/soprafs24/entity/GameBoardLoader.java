@@ -33,6 +33,7 @@ public class GameBoardLoader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return gameBoardSpaces;
     }
 }

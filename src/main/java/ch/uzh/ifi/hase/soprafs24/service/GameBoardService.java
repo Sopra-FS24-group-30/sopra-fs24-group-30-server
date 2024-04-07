@@ -45,6 +45,10 @@ public class GameBoardService {
         for (GameBoardSpace space : spaces) {
             gameBoardSpaceRepository.save(space);
         }
+
+        for (GameBoardSpace gameBoardSpace : spaces) {
+            System.out.println(gameBoardSpace.getSpaceId());
+        }
         return spaces; // Or return the saved entities if needed
     }
 
