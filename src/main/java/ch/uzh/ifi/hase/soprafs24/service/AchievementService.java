@@ -1,9 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.Player;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
-import ch.uzh.ifi.hase.soprafs24.repository.PlayerRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class AchievementService {
         this.achievementRepository = achievementRepository;
     }
 
-    public void saveInitialAchievements(Player player){
+    public void saveInitialAchievements(User User){
         AchievementStatus ach = new AchievementStatus();
-        ach.setPlayerId(player.getId());
+        ach.setUserId(User.getId());
         ach.setFirst(false);
         ach.setFirstProgress(0);
         this.achievementRepository.save(ach);

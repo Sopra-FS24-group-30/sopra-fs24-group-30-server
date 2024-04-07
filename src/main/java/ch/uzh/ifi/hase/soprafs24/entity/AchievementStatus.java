@@ -6,14 +6,14 @@ import javax.persistence.*;
 @Table(name = "ACHIEVEMENTSTATUS")
 public class AchievementStatus {
     @Id
-    private long playerId;
+    private long UserId;
 
-    public long getPlayerId() {
-        return playerId;
+    public long getUserId() {
+        return UserId;
     }
 
-    public void setPlayerId(long playerId) {
-        this.playerId = playerId;
+    public void setUserId(long UserId) {
+        this.UserId = UserId;
     }
 
     @Column

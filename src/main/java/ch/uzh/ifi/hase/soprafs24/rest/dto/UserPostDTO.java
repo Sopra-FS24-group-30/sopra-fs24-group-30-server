@@ -1,29 +1,19 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-/*
-To create a user
- */
-
 public class UserPostDTO {
 
-    private String name;
-
     private String username;
-
     private String password;
+    private String token;
 
-    private LocalDate creationDate;
-
-    public String getName() {
-        return name;
+    public String getToken() {
+        return token;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setToken(String token) {
+        this.token = token;
     }
+
 
     public String getUsername() {
         return username;
@@ -39,14 +29,5 @@ public class UserPostDTO {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 }
