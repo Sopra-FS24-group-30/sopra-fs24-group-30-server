@@ -24,9 +24,6 @@ public class GameBoardSpace {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String>prev;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gameBoard_id", nullable = true) // Allowing null for cases without a gameBoard
-    private GameBoard gameBoard;
 
 
 
@@ -120,13 +117,6 @@ public class GameBoardSpace {
         this.playerON = playerON;
     }
 
-    public GameBoard getGameBoard() {
-        return gameBoard;
-    }
-
-    public void setGameBoard(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
-    }
 
 
 }

@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
@@ -19,8 +21,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.UserInformation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import java.util.List;
+import java.util.*;
+import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,11 +47,35 @@ public class GameBoardService {
         for (GameBoardSpace space : spaces) {
             gameBoardSpaceRepository.save(space);
         }
+        System.out.println("Spaces loaded and saved successfully");
+        System.out.println("Spaces: " + spaces);
 
-        for (GameBoardSpace gameBoardSpace : spaces) {
-            System.out.println(gameBoardSpace.getSpaceId());
-        }
         return spaces; // Or return the saved entities if needed
     }
+
+    public GameBoard createGameBoard(GameBoardPostDTO gameBoardPostDTO) {
+        GameBoard gameBoard = new GameBoard();
+        gameBoard.setId(gameBoardPostDTO.getId());// Assuming the ID can be set directly. If IDs are auto-generated, this might not be needed.
+        gameBoard.setStatus(GameBoardStatus.ACTIVE); // Assuming the status is set to ACTIVE by default
+        // Load spaces from file or other source if needed
+        //Set<GameBoardSpace> loadedSpaces = GameBoardLoader.createGameBoardSpacesFromFile();
+
+        // Optional: filter, modify or add the loadedSpaces based on the input `spaces` if needed.
+        // For this example, assuming loadedSpaces are directly used.
+
+        // Set spaces to the gameboard. Assuming GameBoard has a method to set spaces.
+        gameBoard.setSpaces(loadAndSaveGameBoardSpaces());
+
+        // Assuming the creation date and other metadata is handled inside the GameBoard entity.
+
+        // Convert Set to Set if necessary
+
+        // Other metadata handling
+        // Save the gameboard along with its spaces
+        return gameBoardRepository.saveAndFlush(gameBoard);
+    }
+
+
+
 
 }

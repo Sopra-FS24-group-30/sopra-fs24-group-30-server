@@ -48,7 +48,12 @@ public interface DTOMapper {
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
     @Mapping(source = "id", target = "id")
+    @Mapping(source = "spaces", target = "spaces")
+    @Mapping(source = "status", target = "status")
     GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
+
+    @Mapping(source = "id", target = "id")
+    GameBoard convertGameBoardPostDTOtoEntity(GameBoardPostDTO gameBoardPostDTO);
 
 
 }

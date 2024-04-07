@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User Controller
@@ -42,6 +43,18 @@ public class GameBoardController {
             gameBoardGetDTOs.add(DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(gameBoard));
         }
         return gameBoardGetDTOs;
+    }
+
+    @PostMapping("/gameboards")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public GameBoardGetDTO createGameBoard(@RequestBody GameBoardPostDTO gameBoardPostDTO) {
+        // convert API user to internal representation
+
+        // create user
+        GameBoard createdGameBoard = gameBoardService.createGameBoard(gameBoardPostDTO);
+        // convert internal representation of user back to API
+        return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(createdGameBoard);
     }
     @GetMapping("/gameboard/spaces")
     @ResponseStatus(HttpStatus.OK)

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "GAMEBOARD")
@@ -14,21 +15,16 @@ public class GameBoard implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String token;
-
-    @Column(nullable = false)
-    private LocalDate creationDate;
 
     @Column(nullable = false)
     private GameBoardStatus status;
 
     // Add the one-to-many relationship with GameBoardSpace
-    @OneToMany(mappedBy = "gameBoard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<GameBoardSpace> spaces; // Ensure GameBoardSpace class has a 'gameBoard' field with @ManyToOne annotation
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "gameBoard_id")
+    private List<GameBoardSpace> spaces; // Ensure GameBoardSpace class has a 'gameBoard' field with @ManyToOne annotation
 
     // Getters and Setters
     public Long getId() {
@@ -39,14 +35,6 @@ public class GameBoard implements Serializable {
         this.id = id;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public GameBoardStatus getStatus() {
         return status;
     }
@@ -55,24 +43,14 @@ public class GameBoard implements Serializable {
         this.status = status;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
 
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Set<GameBoardSpace> getSpaces() {
+    public List<GameBoardSpace> getSpaces() {
         return spaces;
     }
 
-    public void setSpaces(Set<GameBoardSpace> spaces) {
+    public void setSpaces(List<GameBoardSpace> spaces) {
         this.spaces = spaces;
         // Set the gameBoard reference in each GameBoardSpace
-        for (GameBoardSpace space : spaces) {
-            space.setGameBoard(this);
-        }
     }
 
     // Constructors, other getters, setters, and methods...
