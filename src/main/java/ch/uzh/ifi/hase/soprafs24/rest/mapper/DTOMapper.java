@@ -1,12 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -26,31 +21,12 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    @Mapping(source = "password", target = "password")
+    User convertUserPostDTOtoEntity(UserPostDTO UserPostDTO);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "status", target = "status")
-    @Mapping(source = "birthday", target = "birthday")
-    @Mapping(source = "creationDate", target = "creationDate")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "token", target = "token")
-    UserGetDTO convertEntityToUserGetDTO(User user);
-
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "username", target = "username")
-    @Mapping(source = "birthday", target = "birthday")
-    @Mapping(source = "password", target = "password")
-    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
-
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "spaces", target = "spaces")
-    @Mapping(source = "status", target = "status")
-    GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
-
-    @Mapping(source = "id", target = "id")
-    GameBoard convertGameBoardPostDTOtoEntity(GameBoardPostDTO gameBoardPostDTO);
+    UserPostDTO convertUserToUserPostDTO(User User);
 }
