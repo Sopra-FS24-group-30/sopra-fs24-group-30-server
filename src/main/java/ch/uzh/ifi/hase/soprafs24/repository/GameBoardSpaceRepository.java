@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 @Qualifier("gameBoardSpaceRepository")
 public interface GameBoardSpaceRepository extends JpaRepository<GameBoardSpace, Long> {
-    // You can define custom query methods here if needed
+    Optional<GameBoardSpace> findBySpaceId(Long spaceId);
 }
