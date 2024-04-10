@@ -50,6 +50,7 @@ public class UserService {
         newUser.setCreationDate(LocalDate.now());
         newUser.setToken(UUID.randomUUID().toString());
         AchievementStatus ach = new AchievementStatus();
+        newUser.setAchievement(ach);
         this.UserRepository.save(newUser);
         UserRepository.flush();
         return newUser;
