@@ -22,6 +22,7 @@ import org.mapstruct.factory.Mappers;
  * Always created one mapper for getting information (GET) and one mapper for
  * creating information (POST).
  */
+
 @Mapper
 public interface DTOMapper {
 
@@ -51,6 +52,4 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     GameBoard convertGameBoardPostDTOtoEntity(GameBoardPostDTO gameBoardPostDTO);
-
-
 }

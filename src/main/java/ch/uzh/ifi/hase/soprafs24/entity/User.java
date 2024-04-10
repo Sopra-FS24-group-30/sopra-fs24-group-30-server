@@ -1,16 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-
 
 /**
  * Internal User Representation
@@ -22,10 +15,10 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
  * - unique = true -> this value must be unqiue across the database -> composes
  * the primary key
  */
+
 @Entity
 @Table(name = "USER")
 public class User implements Serializable {
-
 
     private static final long serialVersionUID = 1L;
 
@@ -106,5 +99,4 @@ public class User implements Serializable {
     public LocalDate getCreationDate() {
         return creationDate;
     }
-
 }

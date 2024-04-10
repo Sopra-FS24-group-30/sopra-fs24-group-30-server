@@ -4,13 +4,12 @@ import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 /*
 To get the information of a user
  */
 
 public class UserGetDTO {
-
 
     private Long id;
     private String name;
@@ -68,7 +67,6 @@ public class UserGetDTO {
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
-
 
     public LocalDate getCreationDate() {
         return creationDate;

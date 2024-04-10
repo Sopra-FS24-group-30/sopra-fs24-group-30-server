@@ -1,20 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-
 
 /**
- * Internal User Representation
+ * Internal Game Representation
  * This class composes the internal representation of the user and defines how
  * the user is stored in the database.
  * Every variable will be mapped into a database field with the @Column
@@ -23,6 +15,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
  * - unique = true -> this value must be unqiue across the database -> composes
  * the primary key
  */
+
 @Entity
 @Table(name = "GAME")
 public class Game implements Serializable {
@@ -33,13 +26,11 @@ public class Game implements Serializable {
     @GeneratedValue
     private Long gameid;
 
-
     @Column(nullable = false, unique = true)
     private String token;
 
     @Column(nullable = false)
     private LocalDate creationDate;
-
 
     @Column(nullable = false)
     private GameStatus status;
@@ -86,5 +77,4 @@ public class Game implements Serializable {
     public LocalDate getCreationDate() {
         return creationDate;
     }
-
 }

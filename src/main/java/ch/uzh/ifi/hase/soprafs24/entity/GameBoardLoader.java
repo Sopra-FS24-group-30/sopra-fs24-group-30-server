@@ -19,23 +19,18 @@ public class GameBoardLoader {
 
             // Iterating through each space type ("hybridSpace", etc.)
             for (Map.Entry<String, Map<String, Map<String, Object>>> spaceTypeEntry : topLevelData.entrySet()) {
-                // String spaceType = spaceTypeEntry.getKey(); // If you need to use the space type
-
                 // Iterating through each space within this type
                 for (Map.Entry<String, Map<String, Object>> spaceEntry : spaceTypeEntry.getValue().entrySet()) {
                     // Extracting the spaceId from the key of the JSON structure
                     Long spaceId = Long.parseLong(spaceEntry.getKey());
-
-                    // Applying (spaceId % 63) + 1 logic if needed right here or just setting the spaceId directly
                     // Assuming here that you just need to set the spaceId as is from the JSON key
                     GameBoardSpace space = mapper.convertValue(spaceEntry.getValue(), GameBoardSpace.class);
-                    space.setSpaceId(spaceId); // Set the spaceId extracted from the key
-
+                    space.setSpaceId(spaceId);
                     gameBoardSpaces.add(space);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+
         }
 
         return gameBoardSpaces;
