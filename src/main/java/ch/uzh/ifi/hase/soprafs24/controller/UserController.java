@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 
 @RestController
@@ -51,4 +52,21 @@ public class UserController {
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
+    @GetMapping("/lobby")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private String lobbyId(){
+
+        return this.UserService.getLobbyId();
+    }
+
+    @PutMapping("/game")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
+
+        //boolean success = this.UserService.createGame(lobbyId,playerIds);
+        //return success;
+        return true;
+    }
 }
