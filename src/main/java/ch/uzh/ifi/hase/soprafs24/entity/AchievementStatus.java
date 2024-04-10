@@ -7,6 +7,10 @@ import javax.persistence.*;
 public class AchievementStatus {
     @Id
     private long UserId;
+    @Column
+    private boolean first;
+    @Column
+    private int firstProgress;
 
     public long getUserId() {
         return UserId;
@@ -15,11 +19,6 @@ public class AchievementStatus {
     public void setUserId(long UserId) {
         this.UserId = UserId;
     }
-
-    @Column
-    private boolean first;
-    @Column
-    private int firstProgress;
 
     public boolean isFirst() {
         return first;
