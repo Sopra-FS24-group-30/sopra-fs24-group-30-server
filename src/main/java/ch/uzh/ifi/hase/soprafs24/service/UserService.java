@@ -11,8 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Transactional
@@ -64,6 +66,16 @@ public class UserService {
         return foundUser.get();
     }
 
+    public String getLobbyId(){
+        StringBuilder lobbyId = new StringBuilder();
+        for(int i=0; i<6;i++){
+            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)));
+        }
+
+        //TODO check against already active lobbies to avoid conflicts
+        return lobbyId.toString();
+    }
+
 
     private boolean checkUsernameExists(String username){
         Optional<User> existingUser = this.UserRepository.findByUsername(username);
@@ -72,4 +84,6 @@ public class UserService {
         }
         return false;
     }
+
+
 }
