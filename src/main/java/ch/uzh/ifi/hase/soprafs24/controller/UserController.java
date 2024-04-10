@@ -48,9 +48,7 @@ public class UserController {
 
         User foundUser = this.UserService.findUserWithId(id);
 
-        UserGetDTO selectedUser = DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
-
-        return selectedUser;
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
 }
