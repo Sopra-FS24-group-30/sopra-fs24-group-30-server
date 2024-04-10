@@ -78,19 +78,12 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    String.format(baseErrorMessage, "username and the name", "are"));
-        }
-        else if (userByUsername != null) {
+        if (userByUsername != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
         }
-        else if (userByName != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "name", "is"));
-        }
+
     }
 
     public User login(User loginUser) {
@@ -115,13 +108,6 @@ public class UserService {
     public User edit(User user, User updates) {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
-        }
-        if (updates.getName() != null) {
-            User exists = userRepository.findByName(updates.getName());
-            if (exists != null && !exists.getId().equals(user.getId())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
-            }
-            user.setName(updates.getName());
         }
         if (updates.getUsername() != null) {
             User exists = userRepository.findByUsername(updates.getUsername());
