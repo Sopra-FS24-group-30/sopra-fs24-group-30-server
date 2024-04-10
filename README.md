@@ -65,7 +65,19 @@ once the content of a file has been changed.
 Start two terminal windows and run:
 
 `./gradlew build --continuous`
+public class GameBoard {
+    // ... existing fields ...
 
+    private long nextSpaceId = 1;
+
+    public void addSpace(GameBoardSpace space) {
+        space.setSpaceId(nextSpaceId++);
+        spaces.add(space);
+        space.setGameBoard(this);
+    }
+
+    // ... existing methods ...
+}
 and in the other one:
 
 `./gradlew bootRun`

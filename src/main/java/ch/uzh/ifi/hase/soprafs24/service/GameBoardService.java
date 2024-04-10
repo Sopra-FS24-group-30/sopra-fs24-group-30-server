@@ -57,22 +57,14 @@ public class GameBoardService {
         GameBoard gameBoard = new GameBoard();
         gameBoard.setId(gameBoardPostDTO.getId());// Assuming the ID can be set directly. If IDs are auto-generated, this might not be needed.
         gameBoard.setStatus(GameBoardStatus.ACTIVE); // Assuming the status is set to ACTIVE by default
-        // Load spaces from file or other source if needed
-        //Set<GameBoardSpace> loadedSpaces = GameBoardLoader.createGameBoardSpacesFromFile();
-
-        // Optional: filter, modify or add the loadedSpaces based on the input `spaces` if needed.
-        // For this example, assuming loadedSpaces are directly used.
-
-        // Set spaces to the gameboard. Assuming GameBoard has a method to set spaces.
         gameBoard.setSpaces(loadAndSaveGameBoardSpaces());
 
-        // Assuming the creation date and other metadata is handled inside the GameBoard entity.
-
-        // Convert Set to Set if necessary
-
-        // Other metadata handling
-        // Save the gameboard along with its spaces
         return gameBoardRepository.saveAndFlush(gameBoard);
+    }
+
+    public GameBoard getGameBoard(Long id) {
+        Optional<GameBoard> gameboard = gameBoardRepository.findById(id);
+        return gameboard.orElse(null);
     }
 
 

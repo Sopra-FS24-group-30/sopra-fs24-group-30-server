@@ -64,4 +64,13 @@ public class GameBoardController {
         return gameBoardService.loadAndSaveGameBoardSpaces();
     }
 
+    @GetMapping("/gameboard/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public GameBoardGetDTO gameboard(@PathVariable Long id) {
+        GameBoard gameBoard = gameBoardService.getGameBoard(id);
+        // This method should handle the logic to load spaces and possibly save them
+        return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(gameBoard);
+    }
+
 }

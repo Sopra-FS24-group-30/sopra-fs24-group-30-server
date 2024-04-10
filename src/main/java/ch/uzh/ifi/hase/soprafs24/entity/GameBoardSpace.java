@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 import javax.persistence.*;
 import java.util.List;
@@ -9,8 +12,8 @@ import java.util.List;
 public class GameBoardSpace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long uniqueId;
     private Long spaceId;
-
     private Double xCoord;
     private Double yCoord;
     private Boolean playerON;
@@ -24,10 +27,11 @@ public class GameBoardSpace {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String>prev;
 
-
-
-
-
+    // Add a ManyToOne association
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gameBoard_id") // This column will store the ID of the GameBoard
+    @JsonIgnore // To avoid circular serialization issues
+    private GameBoard gameBoard;
 
     // Constructor for initial setup without relational fields
     public GameBoardSpace(Long spaceId, Double xCoord, Double yCoord) {
@@ -43,6 +47,10 @@ public class GameBoardSpace {
 
     public Long getSpaceId() {
         return spaceId;
+    }
+
+    public Long getuniqueId() {
+        return uniqueId;
     }
     public List<String> getNext() {
         return next;
@@ -92,6 +100,10 @@ public class GameBoardSpace {
         this.spaceId = spaceId;
     }
 
+    public void setuniqueId(Long uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
 
     public Double getxCoord() {
         return xCoord;
@@ -115,6 +127,14 @@ public class GameBoardSpace {
 
     public void setPlayerON(Boolean playerON) {
         this.playerON = playerON;
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
     }
 
 

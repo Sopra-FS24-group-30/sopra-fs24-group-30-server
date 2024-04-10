@@ -10,11 +10,10 @@ import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-
+/*
 public class GamePiece {
 
-    private int xCoordinate;
-    private int yCoordinate;
+
 
     public GamePiece(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
@@ -34,3 +33,5 @@ public class GamePiece {
         return this.yCoordinate;
     }
 }
+
+ */
