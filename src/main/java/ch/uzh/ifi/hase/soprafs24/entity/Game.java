@@ -24,7 +24,7 @@ public class Game implements Serializable {
 
     @Id
     @GeneratedValue
-    private Long gameid;
+    private Long gameId;
 
     @Column(nullable = false, unique = true)
     private String token;
@@ -39,11 +39,11 @@ public class Game implements Serializable {
     private Integer roundNum;
 
     public Long getId() {
-        return gameid;
+        return gameId;
     }
 
-    public void setId(Long id) {
-        this.gameid = gameid;
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
     }
 
     public String getToken() {

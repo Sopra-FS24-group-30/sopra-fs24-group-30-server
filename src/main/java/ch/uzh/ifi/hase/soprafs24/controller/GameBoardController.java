@@ -31,7 +31,6 @@ public class GameBoardController {
 
     @GetMapping("/gameboard")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public List<GameBoardGetDTO> getAllGameBoards() {
         // fetch all gameboards in the internal representation
         List<GameBoard> gameBoards = gameBoardService.getGameBoards();
@@ -45,7 +44,6 @@ public class GameBoardController {
 
     @PostMapping("/gameboards")
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public GameBoardGetDTO createGameBoard(@RequestBody GameBoardPostDTO gameBoardPostDTO) {
         // create gameboard
         GameBoard createdGameBoard = gameBoardService.createGameBoard(gameBoardPostDTO);
@@ -55,7 +53,6 @@ public class GameBoardController {
 
     @GetMapping("/gameboard/spaces")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public List<GameBoardSpace> getAllGameBoardSpaces() {
         // get all spaces of initial gameboard
         return gameBoardService.loadAndSaveGameBoardSpaces();
@@ -63,7 +60,6 @@ public class GameBoardController {
 
     @GetMapping("/gameboard/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public GameBoardGetDTO gameboard(@PathVariable Long id) {
         GameBoard gameBoard = gameBoardService.getGameBoard(id);
         return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(gameBoard);

@@ -2,11 +2,14 @@ package ch.uzh.ifi.hase.soprafs24.entity;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
 public class GameBoardLoader {
 
+    private static final Logger log = LoggerFactory.getLogger(GameBoardLoader.class);
     private static final String FILE_PATH = "src/main/java/ch/uzh/ifi/hase/soprafs24/entity/burger.json";
 
     public static List<GameBoardSpace> createGameBoardSpacesFromFile() {
@@ -29,10 +32,9 @@ public class GameBoardLoader {
                     gameBoardSpaces.add(space);
                 }
             }
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            log.error("this error ", e);
         }
-
         return gameBoardSpaces;
     }
 }

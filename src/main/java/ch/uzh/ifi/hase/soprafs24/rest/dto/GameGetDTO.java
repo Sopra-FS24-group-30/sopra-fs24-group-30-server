@@ -4,8 +4,6 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import java.time.LocalDate;
 
 public class GameGetDTO {
-
-    //private Game id;
     private GameStatus status;
     private LocalDate creationDate;
     private String token;
@@ -23,7 +21,7 @@ public class GameGetDTO {
         return status;
     }
 
-    public void GameStatus(GameStatus status) {
+    public void gameStatus(GameStatus status) {
         this.status = status;
     }
 
