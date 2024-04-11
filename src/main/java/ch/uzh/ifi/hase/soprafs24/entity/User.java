@@ -21,6 +21,10 @@ public class User implements Serializable {
     private String password;
     @Column(nullable = false)
     private LocalDate creationDate;
+    @Column int amountGamesCompleted;
+    @Column
+    private int amountWins;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id",referencedColumnName = "UserId")
     private AchievementStatus achievement;
@@ -63,6 +67,22 @@ public class User implements Serializable {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public int getAmountGamesCompleted() {
+        return amountGamesCompleted;
+    }
+
+    public void setAmountGamesCompleted(int amountGamesCompleted) {
+        this.amountGamesCompleted = amountGamesCompleted;
+    }
+
+    public int getAmountWins() {
+        return amountWins;
+    }
+
+    public void setAmountWins(int amountWins) {
+        this.amountWins = amountWins;
     }
 
     public AchievementStatus getAchievement() {
