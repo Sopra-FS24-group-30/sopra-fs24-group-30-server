@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,6 +31,12 @@ public class UserService {
         this.UserRepository = UserRepository;
     }
 
+    /**
+     * get the token of a given user to authenticate
+     * @param username
+     * @param password
+     * @return the token of the user
+     */
     public String getUserToken(String username, String password){
         Optional<User> foundUser = this.UserRepository.findByUsername(username);
         if (foundUser.isEmpty()){
@@ -43,6 +49,11 @@ public class UserService {
         return actualUser.getToken();
     }
 
+    /**
+     * save a new user to the DB and return it
+     * @param newUser user object with username and password already set
+     * @return returns a user object with complete information
+     */
     public User createUser(User newUser){
 
         //can be removed if frontend does not allow this
@@ -61,6 +72,11 @@ public class UserService {
         return newUser;
     }
 
+    /**
+     * fetch the user with the given id
+     * @param id give the id of the user you want to find
+     * @return user of which the id was specified
+     */
     public User findUserWithId(Long id){
         Optional<User> foundUser = this.UserRepository.findById(id);
         if(foundUser.isEmpty()){
@@ -69,6 +85,10 @@ public class UserService {
         return foundUser.get();
     }
 
+    /**
+     * create a new lobbyId and return it
+     * @return a unique LobbyId
+     */
     public String getLobbyId(){
         StringBuilder lobbyId = new StringBuilder();
         for(int i=0; i<6;i++){
@@ -77,6 +97,28 @@ public class UserService {
 
         //TODO check against already active lobbies to avoid conflicts
         return lobbyId.toString();
+    }
+    /**
+    *create a game and add the players to it so they can join the game and no one else
+     * @return if successful returns true
+     */
+    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){
+
+        try{
+            //TODO create the game with the lobbyID and the players
+        } catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
+        }
+        return true;
+
+        //
+    }
+
+    /**
+     * start the game and let sockets take over
+     */
+    public void startGame(){
+        //TODO trigger the start of game => websockets take over
     }
 
 
