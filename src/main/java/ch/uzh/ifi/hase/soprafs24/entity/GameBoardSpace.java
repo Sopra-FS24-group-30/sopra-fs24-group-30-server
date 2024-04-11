@@ -3,12 +3,13 @@ package ch.uzh.ifi.hase.soprafs24.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "GAMEBOARDSPACE")
-public class GameBoardSpace {
+public class GameBoardSpace implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

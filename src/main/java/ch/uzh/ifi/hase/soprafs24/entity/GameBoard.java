@@ -19,7 +19,6 @@ public class GameBoard implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "gameBoard_id")
-    // not transient, since it won't work.
     private List<GameBoardSpace> spaces;
 
     public Long getId() {
