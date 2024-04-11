@@ -42,16 +42,6 @@ public class UserController {
         return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
     }
 
-    @GetMapping("/users/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private UserGetDTO getUser(@PathVariable Long id){
-
-        User foundUser = this.UserService.findUserWithId(id);
-
-        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
-    }
-
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody()
@@ -65,8 +55,24 @@ public class UserController {
     @ResponseBody()
     private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
 
-        //boolean success = this.UserService.createGame(lobbyId,playerIds);
-        //return success;
-        return true;
+        boolean success = this.UserService.createGame(lobbyId,playerIds);
+        return success;
+    }
+
+    @PutMapping("/start")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private void game(){
+        this.UserService.startGame();
+    }
+
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private UserGetDTO getUser(@PathVariable Long id){
+
+        User foundUser = this.UserService.findUserWithId(id);
+
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 }
