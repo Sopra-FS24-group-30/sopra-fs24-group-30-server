@@ -43,6 +43,11 @@ public class GameBoardSpace {
     private GameBoard gameBoard;
 
     public GameBoardSpace() {
+        /*
+         * Empty constructor for GameBoardSpace.
+         * This constructor is intentionally left empty.
+         * // All fields are set via setter methods or directly assigned after instantiation.
+         */
 
     }
 

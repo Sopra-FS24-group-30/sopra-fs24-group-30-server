@@ -12,6 +12,14 @@ public class GameBoardLoader {
     private static final Logger log = LoggerFactory.getLogger(GameBoardLoader.class);
     private static final String FILE_PATH = "src/main/java/ch/uzh/ifi/hase/soprafs24/entity/burger.json";
 
+    private GameBoardLoader() {
+        /*
+         * Empty constructor for GameBoardLoader.
+         * This constructor is intentionally left empty.
+         * // No need of a constructor.
+         */
+    }
+
     public static List<GameBoardSpace> createGameBoardSpacesFromFile() {
         List<GameBoardSpace> gameBoardSpaces = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
