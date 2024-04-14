@@ -55,10 +55,10 @@ public class Game implements Serializable {
         this.id = id;
     }
 
-    public Integer setRoundNum(Integer roundNum) {
+    public void setRoundNum(Integer roundNum) {
         this.roundNum = roundNum;
     }
-    public void getroundNum() {
+    public Integer getroundNum() {
         return roundNum;
     }
 
