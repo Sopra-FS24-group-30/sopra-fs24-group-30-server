@@ -40,7 +40,6 @@ public class GameBoardService {
 
     public GameBoard createGameBoard(GameBoardPostDTO gameBoardPostDTO) {
         GameBoard gameBoard = new GameBoard();
-        gameBoard.setId(gameBoardPostDTO.getId());
         gameBoard.setStatus(GameBoardStatus.ACTIVE);
         gameBoard.setSpaces(loadAndSaveGameBoardSpaces());
         return gameBoardRepository.saveAndFlush(gameBoard);

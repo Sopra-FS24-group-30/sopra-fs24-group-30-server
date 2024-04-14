@@ -23,8 +23,8 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
-    private Long gameId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String token;
@@ -38,27 +38,32 @@ public class Game implements Serializable {
     @Column(nullable = false)
     private Integer roundNum;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
+    private GameBoard gameBoard;
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+        gameBoard.setGame(this);
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+
     public Long getId() {
-        return gameId;
+        return id;
     }
 
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+    public void setid(Long id) {
+        this.id = id;
     }
 
     public GameStatus getStatus() {
         return status;
     }
 
-    public void setGameStatus(GameStatus status) {
+    public void setStatus(GameStatus status) {
         this.status = status;
     }
 
