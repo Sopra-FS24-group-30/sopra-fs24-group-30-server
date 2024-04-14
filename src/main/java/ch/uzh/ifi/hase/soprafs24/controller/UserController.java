@@ -22,6 +22,7 @@ import java.util.List;
  * UserService and finally return the result.
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private final UserService userService;
@@ -53,6 +54,14 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
         }
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
+
+    @GetMapping("/create/id")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String gameID() {
+        String id = "123456";
+        return id;
     }
 
     @PostMapping("/user/login")
