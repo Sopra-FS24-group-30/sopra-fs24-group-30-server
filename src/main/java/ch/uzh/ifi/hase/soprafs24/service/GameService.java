@@ -47,6 +47,7 @@ public class GameService {
         game.setid(GamePostDTO.getId());
         gameBoard.setStatus(GameBoardStatus.ACTIVE);
         game.setStatus(GameStatus.PLAYING);
+        gameBoard.setGame(game);
         return GameRepository.saveAndFlush(game);
     }
 

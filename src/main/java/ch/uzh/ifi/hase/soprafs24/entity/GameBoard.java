@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.entity;
 import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import javax.persistence.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.List;
 
 @Entity
@@ -20,22 +21,22 @@ public class GameBoard implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonBackReference
     private Game game;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "gameBoard_id")
     private List<GameBoardSpace> spaces;
 
-    public Long getId() {
-        return id;
-    }
-
     public Game getGame() {
         return game;
     }
-
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {

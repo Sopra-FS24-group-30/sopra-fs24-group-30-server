@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * Internal Game Representation
@@ -25,21 +26,18 @@ public class Game implements Serializable {
     @Id
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String token;
-
     @Column(nullable = false)
     private GameStatus status;
 
     @Column(nullable = false)
-    private Integer roundNum;
+    private Integer roundNum=1;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
+    @JsonManagedReference
     private GameBoard gameBoard;
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
-        gameBoard.setGame(this);
     }
 
     public GameBoard getGameBoard() {
