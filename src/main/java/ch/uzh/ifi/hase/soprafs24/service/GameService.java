@@ -28,10 +28,12 @@ public class GameService {
 
     private final GameRepository GameRepository;
     private final GameBoardRepository GameBoardRepository;
+    private final GameBoardService gameBoardService;
 
-    public GameService(@Qualifier("gameRepository") GameRepository GameRepository, @Qualifier("gameBoardRepository") GameBoardRepository GameBoardRepository) {
+    public GameService(@Qualifier("gameRepository") GameRepository GameRepository, @Qualifier("gameBoardRepository") GameBoardRepository GameBoardRepository, GameBoardService gameBoardService) {
         this.GameRepository = GameRepository;
         this.GameBoardRepository = GameBoardRepository;
+        this.gameBoardService = gameBoardService;
     }
 
     public List<Game> getGames() {
@@ -40,8 +42,9 @@ public class GameService {
 
     public Game createGame(GamePostDTO GamePostDTO) {
         Game game = new Game();
-        GameBoard gameBoard = new GameBoard();
+        GameBoard gameBoard = gameBoardService.createGameBoard();
         game.setGameBoard(gameBoard);
+        game.setid(GamePostDTO.getId());
         gameBoard.setStatus(GameBoardStatus.ACTIVE);
         game.setStatus(GameStatus.PLAYING);
         return GameRepository.saveAndFlush(game);

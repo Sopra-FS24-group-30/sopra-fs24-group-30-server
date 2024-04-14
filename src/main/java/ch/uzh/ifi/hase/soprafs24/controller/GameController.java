@@ -50,7 +50,9 @@ public class GameController {
     @ResponseStatus(HttpStatus.CREATED)
     public GameGetDTO createGame(@RequestBody GamePostDTO gamePostDTO) {
         // create game
+
         Game createdGame = gameService.createGame(gamePostDTO);
+        System.out.println("Game created: " + createdGame.getId());
         // convert internal representation of game back to API
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(createdGame);
     }

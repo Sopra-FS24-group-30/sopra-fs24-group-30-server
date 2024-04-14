@@ -38,7 +38,7 @@ public class GameBoardService {
         return spaces;
     }
 
-    public GameBoard createGameBoard(GameBoardPostDTO gameBoardPostDTO) {
+    public GameBoard createGameBoard() {
         GameBoard gameBoard = new GameBoard();
         gameBoard.setStatus(GameBoardStatus.ACTIVE);
         gameBoard.setSpaces(loadAndSaveGameBoardSpaces());
