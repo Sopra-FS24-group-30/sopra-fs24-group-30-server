@@ -16,6 +16,7 @@
 |---|---|---|---|
 | 04.04.2024 | Marius Decurtins | [#79](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/79), [#80](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/80), [#81](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/81) |  |
 | 07.04.2024  | Marius Decurtins | [#85](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/85) |   |
+| 09.04.2024 | Carlos Hernandez | [#210](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/210) | created gameboard with spaces |
 |   |   |   |   |
 
 ## <font style="color: #00d7ff">Week 2 *(10.04 – 16.04)*</font>
