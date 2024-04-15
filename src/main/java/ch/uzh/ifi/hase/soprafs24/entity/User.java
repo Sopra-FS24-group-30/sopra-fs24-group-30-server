@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Table (name="User")
 public class User implements Serializable {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
