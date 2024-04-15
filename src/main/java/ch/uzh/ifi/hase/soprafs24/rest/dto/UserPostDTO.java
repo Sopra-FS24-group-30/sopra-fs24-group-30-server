@@ -14,7 +14,6 @@ public class UserPostDTO {
         this.token = token;
     }
 
-
     public String getUsername() {
         return username;
     }
