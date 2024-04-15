@@ -4,13 +4,15 @@ import java.time.LocalDate;
 
 public class GamePostDTO {
 
-    private LocalDate creationDate;
+    private Long id;
 
-    public LocalDate getCreationDate() {
-        return creationDate;
+    public Long getId() {
+        return id;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
+    public void setId(Long id) {
+        this.id = id;
     }
+
+
 }

@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * Internal Game Representation
@@ -23,48 +24,50 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
-    private Long gameId;
-
-    @Column(nullable = false, unique = true)
-    private String token;
-
-    @Column(nullable = false)
-    private LocalDate creationDate;
+    private Long id;
 
     @Column(nullable = false)
     private GameStatus status;
 
     @Column(nullable = false)
-    private Integer roundNum;
+    private Integer roundNum=1;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
+    @JsonManagedReference
+    private GameBoard gameBoard;
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
 
     public Long getId() {
-        return gameId;
+        return id;
     }
 
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
+    public void setid(Long id) {
+        this.id = id;
     }
 
-    public String getToken() {
-        return token;
+    public void setRoundNum(Integer roundNum) {
+        this.roundNum = roundNum;
     }
-
-    public void setToken(String token) {
-        this.token = token;
+    public Integer getroundNum() {
+        return roundNum;
     }
 
     public GameStatus getStatus() {
         return status;
     }
 
-    public void setGameStatus(GameStatus status) {
+    public void setStatus(GameStatus status) {
         this.status = status;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
 
     public void startGame() {
         this.roundNum = 1;
@@ -72,9 +75,5 @@ public class Game implements Serializable {
 
     public void nextRound() {
         this.roundNum++;
-    }
-
-    public LocalDate getCreationDate() {
-        return creationDate;
     }
 }

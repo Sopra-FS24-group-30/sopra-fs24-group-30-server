@@ -1,13 +1,16 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import java.time.LocalDate;
+import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
+import java.util.Set;
 
 public class GameGetDTO {
-    private GameStatus status;
-    private LocalDate creationDate;
-    private String token;
+
     private Long id;
+
+    private GameStatus status;
+
+    private GameBoard gameBoard;
 
     public Long getId() {
         return id;
@@ -21,23 +24,14 @@ public class GameGetDTO {
         return status;
     }
 
-    public void gameStatus(GameStatus status) {
+    public void setStatus(GameStatus status) {
         this.status = status;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
+    public GameBoard getGameBoard() {
+        return gameBoard;
     }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return token;
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
     }
 }

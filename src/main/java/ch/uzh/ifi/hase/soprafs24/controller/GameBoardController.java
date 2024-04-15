@@ -44,9 +44,9 @@ public class GameBoardController {
 
     @PostMapping("/gameboards")
     @ResponseStatus(HttpStatus.CREATED)
-    public GameBoardGetDTO createGameBoard(@RequestBody GameBoardPostDTO gameBoardPostDTO) {
+    public GameBoardGetDTO createGameBoard() {
         // create gameboard
-        GameBoard createdGameBoard = gameBoardService.createGameBoard(gameBoardPostDTO);
+        GameBoard createdGameBoard = gameBoardService.createGameBoard();
         // convert internal representation of gameboard back to API
         return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(createdGameBoard);
     }
