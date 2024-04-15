@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * Internal Game Representation
@@ -23,27 +24,20 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String token;
-
-    @Column(nullable = false)
-    private LocalDate creationDate;
 
     @Column(nullable = false)
     private GameStatus status;
 
     @Column(nullable = false)
-    private Integer roundNum;
+    private Integer roundNum=1;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
+    @JsonManagedReference
     private GameBoard gameBoard;
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
-        gameBoard.setGame(this);
     }
 
     public GameBoard getGameBoard() {
@@ -59,6 +53,13 @@ public class Game implements Serializable {
         this.id = id;
     }
 
+    public void setRoundNum(Integer roundNum) {
+        this.roundNum = roundNum;
+    }
+    public Integer getroundNum() {
+        return roundNum;
+    }
+
     public GameStatus getStatus() {
         return status;
     }
@@ -67,9 +68,6 @@ public class Game implements Serializable {
         this.status = status;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
 
     public void startGame() {
         this.roundNum = 1;
@@ -77,9 +75,5 @@ public class Game implements Serializable {
 
     public void nextRound() {
         this.roundNum++;
-    }
-
-    public LocalDate getCreationDate() {
-        return creationDate;
     }
 }
