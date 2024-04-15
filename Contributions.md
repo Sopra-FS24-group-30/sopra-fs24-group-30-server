@@ -27,11 +27,11 @@
 
 ## <font style="color: #00d7ff">Week 3 *(17.04 – 23.04)*</font>
 
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
-|   |   |   |   |
-|   |   |   |   |
-|   |   |   |   |
+| Date       | Name           | Links to Github Issues | Comments |
+|------------|----------------|------------------------|---|
+| 14.04.2024 | Céline Ziegler | [#90]                  |   |
+|            |                |                        |   |
+|            |                |                        |   |
 
 ## <font style="color: #00d7ff">Week 4 *(24.04 – 26.04)*</font>
 
