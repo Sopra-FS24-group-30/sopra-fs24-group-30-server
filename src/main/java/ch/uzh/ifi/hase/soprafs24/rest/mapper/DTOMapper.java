@@ -2,14 +2,11 @@ package ch.uzh.ifi.hase.soprafs24.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -49,13 +46,9 @@ public interface DTOMapper {
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
     @Mapping(source = "id", target = "id")
+    @Mapping(source = "spaces", target = "spaces")
+    @Mapping(source = "status", target = "status")
     GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
-
-    @Mapping(source = "id", target = "id")
-    GameGetDTO convertEntityToGameGetDTO(Game game);
-
-    @Mapping(source = "id", target = "id")
-    Game convertGamePostDTOtoEntity(GamePostDTO gamePostDTO);
 
     @Mapping(source = "id", target = "id")
     GameBoard convertGameBoardPostDTOtoEntity(GameBoardPostDTO gameBoardPostDTO);
