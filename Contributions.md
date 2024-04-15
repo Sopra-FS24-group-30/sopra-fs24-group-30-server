@@ -7,6 +7,7 @@
 | 31.03.2024 | Céline Ziegler | [#4](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/4), [#3](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/3) |  |
 | 01.04.2024 | Tam Gian | [#116](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/116) | One space class |
 | 02.04.2024 | Marius Decurtins | [#13](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/13), [#14](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/14), [#15](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/15), [#16](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/16) | Completes issue [#2](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/2) |
+| 02.04.2024 | Carlos Hernandez | [#211](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/211) | created spaces |
 |   |   |   |   |
 
 ## <font style="color: #9d979f">Week 1½ *(03.04 – 09.04)*</font>
