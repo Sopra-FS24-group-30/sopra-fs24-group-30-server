@@ -18,28 +18,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
 public class UserController {
     private final UserService UserService;
     private final AchievementService achievementService;
-
-
-    private final UserService userService;
     private final GameService gameService;
 
-    public UserController(UserService userService, GameService gameService) {
-        this.userService = userService;
+    public UserController(UserService UserService, AchievementService achievementService, GameService gameService) {
+        this.UserService = UserService;
+        this.achievementService = achievementService;
         this.gameService = gameService;
     }
 
 
-    @GetMapping("/users")
-=======
-    UserController(UserService UserService, AchievementService achievementService) {
-        this.UserService = UserService;
-        this.achievementService = achievementService;
+    @GetMapping("/games") // <-- corrected endpoint path
+    @ResponseStatus(HttpStatus.OK)
+    public List<GameGetDTO> getAllGames() {
+        // fetch all games in the internal representation
+        List<Game> games = gameService.getGames();
+        List<GameGetDTO> gameGetDTOs = new ArrayList<>();
+        // convert each game to the API representation
+        for (Game game : games) {
+            gameGetDTOs.add(DTOMapper.INSTANCE.convertEntityToGameGetDTO(game));
+        }
+        return gameGetDTOs;
     }
 
     @GetMapping("/login")
@@ -84,19 +89,6 @@ public class UserController {
     @ResponseBody()
     private void game(){
         this.UserService.startGame();
-    }
-
-    @GetMapping("/games") // <-- corrected endpoint path
-    @ResponseStatus(HttpStatus.OK)
-    public List<GameGetDTO> getAllGames() {
-        // fetch all games in the internal representation
-        List<Game> games = gameService.getGames();
-        List<GameGetDTO> gameGetDTOs = new ArrayList<>();
-        // convert each game to the API representation
-        for (Game game : games) {
-            gameGetDTOs.add(DTOMapper.INSTANCE.convertEntityToGameGetDTO(game));
-        }
-        return gameGetDTOs;
     }
 
     @PostMapping("/games") // <-- corrected endpoint path
