@@ -10,9 +10,9 @@ import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-
 
 /**
  * DTOMapper
@@ -25,30 +25,22 @@ import org.mapstruct.factory.Mappers;
  * Always created one mapper for getting information (GET) and one mapper for
  * creating information (POST).
  */
-
 @Mapper
 public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
     @Mapping(source = "username", target = "username")
-    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    @Mapping(source = "password", target = "password")
+    User convertUserPostDTOtoEntity(UserPostDTO UserPostDTO);
 
-    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "status", target = "status")
-    @Mapping(source = "birthday", target = "birthday")
-    @Mapping(source = "creationDate", target = "creationDate")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "token", target = "token")
-    UserGetDTO convertEntityToUserGetDTO(User user);
-
-    @Mapping(source = "username", target = "username")
-    @Mapping(source = "birthday", target = "birthday")
-    @Mapping(source = "password", target = "password")
-    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+    UserPostDTO convertUserToUserPostDTO(User User);
 
     @Mapping(source = "id", target = "id")
+
     GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
 
     @Mapping(source = "id", target = "id")
@@ -59,4 +51,17 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     GameBoard convertGameBoardPostDTOtoEntity(GameBoardPostDTO gameBoardPostDTO);
+}
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "token", target = "token")
+    @Mapping(source = "creationDate", target = "creationDate")
+    @Mapping(source = "achievement", target = "achievement")
+    User UserGetDTOtoEntity(UserGetDTO userGetDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "token", target = "token")
+    @Mapping(source = "creationDate", target = "creationDate")
+    @Mapping(source = "achievement", target = "achievement")
+    UserGetDTO convertUserToUserGetDTO(User user);
 }
