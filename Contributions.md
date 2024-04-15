@@ -22,16 +22,16 @@
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
 | 11.04.2024 | Marius Decurtins | [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/86) |   |
-|   |   |   |   |
+| 14.04.2024 | Céline Ziegler | [#90](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/90) |   |
 |   |   |   |   |
 
 ## <font style="color: #00d7ff">Week 3 *(17.04 – 23.04)*</font>
 
 | Date       | Name           | Links to Github Issues | Comments |
-|------------|----------------|------------------------|---|
-| 14.04.2024 | Céline Ziegler | [#90]                  |   |
-|            |                |                        |   |
-|            |                |                        |   |
+|---|---|---|---|
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
 
 ## <font style="color: #00d7ff">Week 4 *(24.04 – 26.04)*</font>
 
