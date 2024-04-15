@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
 
+import java.util.Random;
+
 public class GameFlow {
 
     private void createBoard(){}
@@ -13,11 +15,20 @@ public class GameFlow {
     private void useItem(){}
     private void useCard(){}
 
-    private void throwDice(){}
+    private int throwDice(){
+        Random random = new Random();
+        int randomNumber = random.nextInt(6) + 1;
+        return randomNumber;
+    }
 
     private void updatePlayer(){}
 
-    private void updatePlayerPosition(){}
+    private void updatePlayerPosition(){
+        int diceThrow = throwDice();
+        while (diceThrow > 0){
+            //diceThrow--;
+        }
+    }
 
     private void turn(){}
 
