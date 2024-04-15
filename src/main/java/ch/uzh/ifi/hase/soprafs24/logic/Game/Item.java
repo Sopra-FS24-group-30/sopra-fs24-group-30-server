@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.gamelogic;
+package ch.uzh.ifi.hase.soprafs24.logic.Game;
 
 import java.util.HashMap;
 import java.util.Map;
