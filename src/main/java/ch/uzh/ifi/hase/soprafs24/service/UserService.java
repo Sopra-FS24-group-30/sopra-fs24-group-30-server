@@ -153,7 +153,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
         }
         if (updates.getUsername()!=null){
-            User exists = this.UserRepository.findUser(updates.getUsername());
+            User exists = findUser(updates.getUsername());
             if (exists!=null && !exists.getId().equals(user.getId())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
             }
