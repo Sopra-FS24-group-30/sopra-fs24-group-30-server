@@ -96,4 +96,5 @@ public class User implements Serializable {
     public void setBirthday(LocalDate birthday){
         this.birthday = birthday;
     }
+    public LocalDate getBirthday(){return birthday; }
 }

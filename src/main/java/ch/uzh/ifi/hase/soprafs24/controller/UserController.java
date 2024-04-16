@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
@@ -22,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000/*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService UserService;
     private final AchievementService achievementService;
@@ -62,17 +63,17 @@ public class UserController {
     @PutMapping("/profile/{userid}/edit")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public UserGetDTO editProfile(@RequestBody UserPostDTO userPostDTO, @PathVariable Long userid) {
-        User user = UserService.profile(userid);
-        User updates = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+    public void editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
+        User user = UserService.findUserWithId(userid);
+        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoUser(userPutDTO);
         if (updates == null) {
-            return DTOMapper.INSTANCE.convertUserToUserGetDTO(user);
+            return;
         }
         User updatedUser = UserService.edit(user, updates);
-        return DTOMapper.INSTANCE.convertUserToUserGetDTO(updatedUser);
+        System.out.println(updatedUser);
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/profile/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody()
     private UserGetDTO getUser(@PathVariable Long id){
@@ -122,17 +123,16 @@ public class UserController {
         return false;
     }
 
-    @GetMapping("/create/game")
+    @PostMapping("/create/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
+    @ResponseBody
     private String createGame(){
-
         return this.UserService.getLobbyId();
     }
 
     @PutMapping("/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
+    @ResponseBody
     private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
 
         boolean success = this.UserService.createGame(lobbyId,playerIds);

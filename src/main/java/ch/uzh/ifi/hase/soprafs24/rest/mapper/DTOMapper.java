@@ -63,4 +63,9 @@ public interface DTOMapper {
     @Mapping(source = "creationDate", target = "creationDate")
     @Mapping(source = "achievement", target = "achievement")
     UserGetDTO convertUserToUserGetDTO(User user);
+
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "birthday", target = "birthday")
+    @Mapping(source = "password", target = "password")
+    User convertUserPutDTOtoUser(UserPutDTO userPutDTO);
 }

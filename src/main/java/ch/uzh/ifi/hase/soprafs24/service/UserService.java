@@ -148,26 +148,24 @@ public class UserService {
         return false;
     }
 
-    public User profile(Long userID){
-        Optional<User> user = UserRepository.findById(userID);
-        return user.orElse(null);
-    }
-
     public User edit(User user, User updates){
         if (user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
         }
         if (updates.getUsername()!=null){
-            User exists = findUser(updates.getUsername());
+            User exists = this.UserRepository.findUser(updates.getUsername());
             if (exists!=null && !exists.getId().equals(user.getId())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
             }
             user.setUsername(updates.getUsername());
         }
+        if (updates.getBirthday()!=null){
+            user.setBirthday(updates.getBirthday());
+        }
         if (updates.getPassword()!=null){
             user.setPassword(updates.getPassword());
         }
-        UserRepository.saveAndFlush(user);
+        this.UserRepository.saveAndFlush(user);
         return user;
     }
     public List<User> getUsers() {
