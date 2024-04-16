@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
 
 @Service
 @Transactional
@@ -147,11 +148,6 @@ public class UserService {
         return false;
     }
 
-    public User profile(Long userID){
-        Optional<User> user = UserRepository.findById(userID);
-        return user.orElse(null);
-    }
-
     public User edit(User user, User updates){
         if (user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
@@ -163,11 +159,18 @@ public class UserService {
             }
             user.setUsername(updates.getUsername());
         }
+        if (updates.getBirthday()!=null){
+            user.setBirthday(updates.getBirthday());
+        }
         if (updates.getPassword()!=null){
             user.setPassword(updates.getPassword());
         }
-        UserRepository.saveAndFlush(user);
+        this.UserRepository.saveAndFlush(user);
         return user;
     }
+    public List<User> getUsers() {
+        return this.UserRepository.findAll();
+    }
+
 
 }

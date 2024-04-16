@@ -6,6 +6,7 @@ public class UserPostDTO {
     private String password;
     private String token;
 
+
     public String getToken() {
         return token;
     }
