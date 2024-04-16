@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
@@ -22,10 +23,17 @@ import java.util.List;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService UserService;
     private final AchievementService achievementService;
     private final GameService gameService;
+
+    /*
+    -----------------------------------------------------------------------------------------------
+    User
+    -----------------------------------------------------------------------------------------------
+     */
 
     public UserController(UserService UserService, AchievementService achievementService, GameService gameService) {
         this.UserService = UserService;
@@ -33,6 +41,67 @@ public class UserController {
         this.gameService = gameService;
     }
 
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    //TODO add security here
+    private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){
+        User loginUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        User user = this.UserService.login(loginUser);
+        return DTOMapper.INSTANCE.convertUserToUserPostDTO(user);
+    }
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
+        User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
+        User generatedUser = this.UserService.createUser(newUser);
+        this.achievementService.saveInitialAchievements(generatedUser);
+        return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
+    }
+
+    @PutMapping("/profile/{userid}/edit")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
+        User user = UserService.findUserWithId(userid);
+        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoUser(userPutDTO);
+        if (updates == null) {
+            return;
+        }
+        User updatedUser = UserService.edit(user, updates);
+        System.out.println(updatedUser);
+    }
+
+    @GetMapping("/profile/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private UserGetDTO getUser(@PathVariable Long id){
+
+        User foundUser = this.UserService.findUserWithId(id);
+
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
+    }
+
+    @GetMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getAllUsers() {
+        // fetch all users in the internal representation
+        List<User> users = UserService.getUsers();
+        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+        // convert each user to the API representation
+        for (User user : users) {
+            userGetDTOs.add(DTOMapper.INSTANCE.convertUserToUserGetDTO(user));
+        }
+        return userGetDTOs;
+    }
+
+    /*
+    -----------------------------------------------------------------------------------------------
+    Game
+    -----------------------------------------------------------------------------------------------
+     */
 
     @GetMapping("/games") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
@@ -47,37 +116,23 @@ public class UserController {
         return gameGetDTOs;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    //TODO add security here
-    private void login(@RequestHeader ("username")String username, @RequestHeader("password") String password, HttpServletResponse response){
-        String token = this.UserService.getUserToken(username,password);
-        response.addHeader("token",token);
-
+    @ResponseBody
+    public boolean gameStatus(@PathVariable String gameID){
+        return false;
     }
 
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody()
-    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
-        User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
-        User generatedUser = this.UserService.createUser(newUser);
-        this.achievementService.saveInitialAchievements(generatedUser);
-        return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
-    }
-
-    @GetMapping("/lobby")
+    @PostMapping("/create/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private String lobbyId(){
-
+    @ResponseBody
+    private String createGame(){
         return this.UserService.getLobbyId();
     }
 
     @PutMapping("/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
+    @ResponseBody
     private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
 
         boolean success = this.UserService.createGame(lobbyId,playerIds);
@@ -107,14 +162,11 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
     }
 
-    @GetMapping("/users/{id}")
+    @PutMapping("/game/join/{gameID}")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private UserGetDTO getUser(@PathVariable Long id){
-
-        User foundUser = this.UserService.findUserWithId(id);
-
-        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
+    @ResponseBody
+    public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+        User user = UserService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
     }
 
 }

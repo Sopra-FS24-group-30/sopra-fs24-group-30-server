@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
 
 @Service
 @Transactional
@@ -46,6 +47,17 @@ public class UserService {
         return actualUser.getToken();
     }
 
+    public User login(User loginUser) {
+        User user = findUser(loginUser.getUsername());
+        String savedPassword = user.getPassword();
+        String givenPassword = loginUser.getPassword();
+        if (!savedPassword.equals(givenPassword)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is incorrect!");
+        }
+        System.out.println("---"); System.out.println("---");
+        return user;
+    }
+
     /**
      * save a new user to the DB and return it
      * @param newUser user object with username and password already set
@@ -64,10 +76,10 @@ public class UserService {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setAmountGamesCompleted(0);
         newUser.setAmountWins(0);
-        AchievementStatus ach = new AchievementStatus();
-        newUser.setAchievement(ach);
         this.UserRepository.save(newUser);
         UserRepository.flush();
+        AchievementStatus ach = new AchievementStatus(newUser.getId());
+        newUser.setAchievement(ach);
         return newUser;
     }
 
@@ -80,6 +92,14 @@ public class UserService {
         Optional<User> foundUser = this.UserRepository.findById(id);
         if(foundUser.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",id));
+        }
+        return foundUser.get();
+    }
+
+    public User findUser(String username){
+        Optional<User> foundUser = this.UserRepository.findByUsername(username);
+        if (foundUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",username));
         }
         return foundUser.get();
     }
@@ -120,13 +140,36 @@ public class UserService {
         //TODO trigger the start of game => websockets take over
     }
 
-
     private boolean checkUsernameExists(String username){
         Optional<User> existingUser = this.UserRepository.findByUsername(username);
         if(existingUser.isPresent()){
             return true;
         }
         return false;
+    }
+
+    public User edit(User user, User updates){
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
+        }
+        if (updates.getUsername()!=null){
+            User exists = findUser(updates.getUsername());
+            if (exists!=null && !exists.getId().equals(user.getId())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
+            }
+            user.setUsername(updates.getUsername());
+        }
+        if (updates.getBirthday()!=null){
+            user.setBirthday(updates.getBirthday());
+        }
+        if (updates.getPassword()!=null){
+            user.setPassword(updates.getPassword());
+        }
+        this.UserRepository.saveAndFlush(user);
+        return user;
+    }
+    public List<User> getUsers() {
+        return this.UserRepository.findAll();
     }
 
 
