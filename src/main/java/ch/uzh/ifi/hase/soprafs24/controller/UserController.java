@@ -22,6 +22,7 @@ import java.util.List;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService UserService;
     private final AchievementService achievementService;
@@ -57,6 +58,14 @@ public class UserController {
 
     }
 
+
+    @GetMapping("/game/{gameID}/status")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public boolean gameStatus(@PathVariable String gameID){
+        return false;
+    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody()
@@ -67,10 +76,10 @@ public class UserController {
         return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
     }
 
-    @GetMapping("/lobby")
+    @GetMapping("/create/game")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody()
-    private String lobbyId(){
+    private String createGame(){
 
         return this.UserService.getLobbyId();
     }
@@ -83,6 +92,18 @@ public class UserController {
         boolean success = this.UserService.createGame(lobbyId,playerIds);
         return success;
     }
+
+    @PutMapping("/profile/{userid}/edit")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public UserGetDTO editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
+        User user = userService.profile(userid);
+        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        if (updates == null) {
+            return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+        }
+        User updatedUser = userService.edit(user, updates);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
 
     @PutMapping("/start")
     @ResponseStatus(HttpStatus.OK)
@@ -115,6 +136,13 @@ public class UserController {
         User foundUser = this.UserService.findUserWithId(id);
 
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
+    }
+
+    @PutMapping("/game/join/{gameID}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
     }
 
 }
