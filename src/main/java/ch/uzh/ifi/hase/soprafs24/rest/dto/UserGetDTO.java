@@ -1,39 +1,23 @@
 package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-import org.apache.tomcat.jni.Local;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-/*
-To get the information of a user
- */
 
 public class UserGetDTO {
 
-    private Long id;
-    private String name;
+    private long id;
     private String username;
-    private UserStatus status;
-    private String password;
-    private LocalDate birthday;
-    private LocalDate creationDate;
     private String token;
+    private LocalDate creationDate;
+    private AchievementStatus achievement;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {
@@ -44,30 +28,13 @@ public class UserGetDTO {
         this.username = username;
     }
 
-    public UserStatus getStatus() {
-        return status;
+    public String getToken() {
+        return token;
     }
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
+    public void setToken(String token) {
+        this.token = token;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
 
     public LocalDate getCreationDate() {
         return creationDate;
@@ -77,11 +44,11 @@ public class UserGetDTO {
         this.creationDate = creationDate;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public AchievementStatus getAchievement() {
+        return achievement;
     }
 
-    public String getToken() {
-        return token;
+    public void setAchievement(AchievementStatus achievement) {
+        this.achievement = achievement;
     }
 }

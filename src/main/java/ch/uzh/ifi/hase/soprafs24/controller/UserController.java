@@ -1,60 +1,63 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
-import ch.uzh.ifi.hase.soprafs24.entity.UserInformation;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
+import ch.uzh.ifi.hase.soprafs24.service.GameService;
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * User Controller
- * This class is responsible for handling all REST request that are related to
- * the user.
- * The controller will receive the request and delegate the execution to the
- * UserService and finally return the result.
- */
+
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
+    private final UserService UserService;
+    private final AchievementService achievementService;
+    private final GameService gameService;
 
-    private final UserService userService;
-
-    UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserService UserService, AchievementService achievementService, GameService gameService) {
+        this.UserService = UserService;
+        this.achievementService = achievementService;
+        this.gameService = gameService;
     }
 
-    @GetMapping("/users")
+
+    @GetMapping("/games") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public List<UserGetDTO> getAllUsers() {
-        // fetch all users in the internal representation
-        List<User> users = userService.getUsers();
-        List<UserGetDTO> userGetDTOs = new ArrayList<>();
-        // convert each user to the API representation
-        for (User user : users) {
-            userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+    public List<GameGetDTO> getAllGames() {
+        // fetch all games in the internal representation
+        List<Game> games = gameService.getGames();
+        List<GameGetDTO> gameGetDTOs = new ArrayList<>();
+        // convert each game to the API representation
+        for (Game game : games) {
+            gameGetDTOs.add(DTOMapper.INSTANCE.convertEntityToGameGetDTO(game));
         }
-        return userGetDTOs;
+        return gameGetDTOs;
     }
 
-    @GetMapping("/profile/{userid}")
+    @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public UserGetDTO profile(@PathVariable Long userid) {
-        User user = userService.profile(userid);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
-        }
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    @ResponseBody()
+    //TODO add security here
+    private void login(@RequestHeader ("username")String username, @RequestHeader("password") String password, HttpServletResponse response){
+        String token = this.UserService.getUserToken(username,password);
+        response.addHeader("token",token);
+
     }
+
 
     @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
@@ -63,34 +66,31 @@ public class UserController {
         return false;
     }
 
-    @PostMapping("/user/login")
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody()
+    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
+        User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
+        User generatedUser = this.UserService.createUser(newUser);
+        this.achievementService.saveInitialAchievements(generatedUser);
+        return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
+    }
+
+    @GetMapping("/create/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public UserGetDTO login(@RequestBody UserPutDTO userPutDTO) {
-        User loginUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-        User user = userService.login(loginUser);
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    @ResponseBody()
+    private String createGame(){
+
+        return this.UserService.getLobbyId();
     }
 
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
-        // convert API user to internal representation
-        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+    @PutMapping("/game")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
 
-        // create user
-        User createdUser = userService.createUser(userInput);
-        // convert internal representation of user back to API
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
-    }
-
-    @PostMapping("/create/game")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public String createGame() {
-        String id = "123456";
-        return id;
+        boolean success = this.UserService.createGame(lobbyId,playerIds);
+        return success;
     }
 
     @PutMapping("/profile/{userid}/edit")
@@ -104,21 +104,38 @@ public class UserController {
         }
         User updatedUser = userService.edit(user, updates);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
+
+    @PutMapping("/start")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private void game(){
+        this.UserService.startGame();
     }
 
-
-    @PutMapping("/game")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void logout(@RequestBody UserPutDTO userPutDTO) {
-        userService.logout(DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO));
+    @PostMapping("/games") // <-- corrected endpoint path
+    @ResponseStatus(HttpStatus.CREATED)
+    public GameGetDTO createGame(@RequestBody GamePostDTO gamePostDTO) {
+        // create game
+        Game createdGame = gameService.createGame(gamePostDTO);
+        // convert internal representation of game back to API
+        return DTOMapper.INSTANCE.convertEntityToGameGetDTO(createdGame);
     }
 
-    @PutMapping("/status/{username}")
+    @GetMapping("/games/{id}") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void status(@PathVariable String username) {
-        userService.status(username);
+    public GameGetDTO getGame(@PathVariable Long id) {
+        Game game = gameService.getGame(id);
+        return DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
+    }
+
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private UserGetDTO getUser(@PathVariable Long id){
+
+        User foundUser = this.UserService.findUserWithId(id);
+
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
     @PutMapping("/game/join/{gameID}")
