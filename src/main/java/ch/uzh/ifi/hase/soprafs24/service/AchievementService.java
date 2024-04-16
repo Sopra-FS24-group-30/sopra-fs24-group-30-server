@@ -21,9 +21,9 @@ public class AchievementService {
         this.achievementRepository = achievementRepository;
     }
 
-    public void saveInitialAchievements(User User){
-        AchievementStatus ach = new AchievementStatus();
-        ach.setUserId(User.getId());
+    public void saveInitialAchievements(User user){
+        AchievementStatus ach = new AchievementStatus(user.getId());
+        ach.setUserId(user.getId());
         ach.setFirst(false);
         ach.setFirstProgress(0);
         this.achievementRepository.save(ach);

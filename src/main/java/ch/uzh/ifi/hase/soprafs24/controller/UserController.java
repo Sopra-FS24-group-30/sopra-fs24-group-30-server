@@ -28,12 +28,65 @@ public class UserController {
     private final AchievementService achievementService;
     private final GameService gameService;
 
+    /*
+    -----------------------------------------------------------------------------------------------
+    User
+    -----------------------------------------------------------------------------------------------
+     */
+
     public UserController(UserService UserService, AchievementService achievementService, GameService gameService) {
         this.UserService = UserService;
         this.achievementService = achievementService;
         this.gameService = gameService;
     }
 
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    //TODO add security here
+    private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){
+        User loginUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        User user = this.UserService.login(loginUser);
+        return DTOMapper.INSTANCE.convertUserToUserPostDTO(user);
+    }
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
+        User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
+        User generatedUser = this.UserService.createUser(newUser);
+        this.achievementService.saveInitialAchievements(generatedUser);
+        return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
+    }
+
+    @PutMapping("/profile/{userid}/edit")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public UserGetDTO editProfile(@RequestBody UserPostDTO userPostDTO, @PathVariable Long userid) {
+        User user = UserService.profile(userid);
+        User updates = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        if (updates == null) {
+            return DTOMapper.INSTANCE.convertUserToUserGetDTO(user);
+        }
+        User updatedUser = UserService.edit(user, updates);
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(updatedUser);
+    }
+
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody()
+    private UserGetDTO getUser(@PathVariable Long id){
+
+        User foundUser = this.UserService.findUserWithId(id);
+
+        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
+    }
+
+    /*
+    -----------------------------------------------------------------------------------------------
+    Game
+    -----------------------------------------------------------------------------------------------
+     */
 
     @GetMapping("/games") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
@@ -48,32 +101,11 @@ public class UserController {
         return gameGetDTOs;
     }
 
-    @GetMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    //TODO add security here
-    private void login(@RequestHeader ("username")String username, @RequestHeader("password") String password, HttpServletResponse response){
-        String token = this.UserService.getUserToken(username,password);
-        response.addHeader("token",token);
-
-    }
-
-
     @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public boolean gameStatus(@PathVariable String gameID){
         return false;
-    }
-
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody()
-    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
-        User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
-        User generatedUser = this.UserService.createUser(newUser);
-        this.achievementService.saveInitialAchievements(generatedUser);
-        return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
     }
 
     @GetMapping("/create/game")
@@ -92,18 +124,6 @@ public class UserController {
         boolean success = this.UserService.createGame(lobbyId,playerIds);
         return success;
     }
-
-    @PutMapping("/profile/{userid}/edit")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public UserGetDTO editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
-        User user = userService.profile(userid);
-        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-        if (updates == null) {
-            return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
-        }
-        User updatedUser = userService.edit(user, updates);
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
 
     @PutMapping("/start")
     @ResponseStatus(HttpStatus.OK)
@@ -128,21 +148,11 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
     }
 
-    @GetMapping("/users/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private UserGetDTO getUser(@PathVariable Long id){
-
-        User foundUser = this.UserService.findUserWithId(id);
-
-        return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
-    }
-
     @PutMapping("/game/join/{gameID}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
-        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
+        User user = UserService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
     }
 
 }
