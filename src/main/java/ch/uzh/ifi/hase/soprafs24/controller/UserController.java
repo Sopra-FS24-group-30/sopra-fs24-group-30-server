@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000/*")
 public class UserController {
     private final UserService UserService;
     private final AchievementService achievementService;
@@ -80,6 +80,20 @@ public class UserController {
         User foundUser = this.UserService.findUserWithId(id);
 
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
+    }
+
+    @GetMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getAllUsers() {
+        // fetch all users in the internal representation
+        List<User> users = UserService.getUsers();
+        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+        // convert each user to the API representation
+        for (User user : users) {
+            userGetDTOs.add(DTOMapper.INSTANCE.convertUserToUserGetDTO(user));
+        }
+        return userGetDTOs;
     }
 
     /*

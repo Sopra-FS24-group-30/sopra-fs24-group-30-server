@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
 
 @Service
 @Transactional
@@ -169,5 +170,9 @@ public class UserService {
         UserRepository.saveAndFlush(user);
         return user;
     }
+    public List<User> getUsers() {
+        return this.UserRepository.findAll();
+    }
+
 
 }

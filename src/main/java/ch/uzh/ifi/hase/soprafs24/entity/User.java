@@ -19,6 +19,8 @@ public class User implements Serializable {
     private String password;
     @Column(nullable = false)
     private LocalDate creationDate;
+    @Column(nullable = true)
+    private LocalDate birthday;
     @Column int amountGamesCompleted;
     @Column
     private int amountWins;
@@ -89,5 +91,9 @@ public class User implements Serializable {
 
     public void setAchievement(AchievementStatus achievement) {
         this.achievement = achievement;
+    }
+
+    public void setBirthday(LocalDate birthday){
+        this.birthday = birthday;
     }
 }
