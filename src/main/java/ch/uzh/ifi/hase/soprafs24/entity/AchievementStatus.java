@@ -12,6 +12,13 @@ public class AchievementStatus {
     @Column
     private int firstProgress;
 
+    public AchievementStatus(long id){
+        this.UserId = id;
+    }
+
+    public AchievementStatus(){
+    }
+
     public long getUserId() {
         return UserId;
     }
