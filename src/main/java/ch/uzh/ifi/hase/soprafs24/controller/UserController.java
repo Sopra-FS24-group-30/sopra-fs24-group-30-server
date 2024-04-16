@@ -56,12 +56,11 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
-    @GetMapping("/create/id")
+    @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String gameID() {
-        String id = "123456";
-        return id;
+    public boolean gameStatus(@PathVariable String gameID){
+        return false;
     }
 
     @PostMapping("/user/login")
@@ -84,6 +83,14 @@ public class UserController {
         User createdUser = userService.createUser(userInput);
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+    }
+
+    @PostMapping("/create/game")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public String createGame() {
+        String id = "123456";
+        return id;
     }
 
     @PutMapping("/profile/{userid}/edit")
@@ -112,6 +119,13 @@ public class UserController {
     @ResponseBody
     public void status(@PathVariable String username) {
         userService.status(username);
+    }
+
+    @PutMapping("/game/join/{gameID}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
     }
 
 }
