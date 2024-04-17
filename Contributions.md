@@ -33,7 +33,7 @@
 
 | Date       | Name           | Links to Github Issues | Comments |
 |---|---|---|---|
-|  |  |  |  |
+| 17.04.2024 | Marius | [#59](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/59)  
 |  |  |  |  |
 |  |  |  |  |
 
