@@ -1,6 +1,6 @@
 # Contributions
 
-## <font style="color: #00d7ff">Week 1 *(25.03 – 02.04)*</font>
+## <font style="color: #d7ff00">Week 1 *(25.03 – 02.04)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
@@ -19,7 +19,7 @@
 | 09.04.2024 | Carlos Hernandez, Tam Gian | [#210](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/210) | created gameboard with spaces |
 |   |   |   |   |
 
-## <font style="color: #00d7ff">Week 2 *(10.04 – 16.04)*</font>
+## <font style="color: #00ffd7">Week 2 *(10.04 – 16.04)*</font>
 
 | Date | Name | Links to Github Issues                                                                                | Comments |
 |---|---|-------------------------------------------------------------------------------------------------------|---|
@@ -37,7 +37,7 @@
 |  |  |  |  |
 |  |  |  |  |
 
-## <font style="color: #00d7ff">Week 4 *(24.04 – 26.04)*</font>
+## <font style="color: #d700ff">Week 4 *(24.04 – 26.04)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
