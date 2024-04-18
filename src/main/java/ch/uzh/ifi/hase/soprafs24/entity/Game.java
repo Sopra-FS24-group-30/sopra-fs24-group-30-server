@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs24.entity;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  * Every variable will be mapped into a database field with the @Column
  * annotation
  * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unqiue across the database -> composes
+ * - unique = true -> this value must be unique across the database -> composes
  * the primary key
  */
 
@@ -49,14 +48,14 @@ public class Game implements Serializable {
         return id;
     }
 
-    public void setid(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     public void setRoundNum(Integer roundNum) {
         this.roundNum = roundNum;
     }
-    public Integer getroundNum() {
+    public Integer getRoundNum() {
         return roundNum;
     }
 

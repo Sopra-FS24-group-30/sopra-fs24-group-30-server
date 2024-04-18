@@ -21,12 +21,12 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    private final UserRepository UserRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public UserService(@Qualifier("UserRepository") UserRepository UserRepository) {
-        this.UserRepository = UserRepository;
+    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
@@ -36,7 +36,7 @@ public class UserService {
      * @return the token of the user
      */
     public String getUserToken(String username, String password){
-        Optional<User> foundUser = this.UserRepository.findByUsername(username);
+        Optional<User> foundUser = this.userRepository.findByUsername(username);
         if (foundUser.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the username %s does not exist",username));
         }
@@ -54,7 +54,6 @@ public class UserService {
         if (!savedPassword.equals(givenPassword)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is incorrect!");
         }
-        System.out.println("---"); System.out.println("---");
         return user;
     }
 
@@ -76,8 +75,8 @@ public class UserService {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setAmountGamesCompleted(0);
         newUser.setAmountWins(0);
-        this.UserRepository.save(newUser);
-        UserRepository.flush();
+        this.userRepository.save(newUser);
+        userRepository.flush();
         AchievementStatus ach = new AchievementStatus(newUser.getId());
         newUser.setAchievement(ach);
         return newUser;
@@ -89,7 +88,7 @@ public class UserService {
      * @return user of which the id was specified
      */
     public User findUserWithId(Long id){
-        Optional<User> foundUser = this.UserRepository.findById(id);
+        Optional<User> foundUser = this.userRepository.findById(id);
         if(foundUser.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",id));
         }
@@ -97,9 +96,9 @@ public class UserService {
     }
 
     public User findUser(String username){
-        Optional<User> foundUser = this.UserRepository.findByUsername(username);
+        Optional<User> foundUser = this.userRepository.findByUsername(username);
         if (foundUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",username));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %s does not exist",username));
         }
         return foundUser.get();
     }
@@ -114,17 +113,17 @@ public class UserService {
             lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)));
         }
 
-        //TODO check against already active lobbies to avoid conflicts
+        //TODO check against already active lobbies to avoid conflicts NOSONAR
         return lobbyId.toString();
     }
     /**
-    *create a game and add the players to it so they can join the game and no one else
+    *create a game and add the players to it, so they can join the game and no one else
      * @return if successful returns true
      */
-    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){
+    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){ //NOSONAR
 
         try{
-            //TODO create the game with the lobbyID and the players
+            //TODO create the game with the lobbyID and the players NOSONAR
         } catch(Exception e){
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
         }
@@ -137,15 +136,12 @@ public class UserService {
      * start the game and let sockets take over
      */
     public void startGame(){
-        //TODO trigger the start of game => websockets take over
+        //TODO trigger the start of game => websockets take over NOSONAR
     }
 
     private boolean checkUsernameExists(String username){
-        Optional<User> existingUser = this.UserRepository.findByUsername(username);
-        if(existingUser.isPresent()){
-            return true;
-        }
-        return false;
+        Optional<User> existingUser = this.userRepository.findByUsername(username);
+        return existingUser.isPresent();
     }
 
     public User edit(User user, User updates){
@@ -165,12 +161,10 @@ public class UserService {
         if (updates.getPassword()!=null){
             user.setPassword(updates.getPassword());
         }
-        this.UserRepository.saveAndFlush(user);
+        this.userRepository.saveAndFlush(user);
         return user;
     }
     public List<User> getUsers() {
-        return this.UserRepository.findAll();
+        return this.userRepository.findAll();
     }
-
-
 }

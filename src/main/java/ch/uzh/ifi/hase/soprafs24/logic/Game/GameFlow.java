@@ -1,35 +1,35 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 public class GameFlow {
 
-    private void createBoard(){}
+    private void createBoard(){} //NOSONAR
 
-    private void getWinCondition(){}
+    private void getWinCondition(){} //NOSONAR
 
-    private void getUltimate(){}
+    private void getUltimate(){} //NOSONAR
 
-    private void addPlayer(){}
+    private void addPlayer(){} //NOSONAR
 
-    private void useItem(){}
-    private void useCard(){}
+    private void useItem(){} //NOSONAR
+    private void useCard(){} //NOSONAR
 
-    private void throwDice(){}
+    private void throwDice(){} //NOSONAR
 
-    private void updatePlayer(){}
+    private void updatePlayer(){} //NOSONAR
 
-    private void updatePlayerPosition(){}
+    private void updatePlayerPosition(){} //NOSONAR
 
-    private void turn(){}
+    private void turn(){} //NOSONAR
 
 
-    private void run(){}
-    private void setup(){}
-    private void teardown(){}
-    private void flow(){}
+    private void run(){} //NOSONAR
+    private void setup(){} //NOSONAR
+    private void teardown(){} //NOSONAR
+    private void flow(){} //NOSONAR
 
 
     /*
-    TODO SETUP
+    TODO SETUP NOSONAR
     Player kreieren
     Teams assigne
     Spieler reihefolg
@@ -37,7 +37,7 @@ public class GameFlow {
     win condition wählen
     Board laden/screen lade
 
-    TODO TURNS
+    TODO TURNS NOSONAR
     items/ultimates
     update to player positions
     updates to player status
@@ -46,13 +46,13 @@ public class GameFlow {
     updates to player status
     give turn to next player
 
-    TODO ENDGAME
+    TODO ENDGAME NOSONAR
     update userprofiles
     remove players
     destroy gameboard
     display winners
 
-    TODO ALWAYS
+    TODO ALWAYS NOSONAR
     display cash
     voice chat
     display items

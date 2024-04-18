@@ -10,7 +10,6 @@ import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -32,12 +31,12 @@ public interface DTOMapper {
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
-    User convertUserPostDTOtoEntity(UserPostDTO UserPostDTO);
+    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "token", target = "token")
-    UserPostDTO convertUserToUserPostDTO(User User);
+    UserPostDTO convertUserToUserPostDTO(User user);
 
     @Mapping(source = "id", target = "id")
 
@@ -56,7 +55,7 @@ public interface DTOMapper {
     @Mapping(source = "token", target = "token")
     @Mapping(source = "creationDate", target = "creationDate")
     @Mapping(source = "achievement", target = "achievement")
-    User UserGetDTOtoEntity(UserGetDTO userGetDTO);
+    User userGetDTOtoEntity(UserGetDTO userGetDTO);
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "token", target = "token")

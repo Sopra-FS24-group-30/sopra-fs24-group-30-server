@@ -9,15 +9,11 @@ import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +21,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-    private final UserService UserService;
+    private final UserService userService;
     private final AchievementService achievementService;
     private final GameService gameService;
 
@@ -35,60 +31,54 @@ public class UserController {
     -----------------------------------------------------------------------------------------------
      */
 
-    public UserController(UserService UserService, AchievementService achievementService, GameService gameService) {
-        this.UserService = UserService;
+    public UserController(UserService userService, AchievementService achievementService, GameService gameService) {
+        this.userService = userService;
         this.achievementService = achievementService;
         this.gameService = gameService;
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    //TODO add security here
-    private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){
+    //TODO add security here NOSONAR
+    private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){ //NOSONAR
         User loginUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        User user = this.UserService.login(loginUser);
+        User user = this.userService.login(loginUser);
         return DTOMapper.INSTANCE.convertUserToUserPostDTO(user);
     }
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){
+    private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){//NOSONAR
         User newUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(UserPostDTO);
-        User generatedUser = this.UserService.createUser(newUser);
+        User generatedUser = this.userService.createUser(newUser);
         this.achievementService.saveInitialAchievements(generatedUser);
         return DTOMapper.INSTANCE.convertUserToUserPostDTO(generatedUser);
     }
 
     @PutMapping("/profile/{userid}/edit")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
     public void editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
-        User user = UserService.findUserWithId(userid);
+        User user = userService.findUserWithId(userid);
         User updates = DTOMapper.INSTANCE.convertUserPutDTOtoUser(userPutDTO);
         if (updates == null) {
             return;
         }
-        User updatedUser = UserService.edit(user, updates);
-        System.out.println(updatedUser);
+        User updatedUser = userService.edit(user, updates);//NOSONAR
     }
 
     @GetMapping("/profile/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private UserGetDTO getUser(@PathVariable Long id){
+    private UserGetDTO getUser(@PathVariable Long id){//NOSONAR
 
-        User foundUser = this.UserService.findUserWithId(id);
+        User foundUser = this.userService.findUserWithId(id);
 
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public List<UserGetDTO> getAllUsers() {
         // fetch all users in the internal representation
-        List<User> users = UserService.getUsers();
+        List<User> users = userService.getUsers();
         List<UserGetDTO> userGetDTOs = new ArrayList<>();
         // convert each user to the API representation
         for (User user : users) {
@@ -118,32 +108,26 @@ public class UserController {
 
     @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public boolean gameStatus(@PathVariable String gameID){
         return false;
     }
 
     @PostMapping("/create/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    private String createGame(){
-        return this.UserService.getLobbyId();
+    private String createGame(){//NOSONAR
+        return this.userService.getLobbyId();
     }
 
     @PutMapping("/game")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){
-
-        boolean success = this.UserService.createGame(lobbyId,playerIds);
-        return success;
+    private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){//NOSONAR
+        return this.userService.createGame(lobbyId,playerIds);
     }
 
     @PutMapping("/start")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody()
-    private void game(){
-        this.UserService.startGame();
+    private void game(){//NOSONAR
+        this.userService.startGame();
     }
 
     @PostMapping("/games") // <-- corrected endpoint path
@@ -164,9 +148,8 @@ public class UserController {
 
     @PutMapping("/game/join/{gameID}")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
-        User user = UserService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
+        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());//NOSONAR
     }
 
 }

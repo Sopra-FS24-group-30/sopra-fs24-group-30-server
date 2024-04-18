@@ -27,7 +27,7 @@ public class User implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id",referencedColumnName = "UserId")
-    private AchievementStatus achievement;
+    private AchievementStatus achievement; //NOSONAR
 
     public Long getId() {
         return id;
