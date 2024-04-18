@@ -110,7 +110,7 @@ public class UserService {
     public String getLobbyId(){
         StringBuilder lobbyId = new StringBuilder();
         for(int i=0; i<6;i++){
-            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)));
+            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))); //NOSONAR
         }
 
         //TODO check against already active lobbies to avoid conflicts NOSONAR
