@@ -1,106 +1,100 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
-
-
-/**
- * Internal User Representation
- * This class composes the internal representation of the user and defines how
- * the user is stored in the database.
- * Every variable will be mapped into a database field with the @Column
- * annotation
- * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unqiue across the database -> composes
- * the primary key
- */
 @Entity
-@Table(name = "USER")
+@Table (name="User")
 public class User implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
+    private String token;
+    @Column(nullable = false, unique = true)
+    private String username;
+    @Column(nullable = false)
+    private String password;
+    @Column(nullable = false)
+    private LocalDate creationDate;
+    @Column(nullable = true)
+    private LocalDate birthday;
+    @Column int amountGamesCompleted;
+    @Column
+    private int amountWins;
 
-  @Id
-  @GeneratedValue
-  private Long id;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id",referencedColumnName = "UserId")
+    private AchievementStatus achievement; //NOSONAR
 
-  @Column(nullable = false, unique = true)
-  private String name;
+    public Long getId() {
+        return id;
+    }
 
-  @Column(nullable = false, unique = true)
-  private String username;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  @Column(nullable = false, unique = true)
-  private String token;
+    public String getToken() {
+        return token;
+    }
 
-  @Column(nullable = false)
-  private String password;
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-  @Column(nullable = false)
-  private LocalDate creationDate;
+    public String getUsername() {
+        return username;
+    }
 
-  @Column(nullable = true)
-  private LocalDate birthday;
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  @Column(nullable = false)
-  private UserStatus status;
+    public String getPassword() {
+        return password;
+    }
 
-  public Long getId() {
-    return id;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public int getAmountGamesCompleted() {
+        return amountGamesCompleted;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public void setAmountGamesCompleted(int amountGamesCompleted) {
+        this.amountGamesCompleted = amountGamesCompleted;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public int getAmountWins() {
+        return amountWins;
+    }
 
-  public String getPassword(){return password; }
-  public void setPassword(String password) {this.password = password; }
-  public String getToken() {
-    return token;
-  }
+    public void setAmountWins(int amountWins) {
+        this.amountWins = amountWins;
+    }
 
-  public void setToken(String token) {
-    this.token = token;
-  }
+    public AchievementStatus getAchievement() {
+        return achievement;
+    }
 
-  public UserStatus getStatus() {
-    return status;
-  }
+    public void setAchievement(AchievementStatus achievement) {
+        this.achievement = achievement;
+    }
 
-  public void setStatus(UserStatus status) {
-    this.status = status;
-  }
-
-  public void setBirthday(LocalDate birthday){
-    this.birthday = birthday;
-  }
-  public LocalDate getBirthday(){return birthday; }
-
-  public void setCreationDate(LocalDate creationDate){this.creationDate = creationDate; }
-  public LocalDate getCreationDate(){return creationDate; }
-
+    public void setBirthday(LocalDate birthday){
+        this.birthday = birthday;
+    }
+    public LocalDate getBirthday(){return birthday; }
 }

@@ -1,153 +1,170 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
-import org.apache.coyote.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import ch.uzh.ifi.hase.soprafs24.entity.UserInformation;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import java.util.List;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-
-/**
- * User Service
- * This class is the "worker" and responsible for all functionality related to
- * the user
- * (e.g., it creates, modifies, deletes, finds). The result will be passed back
- * to the caller.
- */
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
 
 @Service
 @Transactional
 public class UserService {
 
-  private final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final UserRepository userRepository;
 
-  private final UserRepository userRepository;
 
-  @Autowired
-  public UserService(@Qualifier("userRepository") UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
-
-  public List<User> getUsers() {
-    return this.userRepository.findAll();
-  }
-
-  public User findUser(String username){
-    return userRepository.findByUsername(username);
-  }
-
-  public User createUser(User newUser) {
-    newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
-    checkIfUserExists(newUser);
-    newUser.setCreationDate(LocalDate.now());
-    // saves the given entity but data is only persisted in the database once
-    // flush() is called
-    newUser = userRepository.save(newUser);
-    userRepository.flush();
-
-    log.debug("Created Information for User: {}", newUser);
-    return newUser;
-  }
-
-  /**
-   * This is a helper method that will check the uniqueness criteria of the
-   * username and the name
-   * defined in the User entity. The method will do nothing if the input is unique
-   * and throw an error otherwise.
-   *
-   * @param userToBeCreated
-   * @throws org.springframework.web.server.ResponseStatusException
-   * @see User
-   */
-  private void checkIfUserExists(User userToBeCreated) {
-    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
-
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT,
-              String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "name", "is"));
+    @Autowired
+    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-  }
+
+    /**
+     * get the token of a given user to authenticate
+     * @param username
+     * @param password
+     * @return the token of the user
+     */
+    public String getUserToken(String username, String password){
+        Optional<User> foundUser = this.userRepository.findByUsername(username);
+        if (foundUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the username %s does not exist",username));
+        }
+        User actualUser = foundUser.get();
+        if (!password.equals(actualUser.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the password is incorrect");
+        }
+        return actualUser.getToken();
+    }
+
     public User login(User loginUser) {
-      User user = userRepository.findByUsername(loginUser.getUsername());
-      if (user == null){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist!");
-      }
-      String savedPassword = user.getPassword();
-      String givenPassword = loginUser.getPassword();
-      if (!savedPassword.equals(givenPassword)){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is incorrect!");
-      }
-      userRepository.saveAndFlush(user);
-      return user;
-  }
+        User user = findUser(loginUser.getUsername());
+        String savedPassword = user.getPassword();
+        String givenPassword = loginUser.getPassword();
+        if (!savedPassword.equals(givenPassword)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is incorrect!");
+        }
+        return user;
+    }
 
-  public User profile(Long userID){
-    Optional<User> user = userRepository.findById(userID);
-    return user.orElse(null);
-  }
+    /**
+     * save a new user to the DB and return it
+     * @param newUser user object with username and password already set
+     * @return returns a user object with complete information
+     */
+    public User createUser(User newUser){
 
-  public User edit(User user, User updates){
-    if (user == null){
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
+        //can be removed if frontend does not allow this
+        if (newUser.getUsername() == null || newUser.getPassword() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"missing username or password");
+        }
+        else if (checkUsernameExists(newUser.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("the username %s already exists",newUser.getUsername()));
+        }
+        newUser.setCreationDate(LocalDate.now());
+        newUser.setToken(UUID.randomUUID().toString());
+        newUser.setAmountGamesCompleted(0);
+        newUser.setAmountWins(0);
+        this.userRepository.save(newUser);
+        userRepository.flush();
+        AchievementStatus ach = new AchievementStatus(newUser.getId());
+        newUser.setAchievement(ach);
+        return newUser;
     }
-    if (updates.getName()!=null){
-      User exists = userRepository.findByName(updates.getName());
-      if (exists!=null && !exists.getId().equals(user.getId())){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
-      }
-      user.setName(updates.getName());
-    }
-    if (updates.getUsername()!=null){
-      User exists = userRepository.findByUsername(updates.getUsername());
-      if (exists!=null && !exists.getId().equals(user.getId())){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
-      }
-      user.setUsername(updates.getUsername());
-    }
-    if (updates.getPassword()!=null){
-      user.setPassword(updates.getPassword());
-    }
-    if (updates.getBirthday()!=null){
-      user.setBirthday(updates.getBirthday());
-    }
-    userRepository.saveAndFlush(user);
-    return user;
-  }
 
-  public void logout(User usernameToFind){
-    User user = userRepository.findByUsername(usernameToFind.getUsername());
-    if (user!= null){
-      user.setStatus(UserStatus.OFFLINE);
-      userRepository.saveAndFlush(user);
+    /**
+     * fetch the user with the given id
+     * @param id give the id of the user you want to find
+     * @return user of which the id was specified
+     */
+    public User findUserWithId(Long id){
+        Optional<User> foundUser = this.userRepository.findById(id);
+        if(foundUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",id));
+        }
+        return foundUser.get();
     }
-  }
-  public void status(String username){
-    User user = findUser(username);
-    if (user!= null){
-      user.setStatus(UserStatus.ONLINE);
-      userRepository.saveAndFlush(user);
+
+    public User findUser(String username){
+        Optional<User> foundUser = this.userRepository.findByUsername(username);
+        if (foundUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %s does not exist",username));
+        }
+        return foundUser.get();
     }
-  }
+
+    /**
+     * create a new lobbyId and return it
+     * @return a unique LobbyId
+     */
+    public String getLobbyId(){
+        StringBuilder lobbyId = new StringBuilder();
+        for(int i=0; i<6;i++){
+            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))); //NOSONAR
+        }
+
+        //TODO check against already active lobbies to avoid conflicts NOSONAR
+        return lobbyId.toString();
+    }
+    /**
+    *create a game and add the players to it, so they can join the game and no one else
+     * @return if successful returns true
+     */
+    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){ //NOSONAR
+
+        try{
+            //TODO create the game with the lobbyID and the players NOSONAR
+        } catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
+        }
+        return true;
+
+        //
+    }
+
+    /**
+     * start the game and let sockets take over
+     */
+    public void startGame(){
+        //TODO trigger the start of game => websockets take over NOSONAR
+    }
+
+    private boolean checkUsernameExists(String username){
+        Optional<User> existingUser = this.userRepository.findByUsername(username);
+        return existingUser.isPresent();
+    }
+
+    public User edit(User user, User updates){
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
+        }
+        if (updates.getUsername()!=null){
+            User exists = findUser(updates.getUsername());
+            if (exists!=null && !exists.getId().equals(user.getId())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
+            }
+            user.setUsername(updates.getUsername());
+        }
+        if (updates.getBirthday()!=null){
+            user.setBirthday(updates.getBirthday());
+        }
+        if (updates.getPassword()!=null){
+            user.setPassword(updates.getPassword());
+        }
+        this.userRepository.saveAndFlush(user);
+        return user;
+    }
+    public List<User> getUsers() {
+        return this.userRepository.findAll();
+    }
 }
