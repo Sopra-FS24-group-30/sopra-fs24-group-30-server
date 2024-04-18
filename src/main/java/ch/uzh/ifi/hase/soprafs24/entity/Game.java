@@ -4,7 +4,10 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 /**
  * Internal Game Representation
@@ -25,6 +28,9 @@ public class Game implements Serializable {
 
     @Id
     private Long id;
+
+    @Column(nullable = true)
+    private List<String> playerIds;
 
     @Column(nullable = false)
     private GameStatus status;
@@ -49,7 +55,7 @@ public class Game implements Serializable {
         return id;
     }
 
-    public void setid(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -68,12 +74,31 @@ public class Game implements Serializable {
         this.status = status;
     }
 
-
     public void startGame() {
         this.roundNum = 1;
     }
 
     public void nextRound() {
         this.roundNum++;
+    }
+
+    public void setPlayerIds(List<String> playerList){
+        this.playerIds = playerList;
+    }
+
+    public void addToPlayerIds(String Id){
+        if (this.playerIds.size() >= 4){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You can't access this game, because there are already 4 people in it");
+        } else{
+            this.playerIds.add(Id);
+        }
+    }
+
+    public List<String> getPlayerIds() {
+        return playerIds;
+    }
+
+    public void removeFromIdList(String Id){
+        this.playerIds.remove(Id);
     }
 }

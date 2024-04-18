@@ -2,7 +2,9 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository UserRepository;
-
 
     @Autowired
     public UserService(@Qualifier("UserRepository") UserRepository UserRepository) {
@@ -88,13 +89,7 @@ public class UserService {
      * @param id give the id of the user you want to find
      * @return user of which the id was specified
      */
-    public User findUserWithId(Long id){
-        Optional<User> foundUser = this.UserRepository.findById(id);
-        if(foundUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",id));
-        }
-        return foundUser.get();
-    }
+
 
     public User findUser(String username){
         Optional<User> foundUser = this.UserRepository.findByUsername(username);
@@ -102,42 +97,6 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",username));
         }
         return foundUser.get();
-    }
-
-    /**
-     * create a new lobbyId and return it
-     * @return a unique LobbyId
-     */
-    public String getLobbyId(){
-        StringBuilder lobbyId = new StringBuilder();
-        for(int i=0; i<6;i++){
-            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)));
-        }
-
-        //TODO check against already active lobbies to avoid conflicts
-        return lobbyId.toString();
-    }
-    /**
-    *create a game and add the players to it so they can join the game and no one else
-     * @return if successful returns true
-     */
-    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){
-
-        try{
-            //TODO create the game with the lobbyID and the players
-        } catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
-        }
-        return true;
-
-        //
-    }
-
-    /**
-     * start the game and let sockets take over
-     */
-    public void startGame(){
-        //TODO trigger the start of game => websockets take over
     }
 
     private boolean checkUsernameExists(String username){
@@ -172,5 +131,22 @@ public class UserService {
         return this.UserRepository.findAll();
     }
 
+    /**
+     *create a game and add the players to it so they can join the game and no one else
+     * @return if successful returns true
+     */
+    public User findUserWithId(Long id){
+        Optional<User> foundUser = this.UserRepository.findById(id);
+        if(foundUser.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %d does not exist",id));
+        }
+        return foundUser.get();
+    }
 
+    /**
+     * start the game and let sockets take over
+     */
+    public void startGame(){
+        //TODO trigger the start of game => websockets take over
+    }
 }
