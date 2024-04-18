@@ -8,6 +8,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 
 /**
  * Internal Game Representation
@@ -29,7 +31,9 @@ public class Game implements Serializable {
     @Id
     private Long id;
 
-    @Column(nullable = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "game_player_ids", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "player_id")
     private List<String> playerIds;
 
     @Column(nullable = false)
