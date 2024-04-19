@@ -34,7 +34,7 @@ public class Game implements Serializable {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "game_player_ids", joinColumns = @JoinColumn(name = "game_id"))
     @Column(name = "player_id")
-    private List<String> playerIds;
+    private List<String> players;
 
     @Column(nullable = false)
     private GameStatus status;
@@ -86,23 +86,19 @@ public class Game implements Serializable {
         this.roundNum++;
     }
 
-    public void setPlayerIds(List<String> playerList){
-        this.playerIds = playerList;
+    public void setPlayers(List<String> playerList){
+        this.players = playerList;
     }
 
-    public void addToPlayerIds(String Id){
-        if (this.playerIds.size() >= 4){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You can't access this game, because there are already 4 people in it");
-        } else{
-            this.playerIds.add(Id);
-        }
+    public void addPlayer(String Id){
+        this.players.add(Id);
     }
 
-    public List<String> getPlayerIds() {
-        return playerIds;
+    public List<String> getPlayers() {
+        return players;
     }
 
-    public void removeFromIdList(String Id){
-        this.playerIds.remove(Id);
+    public void removePlayer(String Id){
+        this.players.remove(Id);
     }
 }

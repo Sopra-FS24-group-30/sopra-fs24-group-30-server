@@ -63,7 +63,7 @@ public class GameService {
 
             List<String> playerList = new ArrayList<>();
             playerList.add(playerID);
-            game.setPlayerIds(playerList);
+            game.setPlayers(playerList);
 
             return id;
         } catch(Exception e){

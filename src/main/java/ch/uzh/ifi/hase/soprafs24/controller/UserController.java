@@ -119,7 +119,7 @@ public class UserController {
     @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public boolean gameStatus(@PathVariable String gameID){
+    public boolean gameStatus(@PathVariable String gameId){
         return false;
     }
 
@@ -138,9 +138,9 @@ public class UserController {
         this.UserService.startGame();
     }
 
-    @PostMapping("/games") // <-- corrected endpoint path
+    @PostMapping("/games/setUp") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.CREATED)
-    public GameGetDTO createGame(@RequestBody GamePostDTO gamePostDTO) {
+    public GameGetDTO setUpGameGame(@RequestBody GamePostDTO gamePostDTO) {
         // create game
         Game createdGame = gameService.setUpGame(gamePostDTO);
         // convert internal representation of game back to API

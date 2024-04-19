@@ -35,6 +35,7 @@ public interface DTOMapper {
     User convertUserPostDTOtoEntity(UserPostDTO UserPostDTO);
 
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "token", target = "token")
     UserPostDTO convertUserToUserPostDTO(User User);
