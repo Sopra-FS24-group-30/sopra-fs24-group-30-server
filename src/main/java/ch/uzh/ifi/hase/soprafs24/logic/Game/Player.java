@@ -18,6 +18,10 @@ public class Player {
     private Long teammateId;
     private Long gameBoardId;
 
+    private int landYellow;
+    private int landCat;
+
+
     public Long getPlayerId() {
         return playerId;
     }
@@ -74,7 +78,6 @@ public class Player {
         this.ultimate = ultimate;
     }
 
-
     public Long getUserId() {
         return userId;
     }
@@ -97,5 +100,21 @@ public class Player {
 
     public void setGameBoardId(Long gameBoardId) {
         this.gameBoardId = gameBoardId;
+    }
+
+    public int getLandYellow() {
+        return landYellow;
+    }
+
+    public void setLandYellow(int landYellow) {
+        this.landYellow = landYellow;
+    }
+
+    public int getLandCat() {
+        return landCat;
+    }
+
+    public void setLandCat(int landCat) {
+        this.landCat = landCat;
     }
 }
