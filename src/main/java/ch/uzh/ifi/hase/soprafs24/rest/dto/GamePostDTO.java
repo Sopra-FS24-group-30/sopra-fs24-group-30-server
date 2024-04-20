@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs24.rest.dto;
 import java.time.LocalDate;
 
 public class GamePostDTO {
-
     private Long id;
 
     public Long getId() {
@@ -13,6 +12,5 @@ public class GamePostDTO {
     public void setId(Long id) {
         this.id = id;
     }
-
 
 }

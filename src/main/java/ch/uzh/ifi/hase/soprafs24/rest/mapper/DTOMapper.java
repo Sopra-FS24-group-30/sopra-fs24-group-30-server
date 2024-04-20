@@ -10,9 +10,13 @@ import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.GameJoinRequest;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DTOMapper
@@ -41,7 +45,6 @@ public interface DTOMapper {
     UserPostDTO convertUserToUserPostDTO(User User);
 
     @Mapping(source = "id", target = "id")
-
     GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
 
     @Mapping(source = "id", target = "id")
@@ -69,4 +72,5 @@ public interface DTOMapper {
     @Mapping(source = "birthday", target = "birthday")
     @Mapping(source = "password", target = "password")
     User convertUserPutDTOtoUser(UserPutDTO userPutDTO);
+
 }

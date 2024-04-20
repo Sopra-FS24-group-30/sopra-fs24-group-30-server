@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 @Service
 public class GameManagementService {
     private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
@@ -72,6 +77,9 @@ public class GameManagementService {
 
     public boolean joinGame(Long gameId, String playerId) {
         Game game = findGame(gameId);
+        if (game == null){
+            throw new IllegalStateException("Game does not exist");
+        }
         if (game.getPlayers().size() >= 4){
             throw new IllegalStateException("Cannot add more players to the game");
         }
@@ -108,5 +116,23 @@ public class GameManagementService {
         if (game != null && game.getPlayers().isEmpty()) {
             allGames.remove(gameId);
         }
+    }
+
+    public Map<String, String> manualParse(String message){
+        message = message.trim();
+        message = message.replaceAll("[{}\"\\\\]", "");
+        String[] pairs = message.split(",");
+        Map<String, String> dict = new HashMap<>();
+
+        for (String pair: pairs){
+            String[] parts = pair.split(":");
+            if (parts.length != 2){
+                throw new IllegalStateException("You're message cannot be accepted");
+            }
+            String key = parts[0].trim();
+            String value = parts[1].trim();
+            dict.put(key, value);
+        }
+        return dict;
     }
 }
