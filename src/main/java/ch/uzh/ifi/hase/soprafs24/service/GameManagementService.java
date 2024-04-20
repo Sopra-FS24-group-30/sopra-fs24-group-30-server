@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -29,7 +31,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 @Service
 public class GameManagementService {
+
     private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
+
+    public Map<String, String> manualParse(String message){
+        message = message.trim();
+        message = message.replaceAll("[{}\"\\\\]", "");
+        String[] pairs = message.split(",");
+        Map<String, String> dict = new HashMap<>();
+
+        for (String pair: pairs){
+            String[] parts = pair.split(":");
+            if (parts.length != 2){
+                throw new IllegalStateException("You're message cannot be accepted");
+            }
+            String key = parts[0].trim();
+            String value = parts[1].trim();
+            dict.put(key, value);
+        }
+        return dict;
+    }
 
     /**
      * Creates a new game with a random game ID.
@@ -104,6 +125,7 @@ public class GameManagementService {
     public void leaveGame(Long gameId, String playerId) {
         Game game = findGame(gameId);
         game.removePlayer(playerId);
+        removeGameIfEmpty(gameId);
     }
 
     /**
@@ -118,21 +140,8 @@ public class GameManagementService {
         }
     }
 
-    public Map<String, String> manualParse(String message){
-        message = message.trim();
-        message = message.replaceAll("[{}\"\\\\]", "");
-        String[] pairs = message.split(",");
-        Map<String, String> dict = new HashMap<>();
-
-        for (String pair: pairs){
-            String[] parts = pair.split(":");
-            if (parts.length != 2){
-                throw new IllegalStateException("You're message cannot be accepted");
-            }
-            String key = parts[0].trim();
-            String value = parts[1].trim();
-            dict.put(key, value);
-        }
-        return dict;
+    public List<String> lobbyPlayers(Long gameId) {
+        List<String> plrs = getPlayersInGame(gameId);
+        return plrs;
     }
 }
