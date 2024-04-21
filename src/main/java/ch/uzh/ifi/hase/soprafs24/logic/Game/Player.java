@@ -13,6 +13,7 @@ public class Player {
     private List<Card> cards;
     private List<Item> items;
     private Ultimate ultimate;
+    private WinCondition winCondition;
 
     private Long userId;
     private Long teammateId;
@@ -62,12 +63,20 @@ public class Player {
         this.cards = cards;
     }
 
+    public void addCard(Card card){
+        cards.add(card);
+    }
+
     public List<Item> getItems() {
         return items;
     }
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void addItem(Item item){
+        items.add(item);
     }
 
     public Ultimate getUltimate() {
@@ -116,5 +125,17 @@ public class Player {
 
     public void setLandCat(int landCat) {
         this.landCat = landCat;
+    }
+
+    public WinCondition getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(WinCondition winCondition) {
+        this.winCondition = winCondition;
+    }
+
+    public boolean getCanWin() {
+        return winCondition.checkWinConditionMet(this);
     }
 }
