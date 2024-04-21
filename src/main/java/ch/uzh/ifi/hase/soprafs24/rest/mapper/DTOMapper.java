@@ -36,13 +36,13 @@ public interface DTOMapper {
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
-    User convertUserPostDTOtoEntity(UserPostDTO UserPostDTO);
+    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "id", target = "id")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "token", target = "token")
-    UserPostDTO convertUserToUserPostDTO(User User);
+    UserPostDTO convertUserToUserPostDTO(User user);
 
     @Mapping(source = "id", target = "id")
     GameBoardGetDTO convertEntityToGameBoardGetDTO(GameBoard gameBoard);
@@ -60,7 +60,7 @@ public interface DTOMapper {
     @Mapping(source = "token", target = "token")
     @Mapping(source = "creationDate", target = "creationDate")
     @Mapping(source = "achievement", target = "achievement")
-    User UserGetDTOtoEntity(UserGetDTO userGetDTO);
+    User userGetDTOtoEntity(UserGetDTO userGetDTO);
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "token", target = "token")

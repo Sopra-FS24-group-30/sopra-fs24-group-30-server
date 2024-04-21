@@ -1,6 +1,6 @@
 # Contributions
 
-## <font style="color: #00d7ff">Week 1 *(25.03 – 02.04)*</font>
+## <font style="color: #d7ff00">Week 1 *(25.03 – 02.04)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
@@ -19,25 +19,25 @@
 | 09.04.2024 | Carlos Hernandez, Tam Gian | [#210](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/210) | created gameboard with spaces |
 |   |   |   |   |
 
-## <font style="color: #00d7ff">Week 2 *(10.04 – 16.04)*</font>
+## <font style="color: #00ffd7">Week 2 *(10.04 – 16.04)*</font>
 
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
-| 11.04.2024 | Tam Gian | [#212](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/212)
-| 11.04.2024 | Marius | [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/86) |   |
-| 14.04.2024 | Céline | [#90](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/90) |   |
-| 15.04.2024 | Carlos Hernandez | [#220](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/220) |  |
-|   |   |   |   |
+| Date | Name | Links to Github Issues                                                                                | Comments |
+|---|---|-------------------------------------------------------------------------------------------------------|---|
+| 11.04.2024 | Tam Gian | [#212](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/212)                  
+| 11.04.2024 | Marius | [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/86)                    |   |
+| 14.04.2024 | Céline | [#90](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/90) (client), [#219](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/pull/219) |   |
+| 15.04.2024 | Carlos Hernandez | [#220](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/220)                  |  |
+|   |   |                                                                                                       |   |
 
 ## <font style="color: #00d7ff">Week 3 *(17.04 – 23.04)*</font>
 
 | Date       | Name           | Links to Github Issues | Comments |
 |---|---|---|---|
-|  |  |  |  |
+| 17.04.2024 | Marius | [#59](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/59)  
 |  |  |  |  |
 |  |  |  |  |
 
-## <font style="color: #00d7ff">Week 4 *(24.04 – 26.04)*</font>
+## <font style="color: #d700ff">Week 4 *(24.04 – 26.04)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|

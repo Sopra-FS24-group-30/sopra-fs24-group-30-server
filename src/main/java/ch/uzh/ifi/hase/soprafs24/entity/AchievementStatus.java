@@ -6,25 +6,25 @@ import javax.persistence.*;
 @Table(name = "ACHIEVEMENTSTATUS")
 public class AchievementStatus {
     @Id
-    private long UserId;
+    private long userId;
     @Column
     private boolean first;
     @Column
     private int firstProgress;
 
     public AchievementStatus(long id){
-        this.UserId = id;
+        this.userId = id;
     }
 
     public AchievementStatus(){
     }
 
     public long getUserId() {
-        return UserId;
+        return userId;
     }
 
-    public void setUserId(long UserId) {
-        this.UserId = UserId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public boolean isFirst() {

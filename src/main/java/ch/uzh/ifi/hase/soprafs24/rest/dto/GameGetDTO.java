@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import java.util.Set;
 
 public class GameGetDTO {
 
