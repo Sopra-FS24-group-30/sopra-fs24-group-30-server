@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -86,5 +87,23 @@ public class GameWebSocketController {
         String playerId = message.get("playerId");
 
         gameManagementService.leaveGame(gameId, playerId);
+    }
+
+    @MessageMapping("/game/setUp")
+    public void setUpGame(String msg){
+        Map<String, String> message = gameManagementService.manualParse(msg);
+        Long gameId = Long.valueOf(message.get("gameId"));
+        gameManagementService.changeGameStatus(gameId, GameStatus.SETUP);
+    }
+
+    @MessageMapping("/game/status")
+    @SendTo("/topic/game/status")
+    public Map<String, String> gameStatus(String msg){
+        Map<String, String> message = gameManagementService.manualParse(msg);
+        Long gameId = Long.valueOf(message.get("gameId"));
+        GameStatus status = gameManagementService.getGameStatus(gameId);
+        Map<String, String> response = new HashMap<>();
+        response.put("status", status.name());
+        return response;
     }
 }

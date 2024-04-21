@@ -75,6 +75,7 @@ public class GameManagementService {
         playerList.add(playerId);
         game.setPlayers(playerList);
 
+        System.out.println(gameId);
         System.out.println(playerList);
 
         allGames.put(gameId, game);
@@ -98,13 +99,21 @@ public class GameManagementService {
 
     public boolean joinGame(Long gameId, String playerId) {
         Game game = findGame(gameId);
+        System.out.println(gameId);
+        System.out.println(playerId);
         if (game == null){
             throw new IllegalStateException("Game does not exist");
         }
         if (game.getPlayers().size() >= 4){
             throw new IllegalStateException("Cannot add more players to the game");
         }
+        if (game.getPlayers().contains(playerId)){
+            return true;
+        }
         game.addPlayer(playerId);
+
+        System.out.println(gameId);
+        System.out.println(game.getPlayers());
         return true;
     }
 
@@ -140,8 +149,32 @@ public class GameManagementService {
         }
     }
 
+    /**
+     * Gets all the players, who are in the game
+     * Used to get all the players and display it in the front end
+     * @param gameId the game ID to check
+     */
     public List<String> lobbyPlayers(Long gameId) {
         List<String> plrs = getPlayersInGame(gameId);
         return plrs;
+    }
+
+    /**
+     * Sets the gamestatus to setUp
+     * Used to change the status of the game
+     * @param gameId the game ID to check
+     */
+    public boolean changeGameStatus(Long gameId, GameStatus status){
+        Game game = findGame(gameId);
+        game.setStatus(status);
+        if (game.getStatus() != status) {
+            throw new IllegalStateException("Game status couldn't be changed");
+        }
+        return true;
+    }
+
+    public GameStatus getGameStatus(Long gameId){
+        Game game = findGame(gameId);
+        return game.getStatus();
     }
 }
