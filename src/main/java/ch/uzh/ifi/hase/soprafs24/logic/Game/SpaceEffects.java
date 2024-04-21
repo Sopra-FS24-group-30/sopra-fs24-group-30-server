@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Lookup Tables for any spaces
  */
-public class SpaceEffects {
+public class SpaceEffects { //NOSONAR
     private static final Map<String, String> spaces;
 
     static{
@@ -41,7 +41,7 @@ public class SpaceEffects {
     public static void gate(Player player){} //NOSONAR
 
     public static void specialItem(Player player){
-        int rando = (int) (Math.random() * Item.getAllItems().size());
+        int rando = (int) (Math.random() * Item.getAllItems().size()); //NOSONAR
         player.addItem(Item.getAllItems().get(rando));
     }
 

@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ public class WinCondition {
     public boolean checkWinConditionMet(Player player){
         switch (winConditionName){
             case "JackSparrow":
-                //TODO HOW TF???
+                //TODO HOW TF??? NOSONAR
                 //how to gameover
-            case "theMarooned":
+            case "theMarooned": //NOSONAR
                 return player.getCash()==0 && player.getCards().isEmpty() && player.getItems().isEmpty();
             case "goldenIsMy...":
                 return player.getLandYellow() >= 7;

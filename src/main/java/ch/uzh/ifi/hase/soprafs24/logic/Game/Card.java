@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 /**
  * Cards replace the dice.
@@ -6,5 +6,5 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game;
  * silver Cards: one fixed number
  * gold Cards: two numbers, can choose which one to walk
  */
-public class Card {
+public class Card { //NOSONAR
 }

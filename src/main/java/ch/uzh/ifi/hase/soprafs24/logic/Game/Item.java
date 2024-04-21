@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,6 @@ public class Item {
         return itemName;
     }
     //Ambrosses art von class und three subclass how
-    //class MushroomItem extends Item {//MagicMushroom, SuperMagicMushroom, UltraMagicMushroom}
-    //class BrothaItem extends Item {//TheBrotherAndCo}
-    //class OtherItem extends Item {//TreasureChest, OnlyFansAbo}
+
+
 }

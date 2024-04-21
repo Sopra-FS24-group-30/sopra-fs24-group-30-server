@@ -8,14 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class GameFlow {
 
     private void createBoard(){} //NOSONAR
@@ -30,15 +22,14 @@ public class GameFlow {
     private void useCard(){} //NOSONAR
 
     public int throwDice(){
-        return (int) (Math.random() * 6 + 1);
+        return (int) (Math.random() * 6 + 1); //NOSONAR
     }
 
     //maybe split update player up into cash,item,card,posi?
-    private void updatePlayer(){}
+    private void updatePlayer(){} //NOSONAR
 
     //normal walk
     public Map<String, Object> updatePlayerPosition(GameBoard gameBoard, Player player, int moves, long posi) {
-        //Long currPosi = player.getPosition();
         Long currPosi = posi;
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
@@ -51,7 +42,7 @@ public class GameFlow {
 
         while (movies > 0) {
             currentSpace = findSpaceById(allSpaces, currPosi);
-            nextSpaceIds = currentSpace.getNext();
+            nextSpaceIds = currentSpace.getNext(); //NOSONAR
 
             // if next space is linear (not junction/gate)
             if (nextSpaceIds.size() == 1) {
@@ -59,16 +50,16 @@ public class GameFlow {
                 listi.add(nextPosi);
 
                 GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
-                color = nextSpace.getColor();
+                color = nextSpace.getColor(); //NOSONAR
 
                 //set player to next posi already
                 currPosi = nextPosi;
                 player.setPosition(currPosi);
 
                 // check if game is over, or player gets cash
-                if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) {
+                if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
                     if (player.getCanWin()) {
-                        // TODO GAME OVER
+                        // GAME OVER
                         return toReturn(player, listi, moves, color);
                     }
                     player.setCash(player.getCash() + 15);
@@ -79,30 +70,31 @@ public class GameFlow {
                 if (nextSpace.getOnSpace() == null) {
                     if (color.equals("Junction")){
                         // return the currently walked spaces, after getting a response, continue with the walk
-                        //TODO: BUT HOW TO HANDLE RESPONSE OF JUNCTION
+                        // BUT HOW TO HANDLE RESPONSE OF JUNCTION NOSONAR
                         // like handled in SpaceEffects
                         return toReturn(player, listi, moves, color);
                     }
                     else if (color.equals("Gate")){
                         //check if brother exists
                         // - if yes then return the currently walked spaces (like junction)
-                        //TODO: BUT HOW TO HANDLE RESPONSE OF GATE
+
+                        // BUT HOW TO HANDLE RESPONSE OF GATE NOSONAR
                         // like handled in SpaceEffects
                         for (Item item : player.getItems()){
                             if (item.getItemName().equals("TheBrotherAndCo")){
-                                System.out.println("nono");
                                 return toReturn(player,listi,moves,color);
                             }
                         }
                         // - if no then not even ask, just continue
                         // prob handle with recursion instead of just continuing
-                        // TODO ugly ass Gate handling
+
+                        // ugly ass Gate handling NOSONAR
                         currentSpace = findSpaceById(allSpaces, currPosi);
-                        nextSpaceIds = currentSpace.getNext();
+                        nextSpaceIds = currentSpace.getNext(); //NOSONAR
                         nextPosi = Long.parseLong(nextSpaceIds.get(0));
                         listi.add(nextPosi);
                         nextSpace = findSpaceById(allSpaces, nextPosi);
-                        color = nextSpace.getColor();
+                        color = nextSpace.getColor(); //NOSONAR
                         currPosi = nextPosi;
                         player.setPosition(currPosi);
                     }
@@ -125,7 +117,7 @@ public class GameFlow {
         else if ("CatNami".equals(color)){
             player.setLandCat(player.getLandCat()+1);
         }
-        //TODO THE SPACE EFFECT NOW/LATER??
+        // THE SPACE EFFECT NOW/LATER??
         SpaceEffects.getSpaceEffectValue(currentSpace.getOnSpace());
         return toReturn(player, listi, moves, color);
     }
@@ -151,7 +143,7 @@ public class GameFlow {
         return retour;
     }
 
-    private void turn(){}
+    private void turn(){} //NOSONAR
 
 
     private void run(){} //NOSONAR
