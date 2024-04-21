@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -41,7 +42,7 @@ public class GameService {
     public Long getLobbyId(){
         Random rnd = new Random();
         long id = 100000 + rnd.nextInt(900000);
-        while (this.GameRepository.findById(id) != null){
+        while (this.gameRepository.findById(id) != null){
             id = 100000 + rnd.nextInt(900000);
         }
         return id;
@@ -68,6 +69,8 @@ public class GameService {
         GameBoard gameBoard = gameBoardService.createGameBoard();
         game.setGameBoard(gameBoard);
         game.setId(GamePostDTO.getId());
+        return game;
+    }
 
     public Game getGame(Long id) {
         Optional<Game> game = gameRepository.findById(id);

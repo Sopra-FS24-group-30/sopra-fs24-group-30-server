@@ -113,13 +113,6 @@ public class UserController {
         return false;
     }
 
-    @PostMapping("/create/game/{playerId}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    private String createGame(@PathVariable String playerId){
-        Long lobbyID = gameService.createGame(playerId);
-        return String.valueOf(lobbyID);
-
     @PutMapping("/game")
     @ResponseStatus(HttpStatus.OK)
     private boolean game(@RequestBody String lobbyId, @RequestBody ArrayList<Long> playerIds){//NOSONAR
