@@ -2,7 +2,9 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-
 
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
@@ -132,13 +133,6 @@ public class UserService {
         //
     }
 
-    /**
-     * start the game and let sockets take over
-     */
-    public void startGame(){
-        //TODO trigger the start of game => websockets take over NOSONAR
-    }
-
     private boolean checkUsernameExists(String username){
         Optional<User> existingUser = this.userRepository.findByUsername(username);
         return existingUser.isPresent();
@@ -167,4 +161,12 @@ public class UserService {
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
+
+    /**
+     * start the game and let sockets take over
+     */
+    public void startGame(){
+        //TODO trigger the start of game => websockets take over
+    }
+
 }

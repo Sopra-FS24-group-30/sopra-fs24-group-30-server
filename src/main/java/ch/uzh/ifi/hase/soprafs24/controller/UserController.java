@@ -108,15 +108,17 @@ public class UserController {
 
     @GetMapping("/game/{gameID}/status")
     @ResponseStatus(HttpStatus.OK)
-    public boolean gameStatus(@PathVariable String gameID){
+    @ResponseBody
+    public boolean gameStatus(@PathVariable String gameId){
         return false;
     }
 
-    @PostMapping("/create/game")
+    @PostMapping("/create/game/{playerId}")
     @ResponseStatus(HttpStatus.OK)
-    private String createGame(){//NOSONAR
-        return this.userService.getLobbyId();
-    }
+    @ResponseBody
+    private String createGame(@PathVariable String playerId){
+        Long lobbyID = gameService.createGame(playerId);
+        return String.valueOf(lobbyID);
 
     @PutMapping("/game")
     @ResponseStatus(HttpStatus.OK)
@@ -130,11 +132,11 @@ public class UserController {
         this.userService.startGame();
     }
 
-    @PostMapping("/games") // <-- corrected endpoint path
+    @PostMapping("/games/setUp") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.CREATED)
-    public GameGetDTO createGame(@RequestBody GamePostDTO gamePostDTO) {
+    public GameGetDTO setUpGameGame(@RequestBody GamePostDTO gamePostDTO) {
         // create game
-        Game createdGame = gameService.createGame(gamePostDTO);
+        Game createdGame = gameService.setUpGame(gamePostDTO);
         // convert internal representation of game back to API
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(createdGame);
     }
