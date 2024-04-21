@@ -5,12 +5,19 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -28,15 +35,41 @@ public class GameService {
         return this.gameRepository.findAll();
     }
 
-    public Game createGame(GamePostDTO gamePostDTO) {
+    /**
+     * create a new lobbyId and return it
+     * @return a unique LobbyId
+     */
+    public Long getLobbyId(){
+        Random rnd = new Random();
+        long id = 100000 + rnd.nextInt(900000);
+        while (this.gameRepository.findById(id) != null){
+            id = 100000 + rnd.nextInt(900000);
+        }
+        return id;
+    }
+
+    public long createGame(String playerID){
+        try{
+            Game game = new Game();
+            long id = getLobbyId();
+            game.setId(id);
+
+            List<String> playerList = new ArrayList<>();
+            playerList.add(playerID);
+            game.setPlayers(playerList);
+
+            return id;
+        } catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
+        }
+    }
+
+    public Game setUpGame(GamePostDTO GamePostDTO) {
         Game game = new Game();
         GameBoard gameBoard = gameBoardService.createGameBoard();
         game.setGameBoard(gameBoard);
-        game.setId(gamePostDTO.getId());
-        gameBoard.setStatus(GameBoardStatus.ACTIVE);
-        game.setStatus(GameStatus.PLAYING);
-        gameBoard.setGame(game);
-        return gameRepository.saveAndFlush(game);
+        game.setId(GamePostDTO.getId());
+        return game;
     }
 
     public Game getGame(Long id) {
