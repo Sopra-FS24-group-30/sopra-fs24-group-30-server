@@ -20,6 +20,6 @@ public class WebSocketsConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
-        registry.addEndpoint("/ws").setAllowedOrigins("*");
+        registry.addEndpoint("/ws").setAllowedOrigins("https://sopra-fs24-group-30-client.oa.r.appspot.com");
     }
 }
