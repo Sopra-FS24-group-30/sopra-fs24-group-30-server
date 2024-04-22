@@ -19,7 +19,6 @@ import java.util.List;
 
 
 @RestController
-//TODO: Celine whut the fuck? macht kaputt sobald in production nöd?
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
