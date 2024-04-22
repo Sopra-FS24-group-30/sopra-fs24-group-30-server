@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
 import java.util.List;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
 
 public class Player {
 
@@ -9,6 +10,8 @@ public class Player {
     private String playerName;
     private int cash;
     private Long position;
+
+    private transient User user;
 
     private List<Card> cards;
     private List<Item> items;
@@ -22,6 +25,13 @@ public class Player {
     private int landYellow;
     private int landCat;
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Long getPlayerId() {
         return playerId;

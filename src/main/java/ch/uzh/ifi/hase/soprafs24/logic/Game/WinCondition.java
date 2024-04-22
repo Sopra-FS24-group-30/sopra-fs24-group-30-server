@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * At the start of a game the player gets one of the WinConditions randomly.
@@ -28,7 +29,7 @@ public class WinCondition {
         allWinConditions.add(new WinCondition("theMarooned"));
         allWinConditions.add(new WinCondition("goldenIsMy..."));
         allWinConditions.add(new WinCondition("drunk"));
-        return getAllWinConditions();
+        return allWinConditions;
     }
 
     public boolean checkWinConditionMet(Player player){
@@ -45,5 +46,11 @@ public class WinCondition {
             default:
                 return false;
         }
+    }
+
+    public static WinCondition getRandomWinCondition() {
+        List<WinCondition> allWinConditions = getAllWinConditions();
+        Random random = new Random();
+        return allWinConditions.get(random.nextInt(allWinConditions.size()));
     }
 }

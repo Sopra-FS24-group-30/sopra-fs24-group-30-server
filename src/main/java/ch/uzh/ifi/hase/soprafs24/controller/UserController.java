@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
@@ -11,11 +12,14 @@ import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 
 @RestController
@@ -25,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final AchievementService achievementService;
     private final GameService gameService;
+    private final GameManagementService gameManagementService;
 
     /*
     -----------------------------------------------------------------------------------------------
@@ -32,10 +37,11 @@ public class UserController {
     -----------------------------------------------------------------------------------------------
      */
 
-    public UserController(UserService userService, AchievementService achievementService, GameService gameService) {
+    public UserController(UserService userService, AchievementService achievementService, GameService gameService, GameManagementService gameManagementService) {
         this.userService = userService;
         this.achievementService = achievementService;
         this.gameService = gameService;
+        this.gameManagementService = gameManagementService;
     }
 
     @PostMapping("/login")
@@ -128,24 +134,41 @@ public class UserController {
 
     @PostMapping("/games/setUp") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.CREATED)
-    public GameGetDTO setUpGameGame(@RequestBody GamePostDTO gamePostDTO) {
-        // create game
-        Game createdGame = gameService.setUpGame(gamePostDTO);
-        // convert internal representation of game back to API
-        return DTOMapper.INSTANCE.convertEntityToGameGetDTO(createdGame);
+    public Map<String, Object> createGame(String playerString) {
+        Map<String, String> playerDict = new HashMap<>();
+        playerDict.put("playerId", playerString);
+        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
+        Map <String, Object> response = new HashMap<>();
+        response.put("message", "game created");
+        response.put("gameId", String.valueOf(gameId));
+        //List<Player> activeplayers = new ArrayList<>();
+        //game.setactive_players(activeplayers);
+        return response;
     }
 
     @GetMapping("/games/{id}") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
     public GameGetDTO getGame(@PathVariable Long id) {
-        Game game = gameService.getGame(id);
+        System.out.println("This is working");
+        Game game = gameManagementService.findGame(id);
+        System.out.println("This worked!!!");
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
     }
 
     @PutMapping("/game/join/{gameID}")
     @ResponseStatus(HttpStatus.OK)
-    public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+    public Player joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+        Game game = gameManagementService.findGame(Long.parseLong(gameID));
+        int currentPlayerCount = game.getactive_Players().size();
+        System.out.println(game);
         User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());//NOSONAR
+        System.out.println(user);
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        System.out.println(player);
+        game.addNEWPlayer(player);
+        System.out.println("These are the active players after:");
+        System.out.println(game.getactive_Players());
+        return player;
     }
 
 }
