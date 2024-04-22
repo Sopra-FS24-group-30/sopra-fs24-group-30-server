@@ -44,13 +44,14 @@ jobs:
           service_account_key: ${{ secrets.GCP_SERVICE_CREDENTIALS }}
 
       - name: Generate version identifier
-        id: versioning
         run: echo "VERSION_ID=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       - name: Deploy to App Engine
-        run: gcloud app deploy --version=${{ env.VERSION_ID }} --quiet
+        run: |
+          echo "Deploying with VERSION_ID: ${VERSION_ID}"
+          gcloud app deploy --version=${VERSION_ID} --quiet
         env:
-          VERSION_ID: ${{ steps.versioning.outputs.VERSION_ID }}
+          VERSION_ID: ${{ env.VERSION_ID }}
 
       - name: Output URL and test connection
         run: |
