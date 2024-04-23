@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * At the start of a game the player gets one of the WinConditions randomly.
@@ -50,7 +51,10 @@ public class WinCondition {
 
     public static WinCondition getRandomWinCondition() {
         List<WinCondition> allWinConditions = getAllWinConditions();
-        Random random = new Random();
-        return allWinConditions.get(random.nextInt(allWinConditions.size()));
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] bytes = new byte[allWinConditions.size()];
+        secureRandom.nextBytes(bytes);
+        int randomIndex = Math.abs(secureRandom.nextInt()) % allWinConditions.size();
+        return allWinConditions.get(randomIndex);
     }
 }
