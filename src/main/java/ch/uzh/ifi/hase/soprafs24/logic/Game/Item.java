@@ -14,7 +14,7 @@ import java.util.List;
  * - TheBrotherAndCo: Use this item to pass a gate, you can use this item at a gate, even if you have already used an item this turn.
  */
 public class Item {
-    private String itemName;
+    private final String itemName;
 
     public Item(String itemName) {
         this.itemName = itemName;

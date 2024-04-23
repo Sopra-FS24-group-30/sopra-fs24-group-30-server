@@ -8,7 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
+
 public class GameFlow {
+
+    private ArrayList<Player> players;
+    private GameBoard gameBoard;
+
 
     private void createBoard(){} //NOSONAR
 
@@ -18,7 +25,14 @@ public class GameFlow {
 
     private void addPlayer(){} //NOSONAR
 
-    private void useItem(){} //NOSONAR
+    private void endTurn(Long playerId){
+        //TODO: notify frontend about turn is done
+    }
+
+    private void useItem(){
+    } //NOSONAR
+    private void useUltimate(Ultimate ultimate){
+    } //NOSONAR
     private void useCard(){} //NOSONAR
 
     public int throwDice(){
@@ -29,6 +43,7 @@ public class GameFlow {
     private void updatePlayer(){} //NOSONAR
 
     //normal walk
+    //TODO: Gameboard useneh und als class variable? git nume einisch und wird überall brucht?
     public Map<String, Object> updatePlayerPosition(GameBoard gameBoard, Player player, int moves, long posi) {
         Long currPosi = posi;
         int movies = moves;
@@ -143,7 +158,6 @@ public class GameFlow {
         return retour;
     }
 
-    private void turn(){} //NOSONAR
 
 
     private void run(){} //NOSONAR
@@ -186,5 +200,20 @@ public class GameFlow {
 
      */
 
+
+    /*
+    TODO:
+    Items can have the following effects:
+        give a player more turns
+        update a players money
+        let a player move differently (abiegekarte)
+        get cards from other players
+        give a player a special status in case he lands on a field or overtakes other people
+        teleport players
+        exchange cards/items from players (can steal with nothing given back)
+        exchange something for usables (if getting give nothing back)
+        mute a player
+        force a player to do an action
+     */
 
 }

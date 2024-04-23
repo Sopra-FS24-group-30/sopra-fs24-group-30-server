@@ -67,6 +67,10 @@ public class Player {
         cards.add(card);
     }
 
+    public void removeCard(Card card){
+        cards.remove(card);
+    }
+
     public List<Item> getItems() {
         return items;
     }
@@ -77,6 +81,10 @@ public class Player {
 
     public void addItem(Item item){
         items.add(item);
+    }
+
+    public void removeItem(Item item){
+        items.remove(item);
     }
 
     public Ultimate getUltimate() {
