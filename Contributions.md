@@ -34,7 +34,7 @@
 | Date       | Name           | Links to Github Issues | Comments |
 |---|---|---|---|
 | 17.04.2024 | Marius | [#59](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/59)  
-|  |  |  |  |
+| 23.04.2024 | Marius | [#45](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/45) |  |
 |  |  |  |  |
 
 ## <font style="color: #d700ff">Week 4 *(24.04 – 26.04)*</font>
