@@ -2,8 +2,11 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
+import org.hibernate.internal.util.collections.Stack;
 import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -36,6 +39,14 @@ public class GameWebSocketController {
         return response;
     }
 
+    @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
+	public static Map<String, Object> changeMoney(Player player, int change){
+        final int newAmount=Math.max(player.getCash()+change, 0);
+        player.setCash(newAmount);
+        final Map <String, Object> response = Map.of("newAmountOfMoney", newAmount, "changeAmountOfMoney", change);
+        return(response);
+    }
+    
     @MessageMapping("/game/join")
     @SendTo("/topic/gameJoined")
     public  Map<String, Object> joinGame(String msg) {
