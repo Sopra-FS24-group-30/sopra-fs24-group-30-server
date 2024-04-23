@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -178,6 +179,9 @@ public class UserController {
     @PutMapping("/game/{gameID}/teammate/{playerID}/{teammateID}")
     @ResponseStatus(HttpStatus.OK)
     public Game chooseTeammate(@PathVariable String gameID,@PathVariable Long playerID,@PathVariable Long teammateID){
+        if (!playerID.equals(1L)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid player ID. Only host can choose teammate.");
+        }
         Game game = gameManagementService.findGame(Long.parseLong(gameID));
         int currentPlayerCount = game.getactive_Players().size();
         System.out.println(playerID);
