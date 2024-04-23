@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -172,6 +173,41 @@ public class UserController {
         System.out.println("These are the active players after:");
         System.out.println(game.getactive_Players());
         return player;
+    }
+
+    @PutMapping("/game/{gameID}/teammate/{playerID}/{teammateID}")
+    @ResponseStatus(HttpStatus.OK)
+    public Game chooseTeammate(@PathVariable String gameID,@PathVariable Long playerID,@PathVariable Long teammateID){
+        Game game = gameManagementService.findGame(Long.parseLong(gameID));
+        int currentPlayerCount = game.getactive_Players().size();
+        System.out.println(playerID);
+        Player player1 = findPlayerById(game, playerID);
+        Player player2 = findPlayerById(game, teammateID);
+        player1.setTeammateId(teammateID);
+        player2.setTeammateId(playerID);
+
+
+
+        List<Player> unpairedPlayers = game.getactive_Players().stream()
+                .filter(p -> p.getTeammateId() == null || p.getTeammateId() == 0)
+                .collect(Collectors.toList());
+
+        if (unpairedPlayers.size() == 2) {
+            unpairedPlayers.get(0).setTeammateId(unpairedPlayers.get(1).getPlayerId());
+            unpairedPlayers.get(1).setTeammateId(unpairedPlayers.get(0).getPlayerId());
+        }
+        return game;
+    }
+
+    public Player findPlayerById(Game game, Long playerID) {
+        for (Player player : game.getactive_Players()) {
+            System.out.println("Checking player ID: " + player.getPlayerId() + " against " + playerID);
+
+            if (player.getPlayerId().equals(playerID)) {
+                return player;
+            }
+        }
+        return null; // Return null or throw an exception if the player is not found
     }
 
 }
