@@ -134,16 +134,19 @@ public class UserController {
 
     @PostMapping("/games/setUp") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> createGame(String playerString) {
+    public Game createGame(String playerString, @RequestBody UserPostDTO userPostDTO) {
         Map<String, String> playerDict = new HashMap<>();
         playerDict.put("playerId", playerString);
         Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
         response.put("gameId", String.valueOf(gameId));
-        //List<Player> activeplayers = new ArrayList<>();
-        //game.setactive_players(activeplayers);
-        return response;
+        Game game = gameManagementService.findGame(gameId);
+        int currentPlayerCount = game.getactive_Players().size();
+        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        game.addNEWPlayer(player);
+        return game;
     }
 
     @GetMapping("/games/{id}") // <-- corrected endpoint path
