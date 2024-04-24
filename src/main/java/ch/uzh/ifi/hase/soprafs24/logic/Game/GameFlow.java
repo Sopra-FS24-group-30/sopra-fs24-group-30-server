@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import org.json.JSONObject;
 
 import java.util.*;
 
+
+import org.springframework.messaging.handler.annotation.SendTo;
 
 public class GameFlow {
 
@@ -204,6 +207,7 @@ public class GameFlow {
     } //NOSONAR
     private void useCard(){} //NOSONAR
 
+
     public int throwDice(){
         return (int) (Math.random() * 6 + 1); //NOSONAR
     }
@@ -212,8 +216,7 @@ public class GameFlow {
     private void updatePlayer(){} //NOSONAR
 
     //normal walk
-    //TODO: Gameboard useneh und als class variable? git nume einisch und wird überall brucht?
-    public Map<String, Object> updatePlayerPosition(GameBoard gameBoard, Player player, int moves, long posi) {
+    public Map<String, Object> move(GameBoard gameBoard, Player player, int moves, long posi) {
         Long currPosi = posi;
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
@@ -246,7 +249,8 @@ public class GameFlow {
                         // GAME OVER
                         return toReturn(player, listi, moves, color);
                     }
-                    player.setCash(player.getCash() + 15);
+                    //changed from: player.setCash(player.getCash() + 15)
+                    GameWebSocketController.changeMoney(player, +15);
                 }
 
                 // "partial end of walk", check on what decision can be done.
@@ -299,12 +303,14 @@ public class GameFlow {
             player.setLandYellow(player.getLandYellow()+1);
         }
         else if ("CatNami".equals(color)){
-            player.setLandCat(player.getLandCat()+1);
+            player.setLandCat(player.getLandCat()+1); //also include this on space 18
         }
         // THE SPACE EFFECT NOW/LATER??
         SpaceEffects.getSpaceEffectValue(currentSpace.getOnSpace());
         return toReturn(player, listi, moves, color);
     }
+
+
 
     //helper for finding Space by Id
     private GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
@@ -327,12 +333,15 @@ public class GameFlow {
         return retour;
     }
 
+    private void turn(){} //NOSONAR
 
 
     private void run(){} //NOSONAR
     private void setup(){} //NOSONAR
     private void teardown(){} //NOSONAR
     private void flow(){} //NOSONAR
+
+
 
 
     /*
@@ -368,8 +377,6 @@ public class GameFlow {
     display win/ultimate (only for self)
 
      */
-
-
 
 
 }
