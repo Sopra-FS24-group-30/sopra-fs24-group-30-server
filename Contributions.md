@@ -21,28 +21,30 @@
 
 ## <font style="color: #00ffd7">Week 2 *(10.04 – 16.04)*</font>
 
-| Date | Name | Links to Github Issues                                                                                | Comments |
-|---|---|-------------------------------------------------------------------------------------------------------|---|
-| 11.04.2024 | Tam Gian | [#212](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/212)                  
-| 11.04.2024 | Marius | [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/86)                    |   |
+| Date | Name | Links to Github Issues | Comments |
+|---|---|------------------------|---|
+| 11.04.2024 | Tam Gian | [#212](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/212) 
+| 11.04.2024 | Marius | [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/86) |   |
 | 14.04.2024 | Céline | [#90](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/90) (client), [#219](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/pull/219) |   |
-| 15.04.2024 | Carlos Hernandez | [#220](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/220)                  |  |
-|   |   |                                                                                                       |   |
+| 15.04.2024 | Carlos Hernandez | [#220](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/220) |  |
+|   |   |                        |   |
 
 ## <font style="color: #00d7ff">Week 3 *(17.04 – 23.04)*</font>
 
-| Date       | Name           | Links to Github Issues | Comments |
-|---|---|---|---|
-| 17.04.2024 | Marius | [#59](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/59)  
-| 23.04.2024 | Marius | [#45](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/45) |  |
-| 23.04.2024 | Carlos | [#288](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/288)
-| 23.04.2024 | Carlos | [#289](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/289) |  |
-|  |  |  |  |
+| Date       | Name     | Links to Github Issues                                                                                                                                                                                                                                                                                                                                                                                                                   | Comments |
+|------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
+| 17.04.2024 | Marius   | [#59](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/59)                                                                                                                                                                                                                                                                                                                                                       
+| 21.04.2024 | Ambros   | [#97](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/97)                                                                                                                                                                                                                                                                                                                                                       | basic Voicechat (no im Voicebranch)    |
+| 21.04.2024 | Tam Gian | [#111](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/111), [#115](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/115), [#206](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/206), [#108](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/108), [#69](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/69) | first WinConditions, additions to walk |
+| 23.04.2024 | Marius   | [#45](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/45)                                                                                                                                                                                                                                                                                                                                                       |                                        |
+| 23.04.2024 | Carlos   | [#288](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/288), [#289](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/289),                                                                                                                                                                                                                                                              
+| 24.04.2024 | Céline   | Backend: [#216](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/216), [#215](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/215); Frontend: [#98](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/98), [#90](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/90)                                                                    |                                        |
 
 ## <font style="color: #d700ff">Week 4 *(24.04 – 26.04)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
+| 24.04.2024 | Ambros   | [#49](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/49)                                                                                                                                                                               | bildet fundament für ali effekt     |
 |   |   |   |   |
 |   |   |   |   |
 |   |   |   |   |
