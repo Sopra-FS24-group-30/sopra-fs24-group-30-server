@@ -5,5 +5,5 @@
   "SuperMagicMushroom": {"givePlayerDice":{"dice": "3","bonusCount":3,"money": 30}},
   "UltraMagicMushroom": {"givePlayerDice":{"dice": "4","bonusCount":4,"money": 69}},
   "OnlyFansAbo": {"updateMoney": {"amount": {"others":"-7","current":"givenAmount"}}},
-  "TreasureChest": {"exchange": {"player": "current","give": {"type": null,"selection": null, "amount": null}, "get": {"player": "choice","type": "item","selection": "random","amount": 1}}}
+  "TreasureChest": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "item","selection": "random","amount": 1}}}
 }

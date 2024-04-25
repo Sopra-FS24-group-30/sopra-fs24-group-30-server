@@ -15,8 +15,14 @@
 - if the receiving amount is set to `givenAmount` all the money that is given will be divided to the receiving players
 
 ## note about exchange
+- `player` parameter
+    - for the player in the give parameter only a single player is allowed
+    - if the value for the player in the get parameter is more than one player the give player may not give anything
+    - if a player needs to exchange with multiple players use the effect multiple times
+- `type` parameter
+  - if no value set to empty string
 - `selection` parameter
-  - if nothing or all are part of the transaction set to null
+  - if no value set to empty String
+  - can be value all
   - can be value choice
   - can be value random
-- the first specified player is the `giver` the second specified player is the `getter`
