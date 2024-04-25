@@ -23,7 +23,7 @@ public class GameFlow {
         this.turnPlayerId = turnPlayerId;
     }
 /*
-    TODO:
+    possible Effects
     Items can have the following effects:
         give a player more turns
         update a players money
@@ -37,19 +37,16 @@ public class GameFlow {
         force a player to do an action
      */
 
-    //Effecthandlers => return playerIds and values
 
-    private void handleEffects(String itemName){}
-
-    //give a player x amount of additional turns => takes the parameters, returns the amount of dice the player can throw
-    private int giveTurns(JSONObject args){
-        //TODO: make sure same persons turn and get reward if req met
-        int amountDice = args.getInt("dice");
-        return amountDice;
-    }
 
     //TODO: add support for giving items to multiple people as of now can only exchange with one
     //TODO: get the itemNames to be exchanged
+
+    /**
+     * exchange usables between players
+     * @param args parameters for the exchange effect
+     * @param exchanges choices from frontend
+     */
     private void exchange(JSONObject args, HashMap<Integer,ArrayList<String>> exchanges){
         JSONObject giveInfos = args.getJSONObject("give");
         JSONObject getInfos = args.getJSONObject("get");
@@ -80,6 +77,12 @@ public class GameFlow {
         //TODO notify frontend about changes
     }
 
+    /**
+     * add the usables to the respective player
+     * @param playerId
+     * @param usables usables which the player should get
+     * @param type item or cards
+     */
     private void updateUsables(int playerId, ArrayList<String> usables, String type){
         switch (type){
             case "item":
@@ -91,6 +94,15 @@ public class GameFlow {
         }
     }
 
+    /**
+     * get the list with usables based wheter item or card is specified and remove them from the player
+     * @param exchanges choices from frontend
+     * @param exchangePlayers players for which usables need to be fetched
+     * @param type item or card
+     * @param selection all, random, choice
+     * @param amount in case of choice or random, how many usables are to be fetched
+     * @return gives back the usables
+     */
     private ArrayList<String> getType(HashMap<Integer, ArrayList<String>> exchanges, ArrayList<Integer> exchangePlayers, String type, String selection, Integer amount) {
         if(type != null){
             switch (type){
