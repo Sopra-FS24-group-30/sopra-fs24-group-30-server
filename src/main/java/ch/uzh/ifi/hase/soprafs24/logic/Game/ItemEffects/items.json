@@ -1,10 +1,9 @@
 {
 
   "TheBrotherAndCo": {},
-  "MagicMushroom": {"givePlayerDice":{"dice": "2","pash":2,"money": 10}},
-  "SuperMagicMushroom": {"givePlayerDice":{"dice": "3","pash":3,"money": 30}},
-  "UltraMagicMushroom": {"givePlayerDice":{"dice": "4","pash":4,"money": 69}},
+  "MagicMushroom": {"givePlayerDice":{"dice": "2","bonusCount":2,"money": 10}},
+  "SuperMagicMushroom": {"givePlayerDice":{"dice": "3","bonusCount":3,"money": 30}},
+  "UltraMagicMushroom": {"givePlayerDice":{"dice": "4","bonusCount":4,"money": 69}},
   "OnlyFansAbo": {"updateMoney": {"amount": {"others":"-7","current":"givenAmount"}}},
-  "TreasureChest": {"exchange": {"give": {"type": null, "amount": null}, "get": {"type": "item","amount": 1},"matches": [["current","choice"]]}}
-
+  "TreasureChest": {"exchange": {"player": "current","give": {"type": null,"selection": null, "amount": null}, "get": {"player": "choice","type": "item","selection": "random","amount": 1}}}
 }

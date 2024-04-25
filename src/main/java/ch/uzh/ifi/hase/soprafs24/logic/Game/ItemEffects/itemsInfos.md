@@ -14,7 +14,9 @@
 - if the giving amount is set to `all` a player will need to give all his money
 - if the receiving amount is set to `givenAmount` all the money that is given will be divided to the receiving players
 
-## note about exchangecards
-- the matches parameter defines which players are part of the exchange
-- the value is an array containing arrays with the player pairs
+## note about exchange
+- `selection` parameter
+  - if nothing or all are part of the transaction set to null
+  - can be value choice
+  - can be value random
 - the first specified player is the `giver` the second specified player is the `getter`
