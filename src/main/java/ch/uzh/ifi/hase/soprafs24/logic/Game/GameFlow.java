@@ -3,14 +3,14 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
 
 
-import org.springframework.messaging.handler.annotation.SendTo;
-
 public class GameFlow {
+
 
     private Player[] players = new Player[4];
     private GameBoard gameBoard;
@@ -49,31 +49,44 @@ public class GameFlow {
         return amountDice;
     }
 
-    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
-    private Hashtable<Long,Integer> updateMoney(JSONObject args){
-        Hashtable<Long,Integer> playersMoney = new Hashtable<>();
-        JSONObject amounts = args.getJSONObject("amount");
+    private void exchange(JSONObject args){
+        JSONArray exchangees = args.getJSONArray("matches");
+        JSONObject giveInfos = args.getJSONObject("give");
+        JSONObject getInfos = args.getJSONObject("get");
 
-        //find the amounts
-        HashMap<Integer,Integer> playerPays = new HashMap<>();
-        ArrayList<Integer> payingId = new ArrayList<>();
-        Iterator<String> keys = amounts.keys();
-        while (keys.hasNext()){
-            String key = keys.next();
-            Integer moneyAmount = moneyDescToNumber(amounts.getString(key));
-            payingId = specialIds(key);
-            for (Integer id : payingId) {
-                playerPays.put(id, moneyAmount);
-            }
-        }
+        ArrayList<Integer> givePlayers = specialIds(getInfos.getString("player"));
+        String giveType = giveInfos.getString("type");
+        String giveSelection = giveInfos.getString("selection");
+        Integer giveAmount = giveInfos.getInt("amount");
 
-        return new Hashtable<Long,Integer>();
+        ArrayList<Integer> getPlayer = specialIds(getInfos.getString("player"));
+        String getType = getInfos.getString("type");
+        String getSelection = getInfos.getString("selection");
+        Integer getAmount = getInfos.getInt("amount");
+
     }
 
-    private HashMap<Integer,Integer> effectivePayAmounts(JSONObject amounts){
+    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
+    private Hashtable<Long,Integer> updateMoney(JSONObject args){
+        Hashtable<Long,Integer> playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"));
+        for(Long key : playersPayMoney.keySet()){
+            this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
+        }
+
+        //TODO: send infos to fronted;
+        return playersPayMoney;
+    }
+
+    /**
+     * give in how much each player should pay in order to get how much they will pay based on how much cash they have
+     * @param amounts the parameters to be processed
+     * @return PlayerIds,Amount
+     */
+
+    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts){
         int totalPot = 0;
         ArrayList<Integer> potWinners = new ArrayList<>();
-        HashMap<Integer,Integer> calculatedAmount= new HashMap<>();
+        Hashtable<Long,Integer> calculatedAmount= new Hashtable<>();
         ArrayList<Integer> playerIds = new ArrayList<>();
         Iterator<String> keys = amounts.keys();
         while(keys.hasNext()){
@@ -83,23 +96,30 @@ public class GameFlow {
             for (Integer id : playerIds) {
                 if (amount == null){
                     potWinners.add(id);
-                    calculatedAmount.put(id,amount);
+                    calculatedAmount.put(Long.valueOf(id),0);
                 }else if(amount < 0){
-                    Integer toPay = amount < this.players[id-1].getCash() ? amount : this.players[id-1].getCash();
+                    int toPay = checkCash(this.players[id-1].getPlayerId().intValue(),amount);
                     totalPot += toPay;
-                    calculatedAmount.put(id,amount);
+                    calculatedAmount.put(Long.valueOf(id),toPay);
                 }else{
-                    calculatedAmount.put(id,amount);
+                    calculatedAmount.put(Long.valueOf(id),amount);
                 }
             }
         }
+        totalPot = totalPot * -1;
         for(Integer id : potWinners){
-            calculatedAmount.put(id,totalPot/potWinners.size());
+            calculatedAmount.put(Long.valueOf(id),totalPot/potWinners.size());
         }
 
         return calculatedAmount;
     }
 
+
+    /**
+     * helperfunction for calculating how much money is given
+     * @param description the defined amount
+     * @return the actual value, 1000 used for max
+     */
     private Integer moneyDescToNumber(String description){
         if(description.equals("givenAmount")){
             return null;
@@ -112,7 +132,11 @@ public class GameFlow {
         }
     }
 
-    //convert the specialIds to actual ids
+    /**
+     * convert the specialIds to actual ids
+     * @param specialId give in the special Id
+     * @return return the id(s) in an arraylist
+     */
     private ArrayList<Integer> specialIds(String specialId){
 
         ArrayList<Integer> playerIds = new ArrayList<>();
@@ -121,7 +145,7 @@ public class GameFlow {
             case "current":
                 playerIds.add((int) (long) this.turnPlayerId);
                 break;
-            case "other":
+            case "others":
                 for(int i=1;i<=4;i++){
                     if(i != (int) (long) this.turnPlayerId){
                         playerIds.add(i);
@@ -157,36 +181,40 @@ public class GameFlow {
     }
 
 
+    /**
+     * throws multiple dice and gives money if the numbers match, returns the summed number which was thrown
+     * @param definition parameters for givePlayerDiceEffect
+     * @return the dice throws
+     */
+    //TODO: send to frontend infos about money
+    private ArrayList<Integer> givePlayerDice(JSONObject definition){
 
-    //throws multiple dice and gives money if the numbers match, returns the summed number which was thrown
-    private Integer multiDiceThrow(Integer diceCount){
-        int playerId = (int)(long)this.turnPlayerId-1;
-        int firstMove = (int) (Math.random()*6+1);
-        int secondMove = (int) (Math.random()*6+1);
-        int moveCount = firstMove + secondMove;
-        switch(diceCount){
-            case 2:
-                if(firstMove == secondMove){
-                    players[playerId].addCash(10);
-                }
-                break;
-            case 3:
-                int additionalMove = (int) (Math.random()*6+1);
-                moveCount += additionalMove;
-                if(firstMove == secondMove && firstMove == additionalMove){
-                    players[playerId].addCash(30);
-                }
-                break;
-            case 4:
-                int thirdMove = (int) (Math.random()*6+1);
-                int fourthMove = (int) (Math.random()*6+1);
-                moveCount += thirdMove + fourthMove;
-                if(firstMove == secondMove && firstMove == thirdMove && firstMove == fourthMove){
-                    players[playerId].addCash(69);
-                }
-                break;
+        int diceCount = definition.getInt("dice");
+        int bonusCount = definition.getInt("bonusCount");
+        int cashAmount = definition.getInt("money");
+        ArrayList<Integer> diceThrows = new ArrayList<>();
+
+        for(int i=0;i<diceCount;i++){
+            diceThrows.add((int) (Math.random()*6+1));
         }
-        return moveCount;
+
+        for(int diceValue=1;diceValue<=6;diceValue++){
+            if(Collections.frequency(diceThrows,diceValue) == bonusCount){
+                players[this.turnPlayerId.intValue()].addCash(cashAmount);
+            }
+        }
+        return diceThrows;
+    }
+
+    /**
+     * check if the player can pay if not reduce the amount to the maximum payable
+     * @param playerId id of the player
+     * @param cashAmount cash amount if has to pay negative amount
+     * @return amount the player can pay
+     */
+    private int checkCash(int playerId, int cashAmount){
+        int playerCash = this.players[playerId-1].getCash();
+        return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
     }
 
     private void createBoard(){} //NOSONAR
@@ -195,7 +223,9 @@ public class GameFlow {
 
     private void getUltimate(){} //NOSONAR
 
-    private void addPlayer(){} //NOSONAR
+    private void addPlayer(Player player){
+        this.players[(int) (long)player.getPlayerId()-1] = player;
+    } //NOSONAR
 
     private void endTurn(Long playerId){
         //TODO: notify frontend about turn is done
