@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.Cash;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.Move;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.Usable;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
-import org.hibernate.internal.util.collections.Stack;
 import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
@@ -10,16 +12,9 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameJoinRequest;
-import org.springframework.messaging.handler.annotation.Payload;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
 @Controller
@@ -37,6 +32,29 @@ public class GameWebSocketController {
         response.put("message", "game created");
         response.put("gameId", String.valueOf(gameId));
         return response;
+    }
+
+
+    //TODO: add handling here
+    @MessageMapping("/game/item")
+    @SendTo("/topic/game/cash")
+    public static void handleEffect(String msg){
+
+    }
+
+    @SendTo("/topic/game/cash")
+    public static Cash returnMoney(Cash cash){
+        return cash;
+    }
+
+    @SendTo("/topic/game/move")
+    public static Move returnMoves(Move move){
+        return move;
+    }
+
+    @SendTo("/topic/game/usable")
+    public static Usable returnUsables(Usable usable){
+        return usable;
     }
 
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board

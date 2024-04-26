@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -84,20 +85,25 @@ public class GameFlow {
      * @param args parameters of the updatepositions effect
      * @return key: playerId, value: the new fieldId where the player gets teleported to
      */
-    //TODO: notify frontend about change, maybe can make void
-    public Hashtable<Integer, Long> updatePositions(JSONObject args){
-        Hashtable<Integer, Long> updatedPositions = new Hashtable<>();
+    public void updatePositions(JSONObject args){
+        Hashtable<Integer, ArrayList<Long>> updatedPositions = new Hashtable<>();
         String playerSpecialId = args.getString("player");
         String fieldSpecialId = args.getString("field");
         ArrayList<Integer> players = new ArrayList<>(specialIds(playerSpecialId));
 
 
         for(Integer player : players){
-            Long fieldId = getField(fieldSpecialId,player);
-            updatedPositions.put(player,fieldId);
-            this.players[player-1].setPosition(fieldId);
+            ArrayList<Long> fieldIds = new ArrayList<>();
+            fieldIds.add(getField(fieldSpecialId,player));
+            updatedPositions.put(player,fieldIds);
+            this.players[player-1].setPosition(fieldIds.get(0));
         }
-        return updatedPositions;
+
+        Move move = new Move();
+        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
+        move.setData(moveData);
+
+        GameWebSocketController.returnMoves(move);
     }
 
 
@@ -136,7 +142,12 @@ public class GameFlow {
         for(int playerId : getPlayers){
             updateUsables(playerId,giveUsables,giveType);
         }
-        //TODO notify frontend about changes
+
+        Usable usable = new Usable();
+        UsableData usableData = new UsableData();
+        usableData.setItems(players[0].getItemNames(),players[2].getItemNames(),players[3].getItemNames(),players[4].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[2].getCardNames(),players[3].getCardNames(),players[4].getCardNames());
+        GameWebSocketController.returnUsables(usable);
     }
 
     /**
@@ -260,9 +271,8 @@ public class GameFlow {
      * @param args parameters for the updatemoney effect
      * @return key: playerId, value: the new amount of money the player has
      */
-    //TODO: notify frontend and give info about new money and changed
     //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
-    private Hashtable<Long,Integer> updateMoney(JSONObject args){
+    private void updateMoney(JSONObject args){
         String type = args.getString("type");
         Hashtable<Long,Integer> playersPayMoney;
         switch (type){
@@ -283,9 +293,10 @@ public class GameFlow {
                 break;
         }
 
-
-        //TODO: send infos to fronted;
-        return playersPayMoney;
+        Cash cash = new Cash();
+        CashData cashdata = new CashData(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
+        cash.setData(cashdata);
+        GameWebSocketController.returnMoney(cash);
     }
 
     /**
