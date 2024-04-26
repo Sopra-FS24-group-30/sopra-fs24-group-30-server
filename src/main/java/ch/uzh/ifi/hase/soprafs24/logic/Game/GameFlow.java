@@ -10,7 +10,6 @@ import java.util.*;
 
 public class GameFlow {
 
-
     private Player[] players = new Player[4];
     private GameBoard gameBoard;
     private Long turnPlayerId;
@@ -37,6 +36,65 @@ public class GameFlow {
         force a player to do an action
      */
 
+
+    //TODO: add numbers for the starting
+
+    /**
+     * find the starting fields for the players
+     * @param playerId
+     * @return left or right starting field Id
+     */
+    private Long findStart(Integer playerId){
+        switch (playerId){
+            case 1, 2:
+                return 53L;
+            case 3, 4:
+                return 54L;
+            default:
+                return 0L;
+        }
+    }
+
+
+    //TODO: let handle choice
+
+    /**
+     * resolve the special fieldId to an actual ID
+     * @param fieldId special fieldId
+     * @param playerId player for whom the field neeeds to be found
+     * @return actual field ID
+     */
+    private Long getField(String fieldId, Integer playerId){
+        switch (fieldId){
+            case "start":
+                return findStart(playerId);
+            case "choice":
+                return 10L;
+            default:
+                return (long) Integer.parseInt(fieldId);
+        }
+    }
+
+    /**
+     * teleport players to a field
+     * @param args parameters of the updatepositions effect
+     * @return key: playerId, value: the new fieldId where the player gets teleported to
+     */
+    //TODO: notify frontend about change, maybe can make void
+    private Hashtable<Integer, Long> updatePositions(JSONObject args){
+        Hashtable<Integer, Long> updatedPositions = new Hashtable<>();
+        String playerSpecialId = args.getString("player");
+        String fieldSpecialId = args.getString("field");
+        ArrayList<Integer> players = new ArrayList<>(specialIds(playerSpecialId));
+
+
+        for(Integer player : players){
+            Long fieldId = getField(fieldSpecialId,player);
+            updatedPositions.put(player,fieldId);
+            this.players[player-1].setPosition(fieldId);
+        }
+        return updatedPositions;
+    }
 
 
     //TODO: add support for giving items to multiple people as of now can only exchange with one
@@ -193,12 +251,34 @@ public class GameFlow {
         return returnCards;
     }
 
+    /**
+     * update the money of players
+     * @param args parameters for the updatemoney effect
+     * @return key: playerId, value: the new amount of money the player has
+     */
+    //TODO: notify frontend and give info about new money and changed
     //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
     private Hashtable<Long,Integer> updateMoney(JSONObject args){
-        Hashtable<Long,Integer> playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"));
-        for(Long key : playersPayMoney.keySet()){
-            this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
+        String type = args.getString("type");
+        Hashtable<Long,Integer> playersPayMoney;
+        switch (type){
+            case "absolute":
+                playersPayMoney = effectivePayAmountsAbsolute(args.getJSONObject("amount"));
+                for(Long key : playersPayMoney.keySet()){
+                    this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
+                }
+                break;
+            case "relative":
+                playersPayMoney = effectivePayAmountsRelative(args.getJSONObject("amount"));
+                for(Long key : playersPayMoney.keySet()){
+                    this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
+                }
+                break;
+            default:
+                playersPayMoney = new Hashtable<>();
+                break;
         }
+
 
         //TODO: send infos to fronted;
         return playersPayMoney;
@@ -209,15 +289,16 @@ public class GameFlow {
      * @param amounts the parameters to be processed
      * @return PlayerIds,Amount
      */
-    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts){
+
+    //TODO: Refactor to be nicer
+    private Hashtable<Long,Integer> effectivePayAmountsAbsolute(JSONObject amounts){
         int totalPot = 0;
         ArrayList<Integer> potWinners = new ArrayList<>();
-        Hashtable<Long,Integer> calculatedAmount= new Hashtable<>();
-        ArrayList<Integer> playerIds = new ArrayList<>();
+        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
         Iterator<String> keys = amounts.keys();
         while(keys.hasNext()){
             String key = keys.next();
-            playerIds = specialIds(key);
+            ArrayList<Integer> playerIds = specialIds(key);
             Integer amount = moneyDescToNumber(amounts.getString(key));
             for (Integer id : playerIds) {
                 if (amount == null){
@@ -229,6 +310,36 @@ public class GameFlow {
                     calculatedAmount.put(Long.valueOf(id),toPay);
                 }else{
                     calculatedAmount.put(Long.valueOf(id),amount);
+                }
+            }
+        }
+        totalPot = totalPot * -1;
+        for(Integer id : potWinners){
+            calculatedAmount.put(Long.valueOf(id),totalPot/potWinners.size());
+        }
+
+        return calculatedAmount;
+    }
+
+    private Hashtable<Long,Integer> effectivePayAmountsRelative(JSONObject amounts){
+        int totalPot = 0;
+        ArrayList<Integer> potWinners = new ArrayList<>();
+        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
+        Iterator<String> keys = amounts.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            ArrayList<Integer> playerIds = specialIds(key);
+            Integer amount = moneyDescToNumber(amounts.getString(key));
+            for (Integer id : playerIds) {
+                if (amount == null){
+                    potWinners.add(id);
+                    calculatedAmount.put(Long.valueOf(id),0);
+                }else if(amount < 0){
+                    int toPay = (int) (this.players[id-1].getCash() / 100.0 * amount);
+                    totalPot += toPay;
+                    calculatedAmount.put(Long.valueOf(id),toPay);
+                }else{
+                    calculatedAmount.put(Long.valueOf(id),(int) (this.players[id-1].getCash() / 100.0 * amount));
                 }
             }
         }
