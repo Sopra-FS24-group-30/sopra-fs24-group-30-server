@@ -14,26 +14,50 @@ public class CashData {
     private PlayerCash player4 = new PlayerCash();
 
 
-    public CashData(int player1Cash, int player2Cash, int player3Cash, int player4Cash){
-        player1.setCash(player1Cash);
-        player2.setCash(player2Cash);
-        player3.setCash(player3Cash);
-        player4.setCash(player4Cash);
-    }
-    public void setPlayer1Cash(int cash){
-        player1.setCash(cash);
+    public void setPlayersNewCash(int cash1, int cash2, int cash3, int cash4){
+        player1.setNewAmountOfMoney(cash1);
+        player2.setNewAmountOfMoney(cash2);
+        player3.setNewAmountOfMoney(cash3);
+        player4.setNewAmountOfMoney(cash4);
     }
 
-    public void setPlayer2cash(int cash){
-        player2.setCash(cash);
+    public void setPlayersChangeAmount(int cash1, int cash2, int cash3, int cash4){
+        player1.setChangeAmountOfMoney(cash1);
+        player2.setChangeAmountOfMoney(cash2);
+        player3.setChangeAmountOfMoney(cash3);
+        player4.setChangeAmountOfMoney(cash4);
     }
 
-    public void setPlayer3Cash(int cash){
-        player3.setCash(cash);
+    public void setPlayer1newAmount(int cash){
+        player1.setNewAmountOfMoney(cash);
     }
 
-    public void setPlayer4Cash(int cash){
-        player4.setCash(cash);
+    public void setPlayer2newAmount(int cash){
+        player2.setNewAmountOfMoney(cash);
+    }
+
+    public void setPlayer3newAmount(int cash){
+        player3.setNewAmountOfMoney(cash);
+    }
+
+    public void setPlayer4newAmount(int cash){
+        player4.setNewAmountOfMoney(cash);
+    }
+
+    public void setPlayer1changeAmount(int cash){
+        player1.setChangeAmountOfMoney(cash);
+    }
+
+    public void setPlayer2changeAmount(int cash){
+        player2.setChangeAmountOfMoney(cash);
+    }
+
+    public void setPlayer3changeAmount(int cash){
+        player3.setChangeAmountOfMoney(cash);
+    }
+
+    public void setPlayer4changeAmount(int cash){
+        player4.setChangeAmountOfMoney(cash);
     }
 
 }

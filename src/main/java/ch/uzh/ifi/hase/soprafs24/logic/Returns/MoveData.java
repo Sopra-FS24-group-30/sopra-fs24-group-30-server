@@ -15,6 +15,8 @@ public class MoveData {
     @JsonProperty("4")
     private PlayerMove player4 = new PlayerMove();
 
+    private String movetype;
+
     public MoveData(ArrayList<Long> playerPos1, ArrayList<Long> playerPos2, ArrayList<Long> playerPos3, ArrayList<Long> playerPos4){
         this.player1.setSpaces(playerPos1);
         this.player2.setSpaces(playerPos2);
@@ -24,4 +26,11 @@ public class MoveData {
 
     //TODO add change method
 
+    public String getMovetype() {
+        return movetype;
+    }
+
+    public void setMovetype(String movetype) {
+        this.movetype = movetype;
+    }
 }

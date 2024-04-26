@@ -2,13 +2,22 @@ package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
 public class PlayerCash {
 
-    private int cash;
+    private int newAmountOfMoney;
+    private int changeAmountOfMoney;
 
-    public int getCash() {
-        return cash;
+    public int getNewAmountOfMoney() {
+        return newAmountOfMoney;
     }
 
-    public void setCash(int newCash) {
-        this.cash = newCash;
+    public void setNewAmountOfMoney(int newAmountOfMoney) {
+        this.newAmountOfMoney = newAmountOfMoney;
+    }
+
+    public int getChangeAmountOfMoney() {
+        return changeAmountOfMoney;
+    }
+
+    public void setChangeAmountOfMoney(int changeAmountOfMoney) {
+        this.changeAmountOfMoney = changeAmountOfMoney;
     }
 }
