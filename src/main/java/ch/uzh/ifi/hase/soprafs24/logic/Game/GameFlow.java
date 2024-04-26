@@ -12,12 +12,15 @@ public class GameFlow {
     private static Player[] players = new Player[4];
     private static GameBoard gameBoard;
     private static Long turnPlayerId;
-    public Long getTurnPlayerId() {
+    public static Long getTurnPlayerId() {
         return turnPlayerId;
     }
 
-    public void setTurnPlayerId(Long turnPlayerId) {
+    public static void setTurnPlayerId(Long turnPlayerId) {
         GameFlow.turnPlayerId = turnPlayerId;
+    }
+    public static Player[] getPlayers(){
+        return players;
     }
 
     private void createBoard(){} //NOSONAR
@@ -51,18 +54,9 @@ public class GameFlow {
         return response;
     }
 
-    public static Player getPlayerById(Long turnPlayerId){
-        for (Player player : players){
-            if (player.getPlayerId().equals(turnPlayerId)){
-                return player;
-            }
-        }
-        return null;
-    }
-
     //normal walk
     public static Map<String, Object> move(int moves, long posi) {
-        Player player = getPlayerById(turnPlayerId);
+        Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
@@ -148,8 +142,22 @@ public class GameFlow {
             player.setLandCat(player.getLandCat()+1);
         }
 
-        return toMove(player, listi, moves, color);
-        //turn over!!! next player
+        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+        GameWebSocketController.newPlayer(nextPlayer());
+        return Collections.emptyMap();
+    }
+
+    //update player
+    private static Map<String, Object> nextPlayer(){
+        long maxi = 4L;
+        turnPlayerId++;
+        if (turnPlayerId > maxi){
+            turnPlayerId = 1L;
+        }
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", 1);
+        retour.put("activePlayer", turnPlayerId.toString());
+        return retour;
     }
 
     //helper for finding Space by Id

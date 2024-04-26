@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
@@ -18,16 +19,12 @@ import java.util.*;
 public class GameWebSocketController {
 
     private static int movesLeft;
-    private static int curiposi;
 
     public static void setMovesLeft(int movesLeft) {
         GameWebSocketController.movesLeft = movesLeft;
     }
     public static int getMovesLeft(){
         return movesLeft;
-    }
-    public static void setCuriposi(int curiposi) {
-        GameWebSocketController.curiposi = curiposi;
     }
 
     @Autowired
@@ -182,7 +179,7 @@ public class GameWebSocketController {
 
     @SendTo("/topic/board/move")
     public Map<String, Object> move(){
-        return GameFlow.move(movesLeft, curiposi); //curiposi
+        return GameFlow.move(movesLeft, GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition());
     }
 
     @SendTo("/topic/board/move")
@@ -201,8 +198,8 @@ public class GameWebSocketController {
     }
 
     @SendTo("/topic/board/newActivePlayer")
-    public Map<String, Object> newPlayer(){
-        return null;
+    public static Map<String, Object> newPlayer(Map<String, Object> bla){
+        return bla;
     }
 
     @SendTo("/topic/board/gameEnd")
