@@ -3,15 +3,22 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.messaging.handler.annotation.SendTo;
+import java.util.*;
 
 public class GameFlow {
+
+    private static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
+
+    private static Player[] players = new Player[4];
+    private static GameBoard gameBoard;
+    private static Long turnPlayerId;
+    public Long getTurnPlayerId() {
+        return turnPlayerId;
+    }
+
+    public void setTurnPlayerId(Long turnPlayerId) {
+        GameFlow.turnPlayerId = turnPlayerId;
+    }
 
     private void createBoard(){} //NOSONAR
 
@@ -24,16 +31,38 @@ public class GameFlow {
     private void useItem(){} //NOSONAR
     private void useCard(){} //NOSONAR
 
-
-    public int throwDice(){
-        return (int) (Math.random() * 6 + 1); //NOSONAR
+    public static List<Integer> throwDice(){
+        return Collections.singletonList((int) (Math.random() * 6) + 1);
     }
 
     //maybe split update player up into cash,item,card,posi?
     private void updatePlayer(){} //NOSONAR
 
+    public static Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){
+        Map<String, Long> response = new HashMap<>();
+        GameBoardSpace oldGoal = findSpaceById(spaces, findGoal(spaces));
+        oldGoal.setIsGoal(false);
+        Long newGoal;
+        do{
+            newGoal = (long) (Math.random() * 8 + 1);
+        } while (newGoal.equals(oldGoal.getSpaceId()));
+        findSpaceById(spaces, newGoal).setIsGoal(true);
+        response.put("result", newGoal);
+        return response;
+    }
+
+    public static Player getPlayerById(Long turnPlayerId){
+        for (Player player : players){
+            if (player.getPlayerId().equals(turnPlayerId)){
+                return player;
+            }
+        }
+        return null;
+    }
+
     //normal walk
-    public Map<String, Object> move(GameBoard gameBoard, Player player, int moves, long posi) {
+    public static Map<String, Object> move(int moves, long posi) {
+        Player player = getPlayerById(turnPlayerId);
         Long currPosi = posi;
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
@@ -41,75 +70,71 @@ public class GameFlow {
         List<Long> listi = new ArrayList<>(); //list of spaceIds that player moves over
         String color = null; //color of next space
 
-        GameBoardSpace currentSpace = new GameBoardSpace(); //space currently on
+        GameBoardSpace currentSpace = new GameBoardSpace(); //space currently on initialize
         List<String> nextSpaceIds; //list of next spaces of space currently on
 
         while (movies > 0) {
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
 
-            // if next space is linear (not junction/gate)
-            if (nextSpaceIds.size() == 1) {
-                Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
-                listi.add(nextPosi);
+            Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
+            listi.add(nextPosi);
 
-                GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
-                color = nextSpace.getColor(); //NOSONAR
+            GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
+            color = nextSpace.getColor(); //NOSONAR
 
-                //set player to next posi already
-                currPosi = nextPosi;
-                player.setPosition(currPosi);
+            //set player to next posi already
+            currPosi = nextPosi;
+            player.setPosition(currPosi);
 
-                // check if game is over, or player gets cash
-                if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
-                    if (player.getCanWin()) {
-                        // GAME OVER
-                        return toReturn(player, listi, moves, color);
-                    }
-                    //changed from: player.setCash(player.getCash() + 15)
-                    GameWebSocketController.changeMoney(player, +15);
+            // check if game is over, or player gets cash
+            if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
+                if (player.getCanWin()) {
+                    // GAME OVER
+                    return toMove(player, listi, moves, color);
                 }
+                //changed from: player.setCash(player.getCash() + 15)
+                GameWebSocketController.changeMoney(player, +15);
+                GameWebSocketController.changeGoal(allSpaces);
+            }
 
-                // "partial end of walk", check on what decision can be done.
-                // walk can never end in these space types btw (junction, gate, specialItem)
-                if (nextSpace.getOnSpace() == null) {
-                    if (color.equals("Junction")){
-                        // return the currently walked spaces, after getting a response, continue with the walk
-                        // BUT HOW TO HANDLE RESPONSE OF JUNCTION NOSONAR
-                        // like handled in SpaceEffects
-                        return toReturn(player, listi, moves, color);
+            // "partial end of walk", check on what decision can be done.
+            // walk can never end in these space types btw (junction, gate, specialItem)
+            if (nextSpace.getOnSpace() == null) {
+                switch (color) {
+                    case "Junction" -> {
+                        List<String> unlock = findSpaceById(allSpaces, currPosi).getNext();
+                        List<String> lock = new ArrayList<>();
+                        GameWebSocketController.setMovesLeft(movies);
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+                        return Collections.emptyMap();
                     }
-                    else if (color.equals("Gate")){
-                        //check if brother exists
-                        // - if yes then return the currently walked spaces (like junction)
-
-                        // BUT HOW TO HANDLE RESPONSE OF GATE NOSONAR
-                        // like handled in SpaceEffects
-                        for (Item item : player.getItems()){
-                            if (item.getItemName().equals("TheBrotherAndCo")){
-                                return toReturn(player,listi,moves,color);
+                    case "Gate" -> {
+                        List<String> unlock = new ArrayList<>();
+                        List<String> lock = new ArrayList<>();
+                        GameWebSocketController.setMovesLeft(movies);
+                        for (String item : player.getItemNames()) {
+                            if (item.equals("TheBrotherAndCo")) {
+                                unlock.add(findSpaceById(allSpaces, currPosi).getNext().get(0));
+                                lock.add(findSpaceById(allSpaces, currPosi).getNext().get(1));
+                                GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                                GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+                                return Collections.emptyMap();
                             }
                         }
-                        // - if no then not even ask, just continue
-                        // prob handle with recursion instead of just continuing
-
-                        // ugly ass Gate handling NOSONAR
-                        currentSpace = findSpaceById(allSpaces, currPosi);
-                        nextSpaceIds = currentSpace.getNext(); //NOSONAR
-                        nextPosi = Long.parseLong(nextSpaceIds.get(0));
-                        listi.add(nextPosi);
-                        nextSpace = findSpaceById(allSpaces, nextPosi);
-                        color = nextSpace.getColor(); //NOSONAR
-                        currPosi = nextPosi;
-                        player.setPosition(currPosi);
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
-                    else if (color.equals("SpecialItem")){
-                        //add an item to the player item list
-                        SpaceEffects.specialItem(player);
-                        return toReturn(player,listi,moves,color);
+                    case "SpecialItem" -> {
+                        GameWebSocketController.setMovesLeft(movies);
+                        GameWebSocketController.specItem(toItem(player));
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
-                    //send data to friend (via websocket)
-                    //recursively call this functiön
+                    default -> {
+                        return Collections.emptyMap();
+                    }
                 }
             }
             movies--;
@@ -119,18 +144,17 @@ public class GameFlow {
         if ("Yellow".equals(color)){
             player.setLandYellow(player.getLandYellow()+1);
         }
-        else if ("CatNami".equals(color)){
-            player.setLandCat(player.getLandCat()+1); //also include this on space 18
+        else if ("CatNami".equals(color) || "26".equals(currentSpace.getOnSpace())){
+            player.setLandCat(player.getLandCat()+1);
         }
-        // THE SPACE EFFECT NOW/LATER??
         SpaceEffects.getSpaceEffectValue(currentSpace.getOnSpace());
-        return toReturn(player, listi, moves, color);
+
+        return toMove(player, listi, moves, color);
+        //turn over!!! next player
     }
 
-
-
     //helper for finding Space by Id
-    private GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
+    private static GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
         for (GameBoardSpace space : spaces) {
             if (space.getSpaceId().equals(spaceId)) {
                 return space;
@@ -139,15 +163,51 @@ public class GameFlow {
         return null;
     }
 
-    //helper for data representation as dict
-    private Map<String, Object> toReturn(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
+    //helper to find goal and get Id
+    private static Long findGoal(List<GameBoardSpace> spaces){
+        for (GameBoardSpace space : spaces){
+            if (space.getIsGoal()){
+                return space.getSpaceId();
+            }
+        }
+        return null;
+    }
+
+    //helper for data representation as dict, move
+    private static Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
         Map<String, Object> data = new HashMap<>();
         data.put("spaces", walkedSpaces);
         data.put("moves", initialMoves);
         data.put("spaceColor", landedSpace);
         Map<String, Object> retour = new HashMap<>();
         retour.put(player.getPlayerId().toString(), data);
+        retour.put("movementType", "walk");
         return retour;
+    }
+
+    //helper for data representation as dict, junc
+    private static Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
+        Map<String, Object> data = new HashMap<>();
+        data.put("playerId", player.getPlayerId().toString());
+        data.put("currentSpace", currSpace);
+        data.put("nextUnlockedSpaces", nextUnlock);
+        data.put("nextLockedSpaces", nextLock);
+        return data;
+    }
+
+    //helper for data representation as dict, item
+    private static Map<String, Object> toItem(Player player){
+        Map<String, Object> retour = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("items", randoItem());
+        data.put("cards", new ArrayList<>());
+        retour.put(player.getPlayerId().toString(), data);
+        return retour;
+    }
+
+    //get a random Item
+    private static String randoItem(){
+        return allItems[(int) (Math.random()*allItems.length)];
     }
 
     private void turn(){} //NOSONAR
@@ -157,8 +217,6 @@ public class GameFlow {
     private void setup(){} //NOSONAR
     private void teardown(){} //NOSONAR
     private void flow(){} //NOSONAR
-
-
 
 
     /*

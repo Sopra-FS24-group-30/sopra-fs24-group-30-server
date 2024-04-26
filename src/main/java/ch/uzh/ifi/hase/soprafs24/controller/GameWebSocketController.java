@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
-import org.hibernate.internal.util.collections.Stack;
 import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
@@ -10,20 +11,24 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameJoinRequest;
-import org.springframework.messaging.handler.annotation.Payload;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class GameWebSocketController {
+
+    private static int movesLeft;
+    private static int curiposi;
+
+    public static void setMovesLeft(int movesLeft) {
+        GameWebSocketController.movesLeft = movesLeft;
+    }
+    public static int getMovesLeft(){
+        return movesLeft;
+    }
+    public static void setCuriposi(int curiposi) {
+        GameWebSocketController.curiposi = curiposi;
+    }
 
     @Autowired
     private GameManagementService gameManagementService;
@@ -38,14 +43,14 @@ public class GameWebSocketController {
         response.put("gameId", String.valueOf(gameId));
         return response;
     }
-    
+
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
         return changeMoneys(Map.of(player, change));
     }
 
     //#region
-    
+
     @SendTo("/topic/board/money")
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2){
         return changeMoneys(Map.of(player, change, player2, change2));
@@ -60,7 +65,7 @@ public class GameWebSocketController {
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3, Player player4, int change4) { //NOSONAR overloading
         return changeMoneys(Map.of(player, change, player2, change2, player3, change3, player4, change4));
     }
-    
+
     private static Map<String, Map<String, Integer>> changeMoneys(Map<Player, Integer> hoi) {
         Map<String, Map<String, Integer>> response = new HashMap<>();
         for (Map.Entry<Player, Integer> entry : hoi.entrySet()) {
@@ -68,7 +73,7 @@ public class GameWebSocketController {
             int change = entry.getValue();
             int newAmount = Math.max(player.getCash()+change, 0);
             player.setCash(newAmount);
-            
+
             // Prepare a detailed response for each player
             Map<String, Integer> details = new HashMap<>();
             details.put("newAmountOfMoney", newAmount);
@@ -148,5 +153,65 @@ public class GameWebSocketController {
         Map<String, String> response = new HashMap<>();
         response.put("status", status.name());
         return response;
+    }
+
+    @MessageMapping("/board/dice")
+    public void diceWalk(){
+        rollOneDice();
+        move();
+        //space effect maybe
+        //call next player somehow
+    }
+
+    @MessageMapping("/board/junction")
+    public Map<String, Object> contJunction(String msg){
+        Map<String, String> message = gameManagementService.manualParse(msg);
+        Long selectedSpace = Long.valueOf(message.get("selectedSpace"));
+        return GameFlow.move(movesLeft, selectedSpace);
+    }
+
+
+    @SendTo("/topic/board/dice")
+    public Map<String, Object> rollOneDice() { //one die throw
+        Map<String, Object> response = new HashMap<>();
+        List<Integer> dice = GameFlow.throwDice();
+        setMovesLeft(dice.get(0));
+        response.put("results", dice);
+        return response;
+    }
+
+    @SendTo("/topic/board/move")
+    public Map<String, Object> move(){
+        return GameFlow.move(movesLeft, curiposi); //curiposi
+    }
+
+    @SendTo("/topic/board/move")
+    public static Map<String, Object> juncMove(Map<String, Object> bla){
+        return bla;
+    }
+
+    @SendTo("/topic/board/junction")
+    public static Map<String, Object> juncJunc(Map<String, Object> bla){
+        return bla;
+    }
+
+    @SendTo("/topic/board/goal")
+    public static Map<String, Long> changeGoal(List<GameBoardSpace> spaces){
+        return GameFlow.setBoardGoal(spaces);
+    }
+
+    @SendTo("/topic/board/newActivePlayer")
+    public Map<String, Object> newPlayer(){
+        return null;
+    }
+
+    @SendTo("/topic/board/gameEnd")
+    public Map<String, Object> endy(){
+        return null;
+    }
+
+    @SendTo("/topic/board/usable")
+    public static Map<String, Object> specItem(Map<String, Object> bla){
+        return bla;
     }
 }
