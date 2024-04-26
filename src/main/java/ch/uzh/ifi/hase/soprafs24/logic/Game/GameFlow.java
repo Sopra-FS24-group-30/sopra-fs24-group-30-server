@@ -147,7 +147,6 @@ public class GameFlow {
         else if ("CatNami".equals(color) || "26".equals(currentSpace.getOnSpace())){
             player.setLandCat(player.getLandCat()+1);
         }
-        SpaceEffects.getSpaceEffectValue(currentSpace.getOnSpace());
 
         return toMove(player, listi, moves, color);
         //turn over!!! next player
