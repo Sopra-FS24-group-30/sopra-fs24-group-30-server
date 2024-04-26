@@ -21,7 +21,11 @@ public class GameFlow {
     public void setTurnPlayerId(Long turnPlayerId) {
         this.turnPlayerId = turnPlayerId;
     }
-/*
+
+    public Player getPlayer(Integer playerId){
+        return this.players[playerId-1];
+    }
+    /*
     possible Effects
     Items can have the following effects:
         give a player more turns
@@ -81,7 +85,7 @@ public class GameFlow {
      * @return key: playerId, value: the new fieldId where the player gets teleported to
      */
     //TODO: notify frontend about change, maybe can make void
-    private Hashtable<Integer, Long> updatePositions(JSONObject args){
+    public Hashtable<Integer, Long> updatePositions(JSONObject args){
         Hashtable<Integer, Long> updatedPositions = new Hashtable<>();
         String playerSpecialId = args.getString("player");
         String fieldSpecialId = args.getString("field");
@@ -105,7 +109,7 @@ public class GameFlow {
      * @param args parameters for the exchange effect
      * @param exchanges choices from frontend
      */
-    private void exchange(JSONObject args, HashMap<Integer,ArrayList<String>> exchanges){
+    public void exchange(JSONObject args, HashMap<Integer,ArrayList<String>> exchanges){
         JSONObject giveInfos = args.getJSONObject("give");
         JSONObject getInfos = args.getJSONObject("get");
 
@@ -465,7 +469,7 @@ public class GameFlow {
 
     private void getUltimate(){} //NOSONAR
 
-    private void addPlayer(Player player){
+    public void addPlayer(Player player){
         this.players[(int) (long)player.getPlayerId()-1] = player;
     } //NOSONAR
 
