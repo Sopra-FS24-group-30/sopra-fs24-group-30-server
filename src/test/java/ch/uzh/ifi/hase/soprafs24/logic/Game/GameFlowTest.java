@@ -61,7 +61,7 @@ public class GameFlowTest {
     }
 
     public void testExchangePickpocketStealRandomItemFromPlayer(){
-        GameFlow gameFlow = gameFlowSetup();
+        //GameFlow gameFlow = gameFlowSetup();
 
     }
 
