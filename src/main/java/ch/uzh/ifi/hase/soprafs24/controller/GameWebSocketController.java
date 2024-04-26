@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
-import org.hibernate.internal.util.collections.Stack;
 import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
@@ -10,16 +10,10 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameJoinRequest;
-import org.springframework.messaging.handler.annotation.Payload;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
 @Controller
@@ -32,20 +26,43 @@ public class GameWebSocketController {
     @SendTo("/topic/gameCreated")
     public Map<String, Object> createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
+        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
-        response.put("gameId", String.valueOf(gameId));
+        response.put("gameId", String.valueOf(gameId));//NOSONAR
         return response;
     }
-    
+
+
+    //TODO: add handling here
+    @MessageMapping("/game/item")
+    @SendTo("/topic/game/cash")
+    public static void handleEffect(String msg){
+
+    }
+
+    @SendTo("/topic/game/cash")
+    public static CashData returnMoney(CashData cashData){
+        return cashData;
+    }
+
+    @SendTo("/topic/game/move")
+    public static MoveData returnMoves(MoveData move){
+        return move;
+    }
+
+    @SendTo("/topic/game/usable")
+    public static UsableData returnUsables(UsableData usableData){
+        return usableData;
+    }
+
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
         return changeMoneys(Map.of(player, change));
     }
 
     //#region
-    
+
     @SendTo("/topic/board/money")
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2){
         return changeMoneys(Map.of(player, change, player2, change2));
@@ -60,7 +77,7 @@ public class GameWebSocketController {
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3, Player player4, int change4) { //NOSONAR overloading
         return changeMoneys(Map.of(player, change, player2, change2, player3, change3, player4, change4));
     }
-    
+
     private static Map<String, Map<String, Integer>> changeMoneys(Map<Player, Integer> hoi) {
         Map<String, Map<String, Integer>> response = new HashMap<>();
         for (Map.Entry<Player, Integer> entry : hoi.entrySet()) {
@@ -68,7 +85,7 @@ public class GameWebSocketController {
             int change = entry.getValue();
             int newAmount = Math.max(player.getCash()+change, 0);
             player.setCash(newAmount);
-            
+
             // Prepare a detailed response for each player
             Map<String, Integer> details = new HashMap<>();
             details.put("newAmountOfMoney", newAmount);

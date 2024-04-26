@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
+import java.util.ArrayList;
 import java.util.List;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 
@@ -10,7 +11,8 @@ public class Player {
     private String playerName;
     private int cash;
     private Long position;
-
+    private ArrayList<String> itemNames = new ArrayList<>();
+    private ArrayList<String> cardNames = new ArrayList<>();
     private transient User user;
 
     private List<Card> cards;
@@ -57,6 +59,60 @@ public class Player {
         this.cash = cash;
     }
 
+    public void addCash(int amount){
+        this.cash = this.cash + amount;
+    }
+
+    public ArrayList<String> getItemNames() {
+        return itemNames;
+    }
+
+    public void setItemNames(ArrayList<String> itemNames) {
+        this.itemNames = itemNames;
+    }
+
+    public void addItemNames(String itemName){
+        itemNames.add(itemName);
+    }
+
+    public void addItemNames(ArrayList<String> itemName){
+        this.itemNames.addAll(itemName);
+    }
+
+    public void removeItemNames(String itemName){
+        this.itemNames.remove(itemName);
+    }
+
+    public void removeItemNames(ArrayList<String> itemName){
+        itemNames.removeAll(itemName);
+    }
+
+
+    public ArrayList<String> getCardNames() {
+        return cardNames;
+    }
+
+    public void setCardNames(ArrayList<String> cardNames) {
+        this.cardNames = cardNames;
+    }
+
+    public void addCardNames(String cardName){
+        cardNames.add(cardName);
+    }
+
+    public void addCardNames(ArrayList<String> cardName){
+        cardNames.addAll(cardName);
+    }
+
+    public void removeCardNames(String cardName){
+        cardNames.remove(cardName);
+    }
+
+    public void removeCardNames(ArrayList<String> cardName){
+        cardNames.removeAll(cardName);
+    }
+
+
     public Long getPosition() {
         return position;
     }
@@ -77,6 +133,10 @@ public class Player {
         cards.add(card);
     }
 
+    public void removeCard(Card card){
+        cards.remove(card);
+    }
+
     public List<Item> getItems() {
         return items;
     }
@@ -87,6 +147,10 @@ public class Player {
 
     public void addItem(Item item){
         items.add(item);
+    }
+
+    public void removeItem(Item item){
+        items.remove(item);
     }
 
     public Ultimate getUltimate() {

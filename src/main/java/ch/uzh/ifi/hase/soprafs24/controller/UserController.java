@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
+//TODO: Celine whut the fuck? macht kaputt sobald in production nöd?
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
