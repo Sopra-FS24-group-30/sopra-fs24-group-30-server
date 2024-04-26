@@ -1,6 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns.Helpers;
-
-import javax.xml.crypto.Data;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
 public class Cash {
 

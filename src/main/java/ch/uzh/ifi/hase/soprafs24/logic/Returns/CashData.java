@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns.Helpers;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
