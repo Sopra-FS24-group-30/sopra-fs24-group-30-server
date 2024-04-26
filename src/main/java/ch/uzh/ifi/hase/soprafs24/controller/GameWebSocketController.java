@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
@@ -34,11 +35,34 @@ public class GameWebSocketController {
     @SendTo("/topic/gameCreated")
     public Map<String, Object> createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
+        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
-        response.put("gameId", String.valueOf(gameId));
+        response.put("gameId", String.valueOf(gameId));//NOSONAR
         return response;
+    }
+
+
+    //TODO: add handling here
+    @MessageMapping("/game/item")
+    @SendTo("/topic/game/cash")
+    public static void handleEffect(String msg){
+
+    }
+
+    @SendTo("/topic/game/cash")
+    public static CashData returnMoney(CashData cashData){
+        return cashData;
+    }
+
+    @SendTo("/topic/game/move")
+    public static MoveData returnMoves(MoveData move){
+        return move;
+    }
+
+    @SendTo("/topic/game/usable")
+    public static UsableData returnUsables(UsableData usableData){
+        return usableData;
     }
 
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board

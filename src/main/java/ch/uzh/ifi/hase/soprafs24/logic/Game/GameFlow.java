@@ -3,6 +3,9 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
+import org.json.JSONObject;
+
 import java.util.*;
 
 public class GameFlow {
@@ -23,16 +26,439 @@ public class GameFlow {
         return players;
     }
 
-    private void createBoard(){} //NOSONAR
+    public Player getPlayer(Integer playerId){
+        return players[playerId-1];
+    }
+    /*
+    possible Effects
+    Items can have the following effects:
+        give a player more turns
+        update a players money
+        let a player move differently (abiegekarte)
+        get cards from other players
+        give a player a special status in case he lands on a field or overtakes other people
+        teleport players
+        exchange cards/items from players (can steal with nothing given back)
+        exchange something for usables (if getting give nothing back)
+        mute a player
+        force a player to do an action
+     */
 
-    private void getWinCondition(){} //NOSONAR
 
-    private void getUltimate(){} //NOSONAR
+    //TODO: add numbers for the starting
 
-    private void addPlayer(){} //NOSONAR
+    /**
+     * find the starting fields for the players
+     * @param playerId
+     * @return left or right starting field Id
+     */
+    private Long findStart(Integer playerId){
+        switch (playerId){
+            case 1, 2:
+                return 53L;
+            case 3, 4:
+                return 54L;
+            default:
+                return 0L;
+        }
+    }
 
-    private void useItem(){} //NOSONAR
-    private void useCard(){} //NOSONAR
+
+    //TODO: let handle choice
+
+    /**
+     * resolve the special fieldId to an actual ID
+     * @param fieldId special fieldId
+     * @param playerId player for whom the field neeeds to be found
+     * @return actual field ID
+     */
+    private Long getField(String fieldId, Integer playerId){
+        switch (fieldId){
+            case "start":
+                return findStart(playerId);
+            case "choice": //NOSONAR
+                return 10L;
+            default:
+                return (long) Integer.parseInt(fieldId);
+        }
+    }
+
+    /**
+     * teleport players to a field
+     * @param args parameters of the updatepositions effect
+     * @return key: playerId, value: the new fieldId where the player gets teleported to
+     */
+    public void updatePositions(JSONObject args){
+        HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
+        String playerSpecialId = args.getString("player");//NOSONAR
+        String fieldSpecialId = args.getString("field");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+
+
+        for(Integer player : playersToUpdate){
+            ArrayList<Long> fieldIds = new ArrayList<>();
+            fieldIds.add(getField(fieldSpecialId,player));
+            updatedPositions.put(player,fieldIds);
+            players[player-1].setPosition(fieldIds.get(0));
+        }
+
+        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
+
+        GameWebSocketController.returnMoves(moveData);
+    }
+
+
+    //TODO: add support for giving items to multiple people as of now can only exchange with one
+    //TODO: get the itemNames to be exchanged
+
+    /**
+     * exchange usables between players
+     * @param args parameters for the exchange effect
+     * @param exchanges choices from frontend
+     */
+    public void exchange(JSONObject args, HashMap<Integer,ArrayList<String>> exchanges){
+        JSONObject giveInfos = args.getJSONObject("give");
+        JSONObject getInfos = args.getJSONObject("get");
+
+        ArrayList<String> giveUsables = new ArrayList<>();
+        ArrayList<String> getUsables = new ArrayList<>();
+
+        ArrayList<Integer> givePlayers = specialIds(giveInfos.getString("player"));
+        String giveType = giveInfos.getString("type");
+        String giveSelection = giveInfos.getString("selection");
+        Integer giveAmount = giveInfos.getInt("amount");//NOSONAR
+
+        ArrayList<Integer> getPlayers = specialIds(getInfos.getString("player"));
+        String getType = getInfos.getString("type");
+        String getSelection = getInfos.getString("selection");
+        Integer getAmount = getInfos.getInt("amount");
+
+        giveUsables.addAll(getType(exchanges, givePlayers, giveType, giveSelection, giveAmount));
+        getUsables.addAll(getType(exchanges, getPlayers, getType, getSelection, getAmount));
+
+
+        for(int playerId : givePlayers){
+            updateUsables(playerId,getUsables,getType);
+        }
+        for(int playerId : getPlayers){
+            updateUsables(playerId,giveUsables,giveType);
+        }
+
+        UsableData usableData = new UsableData();
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        GameWebSocketController.returnUsables(usableData);
+    }
+
+    /**
+     * add the usables to the respective player
+     * @param playerId
+     * @param usables usables which the player should get
+     * @param type item or cards
+     */
+    private void updateUsables(int playerId, ArrayList<String> usables, String type){
+        switch (type){ //NOSONAR
+            case "item":
+                players[playerId-1].addItemNames(usables);
+                break;
+            case "card":
+                players[playerId-1].addCardNames(usables);
+                break;
+        }
+    }
+
+    /**
+     * get the list with usables based wheter item or card is specified and remove them from the player
+     * @param exchanges choices from frontend
+     * @param exchangePlayers players for which usables need to be fetched
+     * @param type item or card
+     * @param selection all, random, choice
+     * @param amount in case of choice or random, how many usables are to be fetched
+     * @return gives back the usables
+     */
+    private ArrayList<String> getType(HashMap<Integer, ArrayList<String>> exchanges, ArrayList<Integer> exchangePlayers, String type, String selection, Integer amount) {
+        if(type != null){
+            switch (type){ //NOSONAR
+                case "item":
+                    for(Integer player : exchangePlayers){
+                        return getSelectedItems(exchanges,selection,player,amount);
+                    }
+                    break;
+                case "card":
+                    for(Integer player : exchangePlayers){
+                        return (getSelectedCards(exchanges,selection,player,amount));
+                    }
+            }
+        }
+        return new ArrayList<String>();
+    }
+
+
+    //TODO: give infos to frontend what was removed
+
+    /**
+     * remove the items from the player and give the items gained this way back in a list
+     * @param exchanges selections from frontend in case of choice
+     * @param selection type of selections
+     * @param playerid ID of the concerning player
+     * @param amount how many items are given
+     * @return all the items which are ready for exchange
+     */
+    private ArrayList<String> getSelectedItems(HashMap<Integer,ArrayList<String>> exchanges, String selection, int playerid, Integer amount){
+        ArrayList<String> returnItems = new ArrayList<>();
+        if(selection == null){
+            return returnItems;
+        }
+        ArrayList<String> playerItems = players[playerid-1].getItemNames();
+        switch(selection){ //NOSONAR
+            case "random":
+                for(int i = 0; i<amount;i++){
+                    //TODO: add function from Ta here
+                    int select = (int) (Math.random()*playerItems.size());
+                    String itemName = playerItems.get(select);
+                    returnItems.add(itemName);
+                    players[playerid-1].removeItemNames(itemName);
+                }
+                break;
+            case "all":
+                returnItems.addAll(playerItems);
+                players[playerid-1].setItemNames(new ArrayList<>());
+                break;
+            case "choice":
+                returnItems.addAll(exchanges.get(playerid));
+                players[playerid-1].removeItemNames(exchanges.get(playerid));
+                break;
+        }
+        return returnItems;
+    }
+
+
+    /**
+     * remove the cards from the player and give the cards gained this way back in a list
+     * @param exchanges selections from frontend in case of choice
+     * @param selection type of selections
+     * @param playerid ID of the concerning player
+     * @param amount how many cards are given
+     * @return all the items which are ready for exchange
+     */
+    private ArrayList<String> getSelectedCards(HashMap<Integer,ArrayList<String>> exchanges, String selection, int playerid, Integer amount){
+        ArrayList<String> returnCards = new ArrayList<>();
+        if(selection == null){
+            return returnCards;
+        }
+        ArrayList<String> playerCards = players[playerid-1].getCardNames();
+        switch(selection){ //NOSONAR
+            case "random":
+                for(int i = 0; i<amount;i++){
+                    int select = (int) Math.random()*playerCards.size()+1;
+                    returnCards.add(playerCards.get(select));
+                    playerCards.remove(select);
+                }
+                break;
+            case "all":
+                returnCards.addAll(playerCards);
+                players[playerid-1].setCardNames(new ArrayList<>());
+                break;
+            case "choice":
+                returnCards.addAll(exchanges.get(playerid));
+                players[playerid-1].removeCardNames(exchanges.get(playerid));
+                break;
+        }
+        return returnCards;
+    }
+
+    /**
+     * update the money of players
+     * @param args parameters for the updatemoney effect
+     * @return key: playerId, value: the new amount of money the player has
+     */
+    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
+    public void updateMoney(JSONObject args){
+        String type = args.getString("type");
+        Hashtable<Long,Integer> playersPayMoney;
+
+        playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
+
+        CashData cashData = new CashData();
+        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
+        cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
+        GameWebSocketController.returnMoney(cashData);
+    }
+
+    /**
+     * give in how much each player should pay in order to get how much they will pay based on how much cash they have
+     * @param amounts the parameters to be processed
+     * @return PlayerIds,Amount
+     */
+
+    //TODO: Refactor to be nicer
+    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts, String type){//NOSONAR
+        int totalPot = 0;
+        ArrayList<Integer> potWinners = new ArrayList<>();
+        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
+        Iterator<String> keys = amounts.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            ArrayList<Integer> playerIds = specialIds(key);
+            for (Integer id : playerIds) {
+                Integer amount = moneyDescToNumber(amounts.getString(key),id);
+                if (amount == null){
+                    potWinners.add(id);
+                    calculatedAmount.put(Long.valueOf(id),0);
+                }else if(amount < 0){
+                    switch (type){//NOSONAR
+                        case "absolute":
+                            int toPayAbsolute = checkCash(players[id-1].getPlayerId().intValue(),amount);
+                            totalPot += toPayAbsolute;
+                            players[id-1].setCash(players[id-1].getCash()+toPayAbsolute);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                        case "relative":
+                            int toPayRelative = (int) (players[id-1].getCash() / 100.0 * amount);
+                            totalPot += toPayRelative;
+                            players[id-1].setCash(players[id-1].getCash()+toPayRelative);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                    }
+                }else{
+                    switch (type){//NOSONAR
+                        case "absolute":
+                            players[id-1].setCash(players[id-1].getCash()+amount);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                        case "relative":
+                            int toPayRelative = (int) (players[id-1].getCash() / 100.0 * amount);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                    }
+                }
+            }
+        }
+        totalPot = totalPot * -1;
+        for(Integer id : potWinners){
+            int changeMoney = totalPot/potWinners.size();
+            players[id-1].setCash(players[id-1].getCash()+changeMoney);
+            calculatedAmount.put(Long.valueOf(id),changeMoney);
+        }
+
+        return calculatedAmount;
+    }
+
+
+    /**
+     * helperfunction for calculating how much money is given
+     * @param description the defined amount
+     * @return the actual value, 1000 used for max
+     */
+    private Integer moneyDescToNumber(String description, int playerId){
+        if(description.equals("givenAmount")){
+            return null;
+        }
+        else if (description.equals("everything")) {
+            return players[playerId-1].getCash();
+        }
+        else{
+            return Integer.valueOf(description);
+        }
+    }
+
+    /**
+     * convert the specialIds to actual ids
+     * @param specialId give in the special Id
+     * @return return the id(s) in an arraylist
+     */
+
+    private ArrayList<Integer> specialIds(String specialId){
+
+        ArrayList<Integer> playerIds = new ArrayList<>();
+
+        switch (specialId){
+            case "current":
+                playerIds.add((int) (long) turnPlayerId);
+                break;
+            case "others":
+                for(int i=1;i<=4;i++){
+                    if(i != (int) (long) turnPlayerId){
+                        playerIds.add(i);
+                    }
+                }
+                break;
+            case "all":
+                for(int i=1;i<=4;i++){
+                    playerIds.add(i);
+                }
+                break;
+            case "teammate":
+                int mate = (int) (long) turnPlayerId+2;
+                if(mate > 4){
+                    mate = mate % 4;
+                }
+                playerIds.add(mate);
+                break;
+            case "enemy":
+                int current = (int) (long) turnPlayerId;
+                if(current % 2 == 0){
+                    playerIds.add(1);
+                    playerIds.add(3);
+                }else{
+                    playerIds.add(2);
+                    playerIds.add(4);
+                }
+                break;
+            //TODO: get from frontend which number
+            case "choice":
+                playerIds.add(2);
+                break;
+            default:
+                playerIds.add(Integer.valueOf(specialId));
+        }
+        return playerIds;
+    }
+
+
+    /**
+     * throws multiple dice and gives money if the numbers match, returns the summed number which was thrown
+     * @param definition parameters for givePlayerDiceEffect
+     * @return the dice throws
+     */
+    //TODO: send to frontend infos about money and call move with total
+    private ArrayList<Integer> givePlayerDice(JSONObject definition){
+
+        int diceCount = definition.getInt("dice");
+        int bonusCount = definition.getInt("bonusCount");
+        int cashAmount = definition.getInt("money");
+        ArrayList<Integer> diceThrows = new ArrayList<>();
+
+        for(int i=0;i<diceCount;i++){
+            diceThrows.add((int) (Math.random()*6+1));
+        }
+
+        for(int diceValue=1;diceValue<=6;diceValue++){
+            if(Collections.frequency(diceThrows,diceValue) == bonusCount){
+                players[turnPlayerId.intValue()-1].addCash(cashAmount);
+            }
+        }
+        return diceThrows;
+    }
+
+    /**
+     * check if the player can pay if not reduce the amount to the maximum payable
+     * @param playerId id of the player
+     * @param cashAmount cash amount if has to pay negative amount
+     * @return amount the player can pay
+     */
+    private int checkCash(int playerId, int cashAmount){
+        int playerCash = players[playerId-1].getCash();
+        return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
+    }
+
+    public void addPlayer(Player player){
+        players[(int) (long)player.getPlayerId()-1] = player;
+    } //NOSONAR
+
+    //TODO: notify frontend about turn is done
+    private void endTurn(Long playerId){} //NOSONAR
+
 
     public static List<Integer> throwDice(){
         return Collections.singletonList((int) (Math.random() * 6) + 1);

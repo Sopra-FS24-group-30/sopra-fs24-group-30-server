@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
+
+import java.util.ArrayList;
 
 /**
  * Internal Game Representation
@@ -36,6 +40,9 @@ public class Game implements Serializable {
     @Column(name = "player_id")
     private List<String> players;
 
+    @Transient
+    private List<Player> active_players = new ArrayList<>();
+
     @Column(nullable = false)
     private GameStatus status;
 
@@ -45,6 +52,18 @@ public class Game implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
     @JsonManagedReference
     private GameBoard gameBoard;
+
+    public List<Player> getactive_Players() {
+        return active_players;
+    }
+
+    public void setactive_players(List<Player> active_players) {
+        this.active_players = active_players;
+    }
+
+    public void addNEWPlayer(Player player) {
+        this.active_players.add(player);
+    }
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
