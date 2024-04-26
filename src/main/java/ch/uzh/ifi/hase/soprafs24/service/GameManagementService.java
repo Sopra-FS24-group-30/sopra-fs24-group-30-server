@@ -5,9 +5,11 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
+import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class GameManagementService {
 
     private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
+
+    private final GameService gameService; // Final field for the injected service
+
+    @Autowired // Optional if it's the only constructor, Spring will use it by default
+    public GameManagementService(GameService gameService) {
+        this.gameService = gameService; // Assigning the injected service
+    }
 
     public Map<String, String> manualParse(String message){
         message = message.trim();
@@ -67,16 +76,17 @@ public class GameManagementService {
     }
     public Long createGame(String playerId) {
         Long gameId = createGameId();
-        Game game = new Game();
+        Game game = gameService.setUpGame();
         game.setId(gameId);
         game.setStatus(GameStatus.NOT_PLAYING);
 
         List<String> playerList = new ArrayList<>();
+        List<Player> players = new ArrayList<>();
         playerList.add(playerId);
         game.setPlayers(playerList);
-
-        System.out.println(gameId);
-        System.out.println(playerList);
+        game.setactive_players(players);
+        System.out.println("These are the active players before:");
+        System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
         return gameId;
@@ -89,7 +99,7 @@ public class GameManagementService {
      * @return true if the client was added successfully, false if the game is full or does not exist
      */
 
-    private Game findGame(Long gameId){
+    public Game findGame(Long gameId){
         Game game = allGames.get(gameId);
         if (game == null){
             throw new IllegalArgumentException("Game not found");
@@ -98,6 +108,7 @@ public class GameManagementService {
     }
 
     public boolean joinGame(Long gameId, String playerId) {
+        // change
         Game game = findGame(gameId);
         System.out.println(gameId);
         System.out.println(playerId);
@@ -110,7 +121,7 @@ public class GameManagementService {
         if (game.getPlayers().contains(playerId)){
             return true;
         }
-        game.addPlayer(playerId);
+        game.addPlayer(playerId); // add player to the game
 
         System.out.println(gameId);
         System.out.println(game.getPlayers());
@@ -123,7 +134,7 @@ public class GameManagementService {
      * @return a list of session IDs or an empty list if no room exists
      */
     public List<String> getPlayersInGame(Long gameId) {
-        Game game = findGame(gameId);
+        Game game = findGame(gameId); // List of Players
         return game.getPlayers();
     }
 

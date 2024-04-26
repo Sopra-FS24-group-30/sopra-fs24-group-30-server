@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
@@ -11,19 +12,26 @@ import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
+import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
+//TODO: Celine whut the fuck? macht kaputt sobald in production nöd?
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
     private final AchievementService achievementService;
     private final GameService gameService;
+    private final GameManagementService gameManagementService;
 
     /*
     -----------------------------------------------------------------------------------------------
@@ -31,10 +39,11 @@ public class UserController {
     -----------------------------------------------------------------------------------------------
      */
 
-    public UserController(UserService userService, AchievementService achievementService, GameService gameService) {
+    public UserController(UserService userService, AchievementService achievementService, GameService gameService, GameManagementService gameManagementService) {
         this.userService = userService;
         this.achievementService = achievementService;
         this.gameService = gameService;
+        this.gameManagementService = gameManagementService;
     }
 
     @PostMapping("/login")
@@ -127,24 +136,82 @@ public class UserController {
 
     @PostMapping("/games/setUp") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.CREATED)
-    public GameGetDTO setUpGameGame(@RequestBody GamePostDTO gamePostDTO) {
-        // create game
-        Game createdGame = gameService.setUpGame(gamePostDTO);
-        // convert internal representation of game back to API
-        return DTOMapper.INSTANCE.convertEntityToGameGetDTO(createdGame);
+    public Game createGame(String playerString, @RequestBody UserPostDTO userPostDTO) {
+        Map<String, String> playerDict = new HashMap<>();
+        playerDict.put("playerId", playerString);
+        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
+        Map <String, Object> response = new HashMap<>();
+        response.put("message", "game created");
+        response.put("gameId", String.valueOf(gameId));
+        Game game = gameManagementService.findGame(gameId);
+        int currentPlayerCount = game.getactive_Players().size();
+        User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        game.addNEWPlayer(player);
+        return game;
     }
 
     @GetMapping("/games/{id}") // <-- corrected endpoint path
     @ResponseStatus(HttpStatus.OK)
     public GameGetDTO getGame(@PathVariable Long id) {
-        Game game = gameService.getGame(id);
+        System.out.println("This is working");
+        Game game = gameManagementService.findGame(id);
+        System.out.println("This worked!!!");
         return DTOMapper.INSTANCE.convertEntityToGameGetDTO(game);
     }
 
     @PutMapping("/game/join/{gameID}")
     @ResponseStatus(HttpStatus.OK)
-    public void joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+    public Player joinGame(@PathVariable String gameID, @RequestBody UserPostDTO userPostDTO){
+        Game game = gameManagementService.findGame(Long.parseLong(gameID));
+        int currentPlayerCount = game.getactive_Players().size();
+        System.out.println(game);
         User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());//NOSONAR
+        System.out.println(user);
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        System.out.println(player);
+        game.addNEWPlayer(player);
+        System.out.println("These are the active players after:");
+        System.out.println(game.getactive_Players());
+        return player;
+    }
+
+    @PutMapping("/game/{gameID}/teammate/{playerID}/{teammateID}")
+    @ResponseStatus(HttpStatus.OK)
+    public Game chooseTeammate(@PathVariable String gameID,@PathVariable Long playerID,@PathVariable Long teammateID){
+        if (!playerID.equals(1L)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid player ID. Only host can choose teammate.");
+        }
+        Game game = gameManagementService.findGame(Long.parseLong(gameID));
+        int currentPlayerCount = game.getactive_Players().size();
+        System.out.println(playerID);
+        Player player1 = findPlayerById(game, playerID);
+        Player player2 = findPlayerById(game, teammateID);
+        player1.setTeammateId(teammateID);
+        player2.setTeammateId(playerID);
+
+
+
+        List<Player> unpairedPlayers = game.getactive_Players().stream()
+                .filter(p -> p.getTeammateId() == null || p.getTeammateId() == 0)
+                .collect(Collectors.toList());
+
+        if (unpairedPlayers.size() == 2) {
+            unpairedPlayers.get(0).setTeammateId(unpairedPlayers.get(1).getPlayerId());
+            unpairedPlayers.get(1).setTeammateId(unpairedPlayers.get(0).getPlayerId());
+        }
+        return game;
+    }
+
+    public Player findPlayerById(Game game, Long playerID) {
+        for (Player player : game.getactive_Players()) {
+            System.out.println("Checking player ID: " + player.getPlayerId() + " against " + playerID);
+
+            if (player.getPlayerId().equals(playerID)) {
+                return player;
+            }
+        }
+        return null; // Return null or throw an exception if the player is not found
     }
 
 }
