@@ -42,9 +42,9 @@
 
 ## <font style="color: #d700ff">Week 4 *(24.04 – 26.04)*</font>
 
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
-| 24.04.2024 | Ambros   | [#49](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/49)                                                                                                                                                                               | bildet fundament für ali effekt     |
-|   |   |   |   |
-|   |   |   |   |
-|   |   |   |   |
+| Date       | Name     | Links to Github Issues                                                                                                                                                                                                                                                  | Comments                                          |
+|------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| 24.04.2024 | Ambros   | [#49](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/49)                                                                                                                                                                                      | bildet fundament für ali effekt                   |
+| 26.04.2024 | Tam Gian | [#105](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/105), [#106](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/106), [#24](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/24), [#25](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/25) | goal implemented, player can roll a dice and walk |
+|            |          |                                                                                                                                                                                                                                                                         |                                                   |
+|            |          |                                                                                                                                                                                                                                                                         |                                                   |
