@@ -15,8 +15,6 @@ public class Player {
     private ArrayList<String> cardNames = new ArrayList<>();
     private transient User user;
 
-    private List<Card> cards;
-    private List<Item> items;
     private Ultimate ultimate;
     private WinCondition winCondition;
 
@@ -119,38 +117,6 @@ public class Player {
 
     public void setPosition(Long position) {
         this.position = position;
-    }
-
-    public List<Card> getCards() {
-        return cards;
-    }
-
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
-    }
-
-    public void addCard(Card card){
-        cards.add(card);
-    }
-
-    public void removeCard(Card card){
-        cards.remove(card);
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public void addItem(Item item){
-        items.add(item);
-    }
-
-    public void removeItem(Item item){
-        items.remove(item);
     }
 
     public Ultimate getUltimate() {

@@ -33,19 +33,14 @@ public class WinCondition {
     }
 
     public boolean checkWinConditionMet(Player player){
-        switch (winConditionName){
-            case "JackSparrow":
-                //TODO HOW TF??? NOSONAR
-                //how to gameover
-            case "theMarooned": //NOSONAR
-                return player.getCash()==0 && player.getCards().isEmpty() && player.getItems().isEmpty();
-            case "goldenIsMy...":
-                return player.getLandYellow() >= 7;
-            case "drunk":
-                return player.getLandCat() >= 3;
-            default:
-                return false;
-        }
+        return switch (winConditionName) {
+            case "JackSparrow" -> false;
+            case "theMarooned" -> //NOSONAR
+                    player.getCash() == 0 && player.getCardNames().isEmpty() && player.getItemNames().isEmpty();
+            case "goldenIsMy..." -> player.getLandYellow() >= 7;
+            case "drunk" -> player.getLandCat() >= 3;
+            default -> false;
+        };
     }
 
     public static WinCondition getRandomWinCondition() {
