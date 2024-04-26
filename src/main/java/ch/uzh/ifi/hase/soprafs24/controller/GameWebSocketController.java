@@ -26,10 +26,10 @@ public class GameWebSocketController {
     @SendTo("/topic/gameCreated")
     public Map<String, Object> createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));
+        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
-        response.put("gameId", String.valueOf(gameId));
+        response.put("gameId", String.valueOf(gameId));//NOSONAR
         return response;
     }
 

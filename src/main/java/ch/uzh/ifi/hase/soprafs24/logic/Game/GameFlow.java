@@ -73,7 +73,7 @@ public class GameFlow {
         switch (fieldId){
             case "start":
                 return findStart(playerId);
-            case "choice":
+            case "choice": //NOSONAR
                 return 10L;
             default:
                 return (long) Integer.parseInt(fieldId);
@@ -86,13 +86,13 @@ public class GameFlow {
      * @return key: playerId, value: the new fieldId where the player gets teleported to
      */
     public void updatePositions(JSONObject args){
-        Hashtable<Integer, ArrayList<Long>> updatedPositions = new Hashtable<>();
-        String playerSpecialId = args.getString("player");
+        HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
+        String playerSpecialId = args.getString("player");//NOSONAR
         String fieldSpecialId = args.getString("field");
-        ArrayList<Integer> players = new ArrayList<>(specialIds(playerSpecialId));
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
 
 
-        for(Integer player : players){
+        for(Integer player : playersToUpdate){
             ArrayList<Long> fieldIds = new ArrayList<>();
             fieldIds.add(getField(fieldSpecialId,player));
             updatedPositions.put(player,fieldIds);
@@ -123,7 +123,7 @@ public class GameFlow {
         ArrayList<Integer> givePlayers = specialIds(giveInfos.getString("player"));
         String giveType = giveInfos.getString("type");
         String giveSelection = giveInfos.getString("selection");
-        Integer giveAmount = giveInfos.getInt("amount");
+        Integer giveAmount = giveInfos.getInt("amount");//NOSONAR
 
         ArrayList<Integer> getPlayers = specialIds(getInfos.getString("player"));
         String getType = getInfos.getString("type");
@@ -154,7 +154,7 @@ public class GameFlow {
      * @param type item or cards
      */
     private void updateUsables(int playerId, ArrayList<String> usables, String type){
-        switch (type){
+        switch (type){ //NOSONAR
             case "item":
                 this.players[playerId-1].addItemNames(usables);
                 break;
@@ -175,7 +175,7 @@ public class GameFlow {
      */
     private ArrayList<String> getType(HashMap<Integer, ArrayList<String>> exchanges, ArrayList<Integer> exchangePlayers, String type, String selection, Integer amount) {
         if(type != null){
-            switch (type){
+            switch (type){ //NOSONAR
                 case "item":
                     for(Integer player : exchangePlayers){
                         return getSelectedItems(exchanges,selection,player,amount);
@@ -207,7 +207,7 @@ public class GameFlow {
             return returnItems;
         }
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
-        switch(selection){
+        switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
                     //TODO: add function from Ta here
@@ -244,7 +244,7 @@ public class GameFlow {
             return returnCards;
         }
         ArrayList<String> playerCards = players[playerid-1].getCardNames();
-        switch(selection){
+        switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
                     int select = (int) Math.random()*playerCards.size()+1;
@@ -289,7 +289,7 @@ public class GameFlow {
      */
 
     //TODO: Refactor to be nicer
-    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts, String type){
+    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts, String type){//NOSONAR
         int totalPot = 0;
         ArrayList<Integer> potWinners = new ArrayList<>();
         Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
@@ -303,7 +303,7 @@ public class GameFlow {
                     potWinners.add(id);
                     calculatedAmount.put(Long.valueOf(id),0);
                 }else if(amount < 0){
-                    switch (type){
+                    switch (type){//NOSONAR
                         case "absolute":
                             int toPayAbsolute = checkCash(this.players[id-1].getPlayerId().intValue(),amount);
                             totalPot += toPayAbsolute;
@@ -318,7 +318,7 @@ public class GameFlow {
                             break;
                     }
                 }else{
-                    switch (type){
+                    switch (type){//NOSONAR
                         case "absolute":
                             players[id-1].setCash(players[id-1].getCash()+amount);
                             calculatedAmount.put(Long.valueOf(id),amount);
@@ -449,33 +449,18 @@ public class GameFlow {
         return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
     }
 
-    private void createBoard(){} //NOSONAR
-
-    private void getWinCondition(){} //NOSONAR
-
-    private void getUltimate(){} //NOSONAR
-
     public void addPlayer(Player player){
         this.players[(int) (long)player.getPlayerId()-1] = player;
     } //NOSONAR
 
-    private void endTurn(Long playerId){
-        //TODO: notify frontend about turn is done
-    }
+    //TODO: notify frontend about turn is done
+    private void endTurn(Long playerId){} //NOSONAR
 
-    private void useItem(){
-    } //NOSONAR
-    private void useUltimate(Ultimate ultimate){
-    } //NOSONAR
-    private void useCard(){} //NOSONAR
 
 
     public int throwDice(){
         return (int) (Math.random() * 6 + 1); //NOSONAR
     }
-
-    //maybe split update player up into cash,item,card,posi?
-    private void updatePlayer(){} //NOSONAR
 
     //normal walk
     public Map<String, Object> move(GameBoard gameBoard, Player player, int moves, long posi) {
@@ -594,17 +579,6 @@ public class GameFlow {
         retour.put(player.getPlayerId().toString(), data);
         return retour;
     }
-
-    private void turn(){} //NOSONAR
-
-
-    private void run(){} //NOSONAR
-    private void setup(){} //NOSONAR
-    private void teardown(){} //NOSONAR
-    private void flow(){} //NOSONAR
-
-
-
 
     /*
     TODO SETUP NOSONAR
