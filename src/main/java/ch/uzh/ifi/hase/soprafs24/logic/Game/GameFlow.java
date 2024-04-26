@@ -99,11 +99,9 @@ public class GameFlow {
             this.players[player-1].setPosition(fieldIds.get(0));
         }
 
-        Move move = new Move();
         MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
-        move.setData(moveData);
 
-        GameWebSocketController.returnMoves(move);
+        GameWebSocketController.returnMoves(moveData);
     }
 
 
@@ -143,11 +141,10 @@ public class GameFlow {
             updateUsables(playerId,giveUsables,giveType);
         }
 
-        Usable usable = new Usable();
         UsableData usableData = new UsableData();
-        usableData.setItems(players[0].getItemNames(),players[2].getItemNames(),players[3].getItemNames(),players[4].getItemNames());
-        usableData.setCards(players[0].getCardNames(),players[2].getCardNames(),players[3].getCardNames(),players[4].getCardNames());
-        GameWebSocketController.returnUsables(usable);
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        GameWebSocketController.returnUsables(usableData);
     }
 
     /**
@@ -213,6 +210,7 @@ public class GameFlow {
         switch(selection){
             case "random":
                 for(int i = 0; i<amount;i++){
+                    //TODO: add function from Ta here
                     int select = (int) (Math.random()*playerItems.size());
                     String itemName = playerItems.get(select);
                     returnItems.add(itemName);
@@ -272,31 +270,16 @@ public class GameFlow {
      * @return key: playerId, value: the new amount of money the player has
      */
     //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
-    private void updateMoney(JSONObject args){
+    public void updateMoney(JSONObject args){
         String type = args.getString("type");
         Hashtable<Long,Integer> playersPayMoney;
-        switch (type){
-            case "absolute":
-                playersPayMoney = effectivePayAmountsAbsolute(args.getJSONObject("amount"));
-                for(Long key : playersPayMoney.keySet()){
-                    this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
-                }
-                break;
-            case "relative":
-                playersPayMoney = effectivePayAmountsRelative(args.getJSONObject("amount"));
-                for(Long key : playersPayMoney.keySet()){
-                    this.players[Math.toIntExact(key)-1].addCash(playersPayMoney.get(key));
-                }
-                break;
-            default:
-                playersPayMoney = new Hashtable<>();
-                break;
-        }
 
-        Cash cash = new Cash();
-        CashData cashdata = new CashData(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
-        cash.setData(cashdata);
-        GameWebSocketController.returnMoney(cash);
+        playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
+
+        CashData cashData = new CashData();
+        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
+        cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
+        GameWebSocketController.returnMoney(cashData);
     }
 
     /**
@@ -306,7 +289,7 @@ public class GameFlow {
      */
 
     //TODO: Refactor to be nicer
-    private Hashtable<Long,Integer> effectivePayAmountsAbsolute(JSONObject amounts){
+    private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts, String type){
         int totalPot = 0;
         ArrayList<Integer> potWinners = new ArrayList<>();
         Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
@@ -314,53 +297,45 @@ public class GameFlow {
         while(keys.hasNext()){
             String key = keys.next();
             ArrayList<Integer> playerIds = specialIds(key);
-            Integer amount = moneyDescToNumber(amounts.getString(key));
             for (Integer id : playerIds) {
+                Integer amount = moneyDescToNumber(amounts.getString(key),id);
                 if (amount == null){
                     potWinners.add(id);
                     calculatedAmount.put(Long.valueOf(id),0);
                 }else if(amount < 0){
-                    int toPay = checkCash(this.players[id-1].getPlayerId().intValue(),amount);
-                    totalPot += toPay;
-                    calculatedAmount.put(Long.valueOf(id),toPay);
+                    switch (type){
+                        case "absolute":
+                            int toPayAbsolute = checkCash(this.players[id-1].getPlayerId().intValue(),amount);
+                            totalPot += toPayAbsolute;
+                            players[id-1].setCash(players[id-1].getCash()+toPayAbsolute);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                        case "relative":
+                            int toPayRelative = (int) (this.players[id-1].getCash() / 100.0 * amount);
+                            totalPot += toPayRelative;
+                            players[id-1].setCash(players[id-1].getCash()+toPayRelative);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                    }
                 }else{
-                    calculatedAmount.put(Long.valueOf(id),amount);
+                    switch (type){
+                        case "absolute":
+                            players[id-1].setCash(players[id-1].getCash()+amount);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                        case "relative":
+                            int toPayRelative = (int) (this.players[id-1].getCash() / 100.0 * amount);
+                            calculatedAmount.put(Long.valueOf(id),amount);
+                            break;
+                    }
                 }
             }
         }
         totalPot = totalPot * -1;
         for(Integer id : potWinners){
-            calculatedAmount.put(Long.valueOf(id),totalPot/potWinners.size());
-        }
-
-        return calculatedAmount;
-    }
-
-    private Hashtable<Long,Integer> effectivePayAmountsRelative(JSONObject amounts){
-        int totalPot = 0;
-        ArrayList<Integer> potWinners = new ArrayList<>();
-        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
-        Iterator<String> keys = amounts.keys();
-        while(keys.hasNext()){
-            String key = keys.next();
-            ArrayList<Integer> playerIds = specialIds(key);
-            Integer amount = moneyDescToNumber(amounts.getString(key));
-            for (Integer id : playerIds) {
-                if (amount == null){
-                    potWinners.add(id);
-                    calculatedAmount.put(Long.valueOf(id),0);
-                }else if(amount < 0){
-                    int toPay = (int) (this.players[id-1].getCash() / 100.0 * amount);
-                    totalPot += toPay;
-                    calculatedAmount.put(Long.valueOf(id),toPay);
-                }else{
-                    calculatedAmount.put(Long.valueOf(id),(int) (this.players[id-1].getCash() / 100.0 * amount));
-                }
-            }
-        }
-        totalPot = totalPot * -1;
-        for(Integer id : potWinners){
-            calculatedAmount.put(Long.valueOf(id),totalPot/potWinners.size());
+            int changeMoney = totalPot/potWinners.size();
+            players[id-1].setCash(players[id-1].getCash()+changeMoney);
+            calculatedAmount.put(Long.valueOf(id),changeMoney);
         }
 
         return calculatedAmount;
@@ -372,12 +347,12 @@ public class GameFlow {
      * @param description the defined amount
      * @return the actual value, 1000 used for max
      */
-    private Integer moneyDescToNumber(String description){
+    private Integer moneyDescToNumber(String description, int playerId){
         if(description.equals("givenAmount")){
             return null;
         }
         else if (description.equals("everything")) {
-            return 1000;
+            return players[playerId-1].getCash();
         }
         else{
             return Integer.valueOf(description);
@@ -443,7 +418,7 @@ public class GameFlow {
      * @param definition parameters for givePlayerDiceEffect
      * @return the dice throws
      */
-    //TODO: send to frontend infos about money
+    //TODO: send to frontend infos about money and call move with total
     private ArrayList<Integer> givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");

@@ -10,10 +10,6 @@ import java.util.HashMap;
 
 public class Getem {
 
-    public static void main(String[] args){
-        getItems();
-    }
-
     public static HashMap<String, ArrayList<String>> getItems(){
         String jsonData = null;
         try{

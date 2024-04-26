@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.Cash;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.Move;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.Usable;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -43,18 +42,18 @@ public class GameWebSocketController {
     }
 
     @SendTo("/topic/game/cash")
-    public static Cash returnMoney(Cash cash){
-        return cash;
+    public static CashData returnMoney(CashData cashData){
+        return cashData;
     }
 
     @SendTo("/topic/game/move")
-    public static Move returnMoves(Move move){
+    public static MoveData returnMoves(MoveData move){
         return move;
     }
 
     @SendTo("/topic/game/usable")
-    public static Usable returnUsables(Usable usable){
-        return usable;
+    public static UsableData returnUsables(UsableData usableData){
+        return usableData;
     }
 
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
