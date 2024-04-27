@@ -1,6 +1,4 @@
 {
-
-  "TheBrotherAndCo": {},
   "MagicMushroom": {"givePlayerDice":{"dice": "2","bonusCount":2,"money": 10}},
   "SuperMagicMushroom": {"givePlayerDice":{"dice": "3","bonusCount":3,"money": 30}},
   "UltraMagicMushroom": {"givePlayerDice":{"dice": "4","bonusCount":4,"money": 69}},

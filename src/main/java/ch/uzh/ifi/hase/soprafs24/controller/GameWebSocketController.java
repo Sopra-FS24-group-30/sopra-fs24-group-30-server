@@ -1,11 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
@@ -19,6 +20,9 @@ import java.util.*;
 @Controller
 public class GameWebSocketController {
 
+    //TODO: Setup the game
+    private static GameFlow gameFlow = new GameFlow();
+
     private static int movesLeft;
 
     public static void setMovesLeft(int movesLeft) {
@@ -26,6 +30,14 @@ public class GameWebSocketController {
     }
     public static int getMovesLeft(){
         return movesLeft;
+    }
+
+    public static GameFlow getGameFlow() {
+        return gameFlow;
+    }
+
+    public static void setGameFlow(GameFlow gameFlow) {
+        gameFlow = gameFlow;
     }
 
     @Autowired
@@ -43,10 +55,45 @@ public class GameWebSocketController {
     }
 
 
-    //TODO: add handling here
-    @MessageMapping("/game/item")
+    //TODO: add handling here add support for choices
+    @MessageMapping("/game/usable")
     @SendTo("/topic/game/cash")
     public static void handleEffect(String msg){
+        JSONObject jsonObject = new JSONObject(msg);
+        String key = jsonObject.keys().next();
+        String usable = jsonObject.getString(key);
+        String effect;
+        JSONObject effectParas;
+
+        if(key.equals("itemUsed")){
+            HashMap<String, JSONObject> items = Getem.getItems();
+            JSONObject effectComplete = items.get(usable);
+            effect = effectComplete.keys().next();
+            effectParas = effectComplete.getJSONObject(effect);
+        }
+        else{
+            HashMap<String, JSONObject> items = Getem.getUltimates();
+            JSONObject effectComplete = items.get(usable);
+            effect = effectComplete.keys().next();
+            effectParas = effectComplete.getJSONObject(effect);
+        }
+        switch (effect){
+            case "updateMoney":
+                gameFlow.updateMoney(effectParas);
+                break;
+            case "exchange":
+                //TODO: insert choices here
+                gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
+                break;
+            case "givePlayerDice":
+                gameFlow.givePlayerDice(effectParas);
+                break;
+            case "updatePositions":
+                gameFlow.updatePositions(effectParas);
+                break;
+            default:
+                throw new RuntimeException("the defined effect does not exist");
+        }
 
     }
 

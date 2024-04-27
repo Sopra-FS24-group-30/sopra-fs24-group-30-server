@@ -422,7 +422,7 @@ public class GameFlow {
      * @return the dice throws
      */
     //TODO: send to frontend infos about money and call move with total
-    private ArrayList<Integer> givePlayerDice(JSONObject definition){
+    public ArrayList<Integer> givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");
         int bonusCount = definition.getInt("bonusCount");
