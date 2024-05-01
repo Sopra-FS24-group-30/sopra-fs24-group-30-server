@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
@@ -38,9 +37,8 @@ public class GameBoardService {
         return spaces;
     }
 
-    public GameBoard createGameBoard(GameBoardPostDTO gameBoardPostDTO) {
+    public GameBoard createGameBoard() {
         GameBoard gameBoard = new GameBoard();
-        gameBoard.setId(gameBoardPostDTO.getId());
         gameBoard.setStatus(GameBoardStatus.ACTIVE);
         gameBoard.setSpaces(loadAndSaveGameBoardSpaces());
         return gameBoardRepository.saveAndFlush(gameBoard);

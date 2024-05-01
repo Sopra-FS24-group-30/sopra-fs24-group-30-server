@@ -2,8 +2,10 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * GameBoard Controller
@@ -44,9 +47,9 @@ public class GameBoardController {
 
     @PostMapping("/gameboards")
     @ResponseStatus(HttpStatus.CREATED)
-    public GameBoardGetDTO createGameBoard(@RequestBody GameBoardPostDTO gameBoardPostDTO) {
+    public GameBoardGetDTO createGameBoard() {
         // create gameboard
-        GameBoard createdGameBoard = gameBoardService.createGameBoard(gameBoardPostDTO);
+        GameBoard createdGameBoard = gameBoardService.createGameBoard();
         // convert internal representation of gameboard back to API
         return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(createdGameBoard);
     }

@@ -1,9 +1,19 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+
+import java.util.ArrayList;
 
 /**
  * Internal Game Representation
@@ -12,7 +22,7 @@ import java.time.LocalDate;
  * Every variable will be mapped into a database field with the @Column
  * annotation
  * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unqiue across the database -> composes
+ * - unique = true -> this value must be unique across the database -> composes
  * the primary key
  */
 
@@ -23,47 +33,68 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
-    private Long gameId;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String token;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "game_player_ids", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "player_id")
+    private List<String> players;
 
-    @Column(nullable = false)
-    private LocalDate creationDate;
+    @Transient
+    private List<Player> active_players = new ArrayList<>();
 
     @Column(nullable = false)
     private GameStatus status;
 
     @Column(nullable = false)
-    private Integer roundNum;
+    private Integer roundNum=1;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
+    @JsonManagedReference
+    private GameBoard gameBoard;
+
+    public List<Player> getactive_Players() {
+        return active_players;
+    }
+
+    public void setactive_players(List<Player> active_players) {
+        this.active_players = active_players;
+    }
+
+    public void addNEWPlayer(Player player) {
+        this.active_players.add(player);
+    }
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
 
     public Long getId() {
-        return gameId;
+        return id;
     }
 
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getToken() {
-        return token;
+    public void setRoundNum(Integer roundNum) {
+        this.roundNum = roundNum;
     }
-
-    public void setToken(String token) {
-        this.token = token;
+    public Integer getRoundNum() {
+        return roundNum;
     }
 
     public GameStatus getStatus() {
         return status;
     }
 
-    public void setGameStatus(GameStatus status) {
+    public void setStatus(GameStatus status) {
         this.status = status;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 
     public void startGame() {
@@ -74,7 +105,19 @@ public class Game implements Serializable {
         this.roundNum++;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
+    public void setPlayers(List<String> playerList){
+        this.players = playerList;
+    }
+
+    public void addPlayer(String Id){
+        this.players.add(Id);
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public void removePlayer(String Id){
+        this.players.remove(Id);
     }
 }
