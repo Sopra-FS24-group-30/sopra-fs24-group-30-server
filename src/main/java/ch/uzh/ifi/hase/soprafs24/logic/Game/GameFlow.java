@@ -13,22 +13,39 @@ public class GameFlow {
     private static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
 
     private static Player[] players = new Player[4];
+    public static Player[] getPlayers() {
+        return players;
+    }
+    public Player getPlayer(Integer playerId) {
+        return players[playerId - 1];
+    }
+
     private static GameBoard gameBoard;
+    public static void setGameBoard() {
+        GameFlow.gameBoard = GameWebSocketController.getCurrGame().getGameBoard();
+    }
+
     private static Long turnPlayerId;
     public static Long getTurnPlayerId() {
         return turnPlayerId;
     }
-
-    public static void setTurnPlayerId(Long turnPlayerId) {
-        GameFlow.turnPlayerId = turnPlayerId;
-    }
-    public static Player[] getPlayers(){
-        return players;
+    public static void setTurnPlayerId(Long turnoPlayerId) {
+        GameFlow.turnPlayerId = turnoPlayerId;
     }
 
-    public Player getPlayer(Integer playerId){
-        return players[playerId-1];
+    private static int currentTurn;
+    public static int getCurrentTurn() {
+        return currentTurn;
     }
+    public static void setCurrentTurn() {
+        GameFlow.currentTurn = GameWebSocketController.getCurrGame().getRoundNum();
+    }
+
+    public GameFlow(){
+        //setGameBoard();
+        //setCurrentTurn();
+    }
+
     /*
     possible Effects
     Items can have the following effects:
@@ -43,7 +60,6 @@ public class GameFlow {
         mute a player
         force a player to do an action
      */
-
 
     //TODO: add numbers for the starting
 
@@ -232,7 +248,6 @@ public class GameFlow {
         return returnItems;
     }
 
-
     /**
      * remove the cards from the player and give the cards gained this way back in a list
      * @param exchanges selections from frontend in case of choice
@@ -344,7 +359,6 @@ public class GameFlow {
         return calculatedAmount;
     }
 
-
     /**
      * helperfunction for calculating how much money is given
      * @param description the defined amount
@@ -415,7 +429,6 @@ public class GameFlow {
         return playerIds;
     }
 
-
     /**
      * throws multiple dice and gives money if the numbers match, returns the summed number which was thrown
      * @param definition parameters for givePlayerDiceEffect
@@ -454,18 +467,30 @@ public class GameFlow {
 
     public void addPlayer(Player player){
         players[(int) (long)player.getPlayerId()-1] = player;
-    } //NOSONAR
-
-    //TODO: notify frontend about turn is done
-    private void endTurn(Long playerId){} //NOSONAR
-
-
-    public static List<Integer> throwDice(){
-        return Collections.singletonList((int) (Math.random() * 6) + 1);
     }
 
-    //maybe split update player up into cash,item,card,posi?
-    private void updatePlayer(){} //NOSONAR
+    // update to next player
+    private static Map<String, Object> nextPlayer() {
+        long maxi = 4L;
+        turnPlayerId++;
+        if (turnPlayerId > maxi) {
+            currentTurn++;
+            turnPlayerId = 1L;
+        }
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", currentTurn);
+        retour.put("activePlayer", turnPlayerId.toString());
+        return retour;
+    }
+
+    //TODO: GAME OVER FUNCTION CHECK
+    private static Map<String, Object> doGameOver(){
+        return Collections.emptyMap();
+    }
+
+    public static List<Integer> throwDice() {
+        return Collections.singletonList((int) (Math.random() * 6) + 1);
+    }
 
     public static Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){
         Map<String, Long> response = new HashMap<>();
@@ -511,7 +536,9 @@ public class GameFlow {
             if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
                 if (player.getCanWin()) {
                     // GAME OVER
-                    return toMove(player, listi, moves, color);
+                    GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                    GameWebSocketController.endy(doGameOver());
+                    return Collections.emptyMap();
                 }
                 //changed from: player.setCash(player.getCash() + 15)
                 GameWebSocketController.changeMoney(player, +15);
@@ -569,24 +596,17 @@ public class GameFlow {
         }
 
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+        //TODO: Space Effect
         GameWebSocketController.newPlayer(nextPlayer());
+        //check if Game is over
+        if (currentTurn >= 21){
+            GameWebSocketController.endy(doGameOver());
+        }
         return Collections.emptyMap();
     }
 
-    //update player
-    private static Map<String, Object> nextPlayer(){
-        long maxi = 4L;
-        turnPlayerId++;
-        if (turnPlayerId > maxi){
-            turnPlayerId = 1L;
-        }
-        Map<String, Object> retour = new HashMap<>();
-        retour.put("currentTurn", 1);
-        retour.put("activePlayer", turnPlayerId.toString());
-        return retour;
-    }
 
-    //helper for finding Space by Id
+    // helper for finding Space by Id
     private static GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
         for (GameBoardSpace space : spaces) {
             if (space.getSpaceId().equals(spaceId)) {
@@ -685,6 +705,5 @@ public class GameFlow {
     display win/ultimate (only for self)
 
      */
-
 
 }
