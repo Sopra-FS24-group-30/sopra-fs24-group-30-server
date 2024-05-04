@@ -13,7 +13,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
-
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.util.Arrays;
 
 @RestController
 //TODO: Celine whut the fuck? macht kaputt sobald in production nöd?
@@ -212,6 +213,26 @@ public class UserController {
             }
         }
         return null; // Return null or throw an exception if the player is not found
+    }
+
+    @GetMapping("/games/cards") // <-- corrected endpoint path
+    public ArrayList<Player> getPlayers() {
+        GameFlow gameFlow = new GameFlow();
+        Player player1 = gameService.createPlayerForGame(new User(), 0);
+        Player player2 = gameService.createPlayerForGame(new User(), 1);
+        Player player3 = gameService.createPlayerForGame(new User(), 2);
+        Player player4 = gameService.createPlayerForGame(new User(), 3);
+
+        gameFlow.addPlayer(player1);
+        gameFlow.addPlayer(player2);
+        gameFlow.addPlayer(player3);
+        gameFlow.addPlayer(player4);
+
+        Player[] playerArray = gameFlow.getPlayers();
+        ArrayList<Player> players = new ArrayList<>(Arrays.asList(playerArray));
+
+        return players;
+
     }
 
 }

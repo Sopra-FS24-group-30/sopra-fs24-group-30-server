@@ -53,6 +53,43 @@ public class Getem {
         return ultimates;
     }
 
+    public static HashMap<String, JSONObject> getCards() {
+        HashMap<String, JSONObject> cards = new HashMap<>();
+
+        String jsonData;
+        try {
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
+            System.out.println(jsonData);
+        } catch (IOException e) {
+            throw new RuntimeException("the json object could not be created");
+        }
+        JSONObject jsonObject = new JSONObject(jsonData);
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            JSONObject updateCardPositions = effectComplete.getJSONObject("updateCardPositions");
+            // Extracting "player" and "moves" components
+            String player = updateCardPositions.getString("player");
+            System.out.println(player);
+            String moves = updateCardPositions.getString("moves");
+            System.out.println(moves);
+
+            // Creating a new JSON object to hold "player" and "moves"
+            JSONObject cardInfo = new JSONObject();
+            cardInfo.put("player", player);
+            cardInfo.put("moves", moves);
+
+            // Putting the card information into the cards map
+            cards.put(key, cardInfo);
+        }
+        System.out.println(cards);
+
+        return cards;
+    }
+
+
+
     private static String getJson(String path) throws IOException {
         BufferedReader reader = null;
         try{

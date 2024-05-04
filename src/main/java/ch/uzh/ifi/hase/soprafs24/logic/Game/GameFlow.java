@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
+import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -53,13 +54,25 @@ public class GameFlow {
      * @return left or right starting field Id
      */
     private Long findStart(Integer playerId){
-        switch (playerId){
-            case 1, 2:
-                return 53L;
-            case 3, 4:
-                return 54L;
-            default:
-                return 0L;
+        Player player = getPlayer(playerId);
+        Player teammate = getPlayer(player.getTeammateId().intValue());
+
+        Long teammatePosition = teammate.getPosition();
+
+        if (teammatePosition == 53L) {
+            return 54L;
+        } else if (teammatePosition == 54L) {
+            return 53L;
+        } else {
+            // If teammate is not on either 53L or 54L, assign based on playerId
+            switch (playerId){
+                case 1, 2:
+                    return 53L;
+                case 3, 4:
+                    return 54L;
+                default:
+                    return 0L;
+            }
         }
     }
 
@@ -100,6 +113,25 @@ public class GameFlow {
             fieldIds.add(getField(fieldSpecialId,player));
             updatedPositions.put(player,fieldIds);
             players[player-1].setPosition(fieldIds.get(0));
+        }
+
+        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
+
+        GameWebSocketController.returnMoves(moveData);
+    }
+
+    public void updateCardPositions(JSONObject args){
+        HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
+        String playerSpecialId = args.getString("player");//NOSONAR
+        String fieldSpecialId = args.getString("moves");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+
+
+        for(Integer player : playersToUpdate){
+            ArrayList<Long> fieldIds = new ArrayList<>();
+            fieldIds.add(getField(fieldSpecialId,player));
+            updatedPositions.put(player,fieldIds);
+            move(player, fieldIds.get(0));
         }
 
         MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
@@ -284,6 +316,8 @@ public class GameFlow {
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
         GameWebSocketController.returnMoney(cashData);
     }
+
+
 
     /**
      * give in how much each player should pay in order to get how much they will pay based on how much cash they have
