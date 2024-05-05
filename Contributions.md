@@ -59,6 +59,7 @@
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
+| 05.05.2024 | Marius | [#34](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/34), [#38](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/38), [#39](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/39), [#43](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/43), [#55](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/55), [#56](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/56) | Pretty UI |
 |   |   |   |   |
 
 ## <font style="color: #ff9f10">Week 7 *(11.05 – 28.05)*</font>
