@@ -21,6 +21,9 @@ public class GameFlow {
     }
 
     private static GameBoard gameBoard;
+    public static GameBoard getGameBoard(){
+        return gameBoard;
+    }
     public static void setGameBoard() {
         GameFlow.gameBoard = GameWebSocketController.getCurrGame().getGameBoard();
     }
@@ -465,7 +468,7 @@ public class GameFlow {
         return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
     }
 
-    public void addPlayer(Player player){
+    public static void addPlayer(Player player){
         players[(int) (long)player.getPlayerId()-1] = player;
     }
 
@@ -483,9 +486,31 @@ public class GameFlow {
         return retour;
     }
 
-    //TODO: GAME OVER FUNCTION CHECK
+    //TODO: GAME OVER FUNCTION
     private static Map<String, Object> doGameOver(){
-        return Collections.emptyMap();
+        Map<String, Object> mappi = Map.of("okee", "lessgo");
+        System.out.println(mappi);
+        return mappi;
+    }
+
+    //does walkOver and landOn blueGoalSpace
+    private static Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
+        GameWebSocketController.setMovesLeft(movies-1);
+        if (player.getCanWin()) {
+            GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+//            System.out.println("canwin  " + toMove(player, listi, moves, color));
+            // GAME OVER
+            GameWebSocketController.endy(doGameOver());
+            return Collections.emptyMap();
+        }
+        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+        GameWebSocketController.changeMoney(player, +15);
+//        System.out.println("canotwin  " + toMove(player, listi, moves, color));
+        GameWebSocketController.changeGoal(allSpaces);
+        if (movies-1 <= 0){
+            return Collections.emptyMap();
+        }
+        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
     }
 
     public static List<Integer> throwDice() {
@@ -513,19 +538,24 @@ public class GameFlow {
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
 
         List<Long> listi = new ArrayList<>(); //list of spaceIds that player moves over
-        String color = null; //color of next space
 
-        GameBoardSpace currentSpace = new GameBoardSpace(); //space currently on initialize
-        List<String> nextSpaceIds; //list of next spaces of space currently on
+        GameBoardSpace currentSpace = findSpaceById(allSpaces, currPosi); //space currently on initialize
+        List<String> nextSpaceIds = currentSpace.getNext(); //list of next spaces of space currently on
+        Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
+        GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi);
+        String color = currentSpace.getColor(); //color of next space
+
+        //check if game is over, or player gets cash, in case the player moves 0
+        if (moves==0 && "BlueGoal".equals(color) && currentSpace.getIsGoal()){
+            return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
+        }
 
         while (movies > 0) {
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
-
-            Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
+            nextPosi = Long.parseLong(nextSpaceIds.get(0));
             listi.add(nextPosi);
-
-            GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
+            nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
             color = nextSpace.getColor(); //NOSONAR
 
             //set player to next posi already
@@ -534,15 +564,7 @@ public class GameFlow {
 
             // check if game is over, or player gets cash
             if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
-                if (player.getCanWin()) {
-                    // GAME OVER
-                    GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                    GameWebSocketController.endy(doGameOver());
-                    return Collections.emptyMap();
-                }
-                //changed from: player.setCash(player.getCash() + 15)
-                GameWebSocketController.changeMoney(player, +15);
-                GameWebSocketController.changeGoal(allSpaces);
+                return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
             }
 
             // "partial end of walk", check on what decision can be done.
@@ -550,11 +572,13 @@ public class GameFlow {
             if (nextSpace.getOnSpace() == null) {
                 switch (color) {
                     case "Junction" -> {
-                        List<String> unlock = findSpaceById(allSpaces, currPosi).getNext();
+                        List<String> unlock = nextSpace.getNext();
                         List<String> lock = new ArrayList<>();
                         GameWebSocketController.setMovesLeft(movies);
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                         GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+//                        System.out.println("junctioon  " + toMove(player, listi, moves, color));
+//                        System.out.println(toJunction(player, currPosi, unlock, lock));
                         return Collections.emptyMap();
                     }
                     case "Gate" -> {
@@ -563,21 +587,25 @@ public class GameFlow {
                         GameWebSocketController.setMovesLeft(movies);
                         for (String item : player.getItemNames()) {
                             if (item.equals("TheBrotherAndCo")) {
-                                unlock.add(findSpaceById(allSpaces, currPosi).getNext().get(0));
-                                lock.add(findSpaceById(allSpaces, currPosi).getNext().get(1));
+                                unlock.add(nextSpace.getNext().get(0));
+                                lock.add(nextSpace.getNext().get(1));
                                 GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                                 GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+//                                System.out.println("gateBro  " + toMove(player, listi, moves, color));
+//                                System.out.println(toJunction(player, currPosi, unlock, lock));
                                 return Collections.emptyMap();
                             }
                         }
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
+//                        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
+                        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
                     case "SpecialItem" -> {
                         GameWebSocketController.setMovesLeft(movies);
-                        GameWebSocketController.specItem(toItem(player));
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
+                        GameWebSocketController.specItem(toItem(player));
+//                        System.out.println("specitem  " + toMove(player, listi, moves, color));
+                        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
                     default -> {
                         return Collections.emptyMap();
@@ -591,20 +619,24 @@ public class GameFlow {
         if ("Yellow".equals(color)){
             player.setLandYellow(player.getLandYellow()+1);
         }
-        else if ("CatNami".equals(color) || "26".equals(currentSpace.getOnSpace())){
+        else if ("Catnami".equals(color) || "26".equals(currentSpace.getOnSpace())){
             player.setLandCat(player.getLandCat()+1);
         }
 
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+//        System.out.println("endee  " + toMove(player, listi, moves, color));
+
         //TODO: Space Effect
+        System.out.println("OnSpaceEffect nr: " + nextSpace.getOnSpace());
+
         GameWebSocketController.newPlayer(nextPlayer());
+
         //check if Game is over
         if (currentTurn >= 21){
             GameWebSocketController.endy(doGameOver());
         }
         return Collections.emptyMap();
     }
-
 
     // helper for finding Space by Id
     private static GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
@@ -652,8 +684,10 @@ public class GameFlow {
     private static Map<String, Object> toItem(Player player){
         Map<String, Object> retour = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
-        data.put("items", randoItem());
-        data.put("cards", new ArrayList<>());
+        String randItem = randoItem();
+        player.addItemNames(randItem);
+        data.put("items", player.getItemNames());
+        data.put("cards", player.getCardNames());
         retour.put(player.getPlayerId().toString(), data);
         return retour;
     }
