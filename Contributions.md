@@ -51,6 +51,7 @@
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
+| 29.04.2024 | Marius | [#65](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/65) | |
 | 02.05.2024 | Marius | [#35](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/35), [#44](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/44), [#46](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/46), [#49](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/49), [#67](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/67) | Mainly concerning Items and Cards (Frontend). |
 |   |   |   |   |
 
