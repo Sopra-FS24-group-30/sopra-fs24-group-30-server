@@ -24,8 +24,8 @@ public class GameFlow {
     public static GameBoard getGameBoard(){
         return gameBoard;
     }
-    public static void setGameBoard() {
-        GameFlow.gameBoard = GameWebSocketController.getCurrGame().getGameBoard();
+    public static void setGameBoard(Long lobbyId) {
+        GameFlow.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
     }
 
     private static Long turnPlayerId;

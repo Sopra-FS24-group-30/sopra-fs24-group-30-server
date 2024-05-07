@@ -21,22 +21,17 @@ import java.util.*;
 @Controller
 public class GameWebSocketController {
 
-    //saving GameId at the beginning
-    private static Long gameId;
-    public static Long getGameId() {
-        return gameId;
-    }
-    public static void setGameId(Long gameId) {
-        GameWebSocketController.gameId = gameId;
-    }
-
     //saving the current Game at the beginning
-    private static Game currGame;
-    public static Game getCurrGame() {
-        return currGame;
+    private static HashMap<Long,Game> allGames = new HashMap<>();
+    public static Game getCurrGame(Long lobbyId) {
+        return allGames.get(lobbyId);
      }
-    public static void setCurrGame(Game currentGame) {
-     currGame = currentGame;
+    public static void setCurrGame(HashMap<Long,Game> currentGame) {
+        allGames = currentGame;
+     }
+
+     public static void addGame(Long lobbyId, Game game){
+        allGames.put(lobbyId,game);
      }
 
     //saving the moves (dice throws or card usages), used to call the move function in GameFlow
@@ -66,7 +61,7 @@ public class GameWebSocketController {
     }
 
     //TODO: add handling here add support for choices
-    @MessageMapping("/board/usable")
+    @MessageMapping("/board/usable/{gameId}")
     @SendTo("/topic/board/cash")
     public static void handleEffect(String msg){
         JSONObject jsonObject = new JSONObject(msg);

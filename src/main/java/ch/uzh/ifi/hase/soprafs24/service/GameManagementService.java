@@ -74,8 +74,7 @@ public class GameManagementService {
         allGames.put(gameId, game);
 
         //when creating the came, saved in GameWebSocketController, for further usage there
-        GameWebSocketController.setCurrGame(allGames.get(gameId));
-        GameWebSocketController.setGameId(gameId);
+        GameWebSocketController.addGame(gameId,allGames.get(gameId));
 
         return gameId;
     }
