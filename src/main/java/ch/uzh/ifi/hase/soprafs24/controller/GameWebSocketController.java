@@ -228,11 +228,13 @@ public class GameWebSocketController {
     @MessageMapping("/game/status")
     @SendTo("/topic/game/status")
     public Map<String, String> gameStatus(String msg){
+        System.out.println("Get Status");
         Map<String, String> message = gameManagementService.manualParse(msg);
         Long gameId = Long.valueOf(message.get("gameId"));
         GameStatus status = gameManagementService.getGameStatus(gameId);
         Map<String, String> response = new HashMap<>();
         response.put("status", status.name());
+        System.out.println(response);
         return response;
     }
 

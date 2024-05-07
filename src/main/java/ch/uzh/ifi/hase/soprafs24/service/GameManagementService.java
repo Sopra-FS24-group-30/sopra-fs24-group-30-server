@@ -1,23 +1,40 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs24.service.UserService;
+import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 @Service
 public class GameManagementService {
 
-    private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
     private static GameService gameService; // Final field for the injected service
     private final UserService userService;
@@ -80,11 +97,6 @@ public class GameManagementService {
         System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
-
-        //when creating the came, saved in GameWebSocketController, for further usage there
-        GameWebSocketController.setCurrGame(allGames.get(gameId));
-        GameWebSocketController.setGameId(gameId);
-
         return gameId;
     }
 
@@ -176,7 +188,8 @@ public class GameManagementService {
      * @param gameId the game ID to check
      */
     public List<String> lobbyPlayers(Long gameId) {
-        return getPlayersInGame(gameId);
+        List<String> plrs = getPlayersInGame(gameId);
+        return plrs;
     }
 
     /**
