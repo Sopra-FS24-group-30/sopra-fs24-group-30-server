@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,19 @@ public class GameWebSocketController {
      }
 
     //TODO: Setup the game
-    private static GameFlow gameFlow = new GameFlow();
+    private static HashMap<Long,GameFlow> gameFlows = new HashMap<>();
+
+    private static void addGameFlow(Long lobbyId, GameFlow gameFlow){
+        gameFlows.put(lobbyId,gameFlow);
+    }
+
+    private static void removeGameFlow(Long lobbyId){
+        gameFlows.remove(lobbyId);
+    }
+
+    private static GameFlow getGameFlow(Long lobbyId){
+        return gameFlows.get(lobbyId);
+    }
 
     @Autowired
     private GameManagementService gameManagementService;
@@ -54,12 +67,13 @@ public class GameWebSocketController {
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable/{gameId}")
     @SendTo("/topic/board/cash")
-    public static void handleEffect(String msg){
+    public static void handleEffect(String msg, @DestinationVariable("gameId") Long gameId){
         JSONObject jsonObject = new JSONObject(msg);
         String key = jsonObject.keys().next();
         String usable = jsonObject.getString(key);
         String effect;
         JSONObject effectParas;
+        GameFlow gameFlow = gameFlows.get(gameId);
 
         if (key.equals("itemUsed")) {
             HashMap<String, JSONObject> items = Getem.getItems();
