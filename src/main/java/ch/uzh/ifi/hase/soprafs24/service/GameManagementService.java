@@ -34,10 +34,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @Service
 public class GameManagementService {
 
-    private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
     private static GameService gameService; // Final field for the injected service
-    private final UserService userService;
+    private static UserService userService;
 
     @Autowired // Optional if it's the only constructor, Spring will use it by default
     public GameManagementService(GameService gameService, UserService userService) {
@@ -77,7 +77,7 @@ public class GameManagementService {
         return id;
     }
 
-    public static Long createGame(String playerId) {
+    public static Long createGame(String userId) {
         Long gameId = createGameId();
         Game game = gameService.setUpGame();
         game.setId(gameId);
