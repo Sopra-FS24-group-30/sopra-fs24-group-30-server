@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
@@ -22,25 +23,35 @@ import java.util.ArrayList;
 @Controller
 public class GameWebSocketController {
 
-    //TODO: Setup the game
-    private static GameFlow gameFlow = new GameFlow();
+    //saving GameId at the beginning
+    private static Long gameId;
+    public static Long getGameId() {
+        return gameId;
+    }
+    public static void setGameId(Long gameId) {
+        GameWebSocketController.gameId = gameId;
+    }
 
+    //saving the current Game at the beginning
+    private static Game currGame;
+    public static Game getCurrGame() {
+        return currGame;
+     }
+    public static void setCurrGame(Game currentGame) {
+     currGame = currentGame;
+     }
+
+    //saving the moves (dice throws or card usages), used to call the move function in GameFlow
     private static int movesLeft;
-
     public static void setMovesLeft(int movesLeft) {
         GameWebSocketController.movesLeft = movesLeft;
     }
-    public static int getMovesLeft(){
+    public static int getMovesLeft() {
         return movesLeft;
     }
 
-    public static GameFlow getGameFlow() {
-        return gameFlow;
-    }
-
-    public static void setGameFlow(GameFlow gameFlow) {
-        gameFlow = gameFlow;
-    }
+    //TODO: Setup the game
+    private static GameFlow gameFlow = new GameFlow();
 
     @Autowired
     private GameManagementService gameManagementService;
@@ -49,17 +60,16 @@ public class GameWebSocketController {
     @SendTo("/topic/gameCreated")
     public Map<String, Object> createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = gameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
+        Long gameId = GameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
         response.put("gameId", String.valueOf(gameId));//NOSONAR
         return response;
     }
 
-
     //TODO: add handling here add support for choices
-    @MessageMapping("/game/usable")
-    @SendTo("/topic/game/cash")
+    @MessageMapping("/board/usable")
+    @SendTo("/topic/board/cash")
     public static void handleEffect(String msg){
         JSONObject jsonObject = new JSONObject(msg);
         String key = jsonObject.keys().next();
@@ -67,7 +77,7 @@ public class GameWebSocketController {
         String effect;
         JSONObject effectParas;
 
-        if(key.equals("itemUsed")){
+        if (key.equals("itemUsed")) {
             HashMap<String, JSONObject> items = Getem.getItems();
             JSONObject effectComplete = items.get(usable);
             effect = effectComplete.keys().next();
@@ -99,18 +109,18 @@ public class GameWebSocketController {
 
     }
 
-    @SendTo("/topic/game/cash")
-    public static CashData returnMoney(CashData cashData){
+    @SendTo("/topic/board/cash")
+    public static CashData returnMoney(CashData cashData) {
         return cashData;
     }
 
-    @SendTo("/topic/game/move")
-    public static MoveData returnMoves(MoveData move){
+    @SendTo("/topic/board/move")
+    public static MoveData returnMoves(MoveData move) {
         return move;
     }
 
-    @SendTo("/topic/game/usable")
-    public static UsableData returnUsables(UsableData usableData){
+    @SendTo("/topic/board/usable")
+    public static UsableData returnUsables(UsableData usableData) {
         return usableData;
     }
 
@@ -182,6 +192,7 @@ public class GameWebSocketController {
         Long gameId = Long.valueOf(message.get("gameId"));
         List<String> response = gameManagementService.lobbyPlayers(gameId);
         return response;
+
     }
 
     @MessageMapping("/gameReady")
@@ -272,7 +283,7 @@ public class GameWebSocketController {
     @MessageMapping("/board/junction")
     public Map<String, Object> contJunction(String msg){
         Map<String, String> message = gameManagementService.manualParse(msg);
-        Long selectedSpace = Long.valueOf(message.get("selectedSpace"));
+        long selectedSpace = Long.parseLong(message.get("selectedSpace"));
         return GameFlow.move(movesLeft, selectedSpace);
     }
 
@@ -291,13 +302,13 @@ public class GameWebSocketController {
     }
 
     @SendTo("/topic/board/move")
-    public static Map<String, Object> juncMove(Map<String, Object> bla){
-        return bla;
+    public static Map<String, Object> juncMove(Map<String, Object> partialMoveMsg){
+        return partialMoveMsg;
     }
 
     @SendTo("/topic/board/junction")
-    public static Map<String, Object> juncJunc(Map<String, Object> bla){
-        return bla;
+    public static Map<String, Object> juncJunc(Map<String, Object> chooseJunctionMsg){
+        return chooseJunctionMsg;
     }
 
     @SendTo("/topic/board/goal")
@@ -306,17 +317,17 @@ public class GameWebSocketController {
     }
 
     @SendTo("/topic/board/newActivePlayer")
-    public static Map<String, Object> newPlayer(Map<String, Object> bla){
-        return bla;
+    public static Map<String, Object> newPlayer(Map<String, Object> nextTurnMsg){
+        return nextTurnMsg;
     }
 
     @SendTo("/topic/board/gameEnd")
-    public Map<String, Object> endy(){
-        return null;
+    public static Map<String, Object> endy(Map<String, Object> endGameMsg){
+        return endGameMsg;
     }
 
     @SendTo("/topic/board/usable")
-    public static Map<String, Object> specItem(Map<String, Object> bla){
-        return bla;
+    public static Map<String, Object> specItem(Map<String, Object> getItemMsg){
+        return getItemMsg;
     }
 }
