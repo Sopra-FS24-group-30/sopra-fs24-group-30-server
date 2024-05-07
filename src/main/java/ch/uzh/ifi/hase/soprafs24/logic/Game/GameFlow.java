@@ -40,8 +40,16 @@ public class GameFlow {
     public static int getCurrentTurn() {
         return currentTurn;
     }
-    public static void setCurrentTurn() {
-        GameFlow.currentTurn = GameWebSocketController.getCurrGame().getRoundNum();
+    public static void setCurrentTurn(Long lobbyId) {
+        GameFlow.currentTurn = GameWebSocketController.getCurrGame(lobbyId).getRoundNum();
+    }
+
+    private static int movesLeft;
+    public static void setMovesLeft(int movesLeft) {
+        GameFlow.movesLeft = movesLeft;
+    }
+    public static int getMovesLeft() {
+        return movesLeft;
     }
 
     public GameFlow(){
@@ -495,22 +503,22 @@ public class GameFlow {
 
     //does walkOver and landOn blueGoalSpace
     private static Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
-        GameWebSocketController.setMovesLeft(movies-1);
+        setMovesLeft(movies-1);
         if (player.getCanWin()) {
             GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-//            System.out.println("canwin  " + toMove(player, listi, moves, color));
+            System.out.println("canwin  " + toMove(player, listi, moves, color));
             // GAME OVER
             GameWebSocketController.endy(doGameOver());
             return Collections.emptyMap();
         }
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
         GameWebSocketController.changeMoney(player, +15);
-//        System.out.println("canotwin  " + toMove(player, listi, moves, color));
+        System.out.println("canotwin  " + toMove(player, listi, moves, color));
         GameWebSocketController.changeGoal(allSpaces);
         if (movies-1 <= 0){
             return Collections.emptyMap();
         }
-        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
+        return move(getMovesLeft(), player.getPosition());
     }
 
     public static List<Integer> throwDice() {
@@ -574,38 +582,38 @@ public class GameFlow {
                     case "Junction" -> {
                         List<String> unlock = nextSpace.getNext();
                         List<String> lock = new ArrayList<>();
-                        GameWebSocketController.setMovesLeft(movies);
+                        setMovesLeft(movies);
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                         GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
-//                        System.out.println("junctioon  " + toMove(player, listi, moves, color));
-//                        System.out.println(toJunction(player, currPosi, unlock, lock));
+                        System.out.println("junctioon  " + toMove(player, listi, moves, color));
+                        System.out.println(toJunction(player, currPosi, unlock, lock));
                         return Collections.emptyMap();
                     }
                     case "Gate" -> {
                         List<String> unlock = new ArrayList<>();
                         List<String> lock = new ArrayList<>();
-                        GameWebSocketController.setMovesLeft(movies);
+                        setMovesLeft(movies);
                         for (String item : player.getItemNames()) {
                             if (item.equals("TheBrotherAndCo")) {
                                 unlock.add(nextSpace.getNext().get(0));
                                 lock.add(nextSpace.getNext().get(1));
                                 GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                                 GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
-//                                System.out.println("gateBro  " + toMove(player, listi, moves, color));
-//                                System.out.println(toJunction(player, currPosi, unlock, lock));
+                                System.out.println("gateBro  " + toMove(player, listi, moves, color));
+                                System.out.println(toJunction(player, currPosi, unlock, lock));
                                 return Collections.emptyMap();
                             }
                         }
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-//                        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
-                        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
+                        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
+                        return move(getMovesLeft(), player.getPosition());
                     }
                     case "SpecialItem" -> {
-                        GameWebSocketController.setMovesLeft(movies);
+                        setMovesLeft(movies);
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                         GameWebSocketController.specItem(toItem(player));
-//                        System.out.println("specitem  " + toMove(player, listi, moves, color));
-                        return move(GameWebSocketController.getMovesLeft(), player.getPosition());
+                        System.out.println("specitem  " + toMove(player, listi, moves, color));
+                        return move(getMovesLeft(), player.getPosition());
                     }
                     default -> {
                         return Collections.emptyMap();
@@ -624,7 +632,7 @@ public class GameFlow {
         }
 
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-//        System.out.println("endee  " + toMove(player, listi, moves, color));
+        System.out.println("endee  " + toMove(player, listi, moves, color));
 
         //TODO: Space Effect
         System.out.println("OnSpaceEffect nr: " + nextSpace.getOnSpace());

@@ -11,7 +11,6 @@ import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -82,9 +81,9 @@ public class GameBoardController {
         player.setPosition(posi);
         player.setWinCondition(wincondi);
     }
-    @GetMapping("/move/{lobbyId}")
-    public Map<String, Object> doit(@DestinationVariable("lobbyId") Long lobbyId){
-        GameManagementService.createGame("1");
+    @GetMapping("/move")
+    public Map<String, Object> doit(){
+        Long lobbyId = GameManagementService.createGame("1");
         GameFlow.setGameBoard(lobbyId);
         Player p1 = new Player();
         pPlayer(p1, 1L, 15, 53L, new WinCondition("goldenIsMy..."));
@@ -101,7 +100,7 @@ public class GameBoardController {
         GameFlow.addPlayer(p3);
         GameFlow.addPlayer(p4);
         GameFlow.setTurnPlayerId(2L);
-        GameFlow.setCurrentTurn();
+        GameFlow.setCurrentTurn(lobbyId);
         GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
         return GameFlow.move(3, 24L);
     }

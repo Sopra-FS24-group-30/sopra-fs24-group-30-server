@@ -34,15 +34,6 @@ public class GameWebSocketController {
         allGames.put(lobbyId,game);
      }
 
-    //saving the moves (dice throws or card usages), used to call the move function in GameFlow
-    private static int movesLeft;
-    public static void setMovesLeft(int movesLeft) {
-        GameWebSocketController.movesLeft = movesLeft;
-    }
-    public static int getMovesLeft() {
-        return movesLeft;
-    }
-
     //TODO: Setup the game
     private static GameFlow gameFlow = new GameFlow();
 
@@ -239,21 +230,21 @@ public class GameWebSocketController {
     public Map<String, Object> contJunction(String msg){
         Map<String, String> message = gameManagementService.manualParse(msg);
         long selectedSpace = Long.parseLong(message.get("selectedSpace"));
-        return GameFlow.move(movesLeft, selectedSpace);
+        return GameFlow.move(GameFlow.getMovesLeft(), selectedSpace);
     }
 
     @SendTo("/topic/board/dice")
     public Map<String, Object> rollOneDice() { //one die throw
         Map<String, Object> response = new HashMap<>();
         List<Integer> dice = GameFlow.throwDice();
-        setMovesLeft(dice.get(0));
+        GameFlow.setMovesLeft(dice.get(0));
         response.put("results", dice);
         return response;
     }
 
     @SendTo("/topic/board/move")
     public Map<String, Object> move(){
-        return GameFlow.move(movesLeft, GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition());
+        return GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition());
     }
 
     @SendTo("/topic/board/move")
