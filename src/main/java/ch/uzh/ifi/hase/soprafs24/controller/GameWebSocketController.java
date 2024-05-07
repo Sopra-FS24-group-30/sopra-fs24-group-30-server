@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
+import java.util.ArrayList;
 
 @Controller
 public class GameWebSocketController {
@@ -169,8 +171,8 @@ public class GameWebSocketController {
         Map<String, String> message = gameManagementService.manualParse(msg);
 
         Long gameId = Long.valueOf(message.get("gameId"));
-        String playerId = message.get("playerId");
-        boolean joined = gameManagementService.joinGame(gameId, playerId);
+        String userId = message.get("playerId");
+        boolean joined = gameManagementService.joinGame(gameId, userId);
 
         Map <String, Object> response = new HashMap<>();
         response.put("gameId", gameId);
@@ -179,6 +181,7 @@ public class GameWebSocketController {
         }else{
             response.put("joined", false);
         }
+        System.out.println("Joining");
         return response;
     }
 
@@ -187,8 +190,9 @@ public class GameWebSocketController {
     public List<String> lobby(String msg){
         Map<String, String> message = gameManagementService.manualParse(msg);
         Long gameId = Long.valueOf(message.get("gameId"));
+        List<String> response = gameManagementService.lobbyPlayers(gameId);
+        return response;
 
-        return gameManagementService.lobbyPlayers(gameId);
     }
 
     @MessageMapping("/gameReady")
@@ -224,12 +228,50 @@ public class GameWebSocketController {
     @MessageMapping("/game/status")
     @SendTo("/topic/game/status")
     public Map<String, String> gameStatus(String msg){
+        System.out.println("Get Status");
         Map<String, String> message = gameManagementService.manualParse(msg);
         Long gameId = Long.valueOf(message.get("gameId"));
         GameStatus status = gameManagementService.getGameStatus(gameId);
         Map<String, String> response = new HashMap<>();
         response.put("status", status.name());
+        System.out.println(response);
         return response;
+    }
+
+    @MessageMapping("/game/players")
+    @SendTo("/topic/game/players")
+    public Map<String, Object> getPlayers(String msg){
+        System.out.println("getPlayers");
+        Map<String, String> message = gameManagementService.manualParse(msg);
+        Long gameId = Long.valueOf(message.get("gameId"));
+
+        String hostName = message.get("host");
+        System.out.println(hostName);
+
+        List<Player> players = gameManagementService.getActivePlayers(gameId);
+        System.out.println(players);
+        List<String> playerNames = new ArrayList<>();
+
+        for(Player p: players){
+            String name = p.getPlayerName();
+            playerNames.add(name);
+        }
+
+        playerNames.remove(hostName);
+        Map<String, Object> response = new HashMap<>();
+        response.put("players", playerNames);
+        return response;
+    }
+
+    @MessageMapping("/game/setTeammate")
+    public void setTeammates(String msg){
+        Map<String, String> message = gameManagementService.manualParse(msg);
+        Long gameId = Long.valueOf(message.get("gameId"));
+        Game game = gameManagementService.findGame(gameId);
+        String player1 = message.get("host");
+        String player2 = message.get("teammate");
+
+        gameManagementService.setTeams(game, player1, player2);
     }
 
     @MessageMapping("/board/dice")

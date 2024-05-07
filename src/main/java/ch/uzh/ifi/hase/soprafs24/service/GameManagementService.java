@@ -1,29 +1,48 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
+import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs24.service.UserService;
+import ch.uzh.ifi.hase.soprafs24.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 @Service
 public class GameManagementService {
 
     private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
     private static GameService gameService; // Final field for the injected service
+    private static UserService userService;
 
     @Autowired // Optional if it's the only constructor, Spring will use it by default
-    public GameManagementService(GameService gameeService) {
-        gameService = gameeService; // Assigning the injected service
+    public GameManagementService(GameService gameService, UserService userService) {
+        this.gameService = gameService; // Assigning the injected service
+        this.userService = userService;
     }
 
     public Map<String, String> manualParse(String message){
@@ -57,7 +76,8 @@ public class GameManagementService {
         } while(allGames.containsKey(id));
         return id;
     }
-    public static Long createGame(String playerId) {
+
+    public static Long createGame(String userId) {
         Long gameId = createGameId();
         Game game = gameService.setUpGame();
         game.setId(gameId);
@@ -65,18 +85,18 @@ public class GameManagementService {
 
         List<String> playerList = new ArrayList<>();
         List<Player> players = new ArrayList<>();
-        playerList.add(playerId);
+
+        playerList.add(userId);
+        User user = userService.findUserWithId(Long.valueOf(userId));
+        Player player = gameService.createPlayerForGame(user, 1);
+
+        players.add(player);
         game.setPlayers(playerList);
         game.setactive_players(players);
         System.out.println("These are the active players before:");
         System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
-
-        //when creating the came, saved in GameWebSocketController, for further usage there
-        GameWebSocketController.setCurrGame(allGames.get(gameId));
-        GameWebSocketController.setGameId(gameId);
-
         return gameId;
     }
 
@@ -95,24 +115,38 @@ public class GameManagementService {
         return game;
     }
 
-    public boolean joinGame(Long gameId, String playerId) {
+    public Player findPlayerById(Game game, Long playerID) {
+        for (Player player : game.getactive_Players()) {
+            System.out.println("Checking player ID: " + player.getPlayerId() + " against " + playerID);
+
+            if (player.getPlayerId().equals(playerID)) {
+                return player;
+            }
+        }
+        return null; // Return null or throw an exception if the player is not found
+    }
+
+    public boolean joinGame(Long gameId, String userId) {
         // change
         Game game = findGame(gameId);
         System.out.println(gameId);
-        System.out.println(playerId);
+        System.out.println(userId);
+        System.out.println("all players (before adding): " + game.getPlayers());
         if (game == null){
             throw new IllegalStateException("Game does not exist");
-        }
-        if (game.getPlayers().size() >= 4){
+        }else if ((game.getPlayers().size() >= 4) && (!game.getPlayers().contains(userId))){
+            System.out.println("Exception gets thrown here");
             throw new IllegalStateException("Cannot add more players to the game");
-        }
-        if (game.getPlayers().contains(playerId)){
+        }else if (game.getPlayers().contains(userId)){
             return true;
         }
-        game.addPlayer(playerId); // add player to the game
+        User user = userService.findUserWithId(Long.valueOf(userId));
+        Player player = gameService.createPlayerForGame(user, game.getPlayers().size());
+        game.addNEWPlayer(player);
+        game.addPlayer(userId); // add player to the game
 
         System.out.println(gameId);
-        System.out.println(game.getPlayers());
+        System.out.println("all players (after adding)" + game.getPlayers());
         return true;
     }
 
@@ -154,7 +188,8 @@ public class GameManagementService {
      * @param gameId the game ID to check
      */
     public List<String> lobbyPlayers(Long gameId) {
-        return getPlayersInGame(gameId);
+        List<String> plrs = getPlayersInGame(gameId);
+        return plrs;
     }
 
     /**
@@ -174,5 +209,58 @@ public class GameManagementService {
     public GameStatus getGameStatus(Long gameId){
         Game game = findGame(gameId);
         return game.getStatus();
+    }
+
+    /**
+     * Gets all the players in a game
+     * Used to return all the players either for team selection
+     * or for getting all the usesrs for the board
+     * @param gameId the game ID to check
+     */
+    public List<Player> getActivePlayers(Long gameId){
+        Game game = findGame(gameId);
+        return game.getactive_Players();
+    }
+
+    public void setTeams(Game game, String player1, String player2) {
+        Player firstPlayer = null;
+        Player secondPlayer = null;
+
+        System.out.println("Setting the teams");
+        List<Player> playerList = game.getactive_Players();
+        System.out.println("actual player list before parsing: " + playerList);
+        for (Player player : playerList) {
+            System.out.println(player.getPlayerName());
+            if (player.getPlayerName().equals(player1)) {
+                System.out.println("host" + player);
+                firstPlayer = player;
+            }
+            else if (player.getPlayerName().equals(player2)) {
+                System.out.println("teammate" + player);
+                secondPlayer = player;
+            }
+        }
+
+        playerList.remove(firstPlayer);
+        playerList.remove(secondPlayer);
+        System.out.println("after removing: "+ playerList);
+        playerList.add(0, firstPlayer);
+        playerList.add(2, secondPlayer);
+        System.out.println("after adding: "+ playerList);
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(playerList.get(i));
+            int j = i+1;
+            playerList.get(i).setPlayerId((Long.valueOf(j)));
+            System.out.println(playerList.get(i).getPlayerName());
+        }
+
+        playerList.get(0).setTeammateId(playerList.get(2).getPlayerId());
+        playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
+        playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
+        playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
+
+        game.setStatus(GameStatus.PLAYING);
+
     }
 }
