@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game.Effects;
 import org.json.JSONObject;
-
+import org.json.JSONArray;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
@@ -59,7 +59,7 @@ public class Getem {
         String jsonData;
         try {
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
-            System.out.println(jsonData);
+
         } catch (IOException e) {
             throw new RuntimeException("the json object could not be created");
         }
@@ -70,13 +70,13 @@ public class Getem {
             JSONObject effectComplete = jsonObject.getJSONObject(key);
             JSONObject updateCardPositions = effectComplete.getJSONObject("updateCardPositions");
             // Extracting "player" and "moves" components
+            String category = effectComplete.getString("category");
             String player = updateCardPositions.getString("player");
-            System.out.println(player);
-            String moves = updateCardPositions.getString("moves");
-            System.out.println(moves);
+            JSONArray moves = updateCardPositions.getJSONArray("moves");
 
             // Creating a new JSON object to hold "player" and "moves"
             JSONObject cardInfo = new JSONObject();
+            cardInfo.put("category", category);
             cardInfo.put("player", player);
             cardInfo.put("moves", moves);
 

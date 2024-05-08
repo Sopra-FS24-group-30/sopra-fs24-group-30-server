@@ -7,13 +7,16 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
+import ch.uzh.ifi.hase.soprafs24.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.json.JSONObject;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.json.*;
 
 /**
  * GameBoard Controller
@@ -66,5 +69,71 @@ public class GameBoardController {
     public GameBoardGetDTO gameboard(@PathVariable Long id) {
         GameBoard gameBoard = gameBoardService.getGameBoard(id);
         return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(gameBoard);
+    }
+
+    public void pPlayer(Player player, long pId, int cash, long posi, WinCondition wincondi){
+        player.setPlayerId(pId);
+        player.setCash(cash);
+        player.setPosition(posi);
+        player.setWinCondition(wincondi);
+    }
+    @GetMapping("/move")
+    public Map<String, Object> doit(){
+        GameManagementService.createGame("1");
+        GameFlow.setGameBoard();
+        Player p1 = new Player();
+        pPlayer(p1, 1L, 15, 53L, new WinCondition("goldenIsMy..."));
+        p1.addItemNames("TheBrotherAndCo");
+        Player p2 = new Player();
+        pPlayer(p2, 2L, 15, 53L, new WinCondition("goldenIsMy..."));
+        p2.setLandYellow(7);
+        Player p3 = new Player();
+        pPlayer(p3, 3L, 15, 53L, new WinCondition("goldenIsMy..."));
+        Player p4 = new Player();
+        pPlayer(p4, 4L, 15, 53L, new WinCondition("goldenIsMy..."));
+        GameFlow.addPlayer(p1);
+        GameFlow.addPlayer(p2);
+        GameFlow.addPlayer(p3);
+        GameFlow.addPlayer(p4);
+        GameFlow.setTurnPlayerId(2L);
+        GameFlow.setCurrentTurn();
+        GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
+        return GameFlow.move(1, 53L);
+    }
+
+    @GetMapping("/cardPosition")
+    public Map<String, Object> getAllCards() {
+        GameManagementService.createGame("1");
+        GameFlow.setGameBoard();
+        Player p1 = new Player();
+        pPlayer(p1, 1L, 15, 53L, new WinCondition("goldenIsMy..."));
+        p1.addItemNames("TheBrotherAndCo");
+        Player p2 = new Player();
+        pPlayer(p2, 2L, 15, 53L, new WinCondition("goldenIsMy..."));
+        p2.setLandYellow(7);
+        Player p3 = new Player();
+        pPlayer(p3, 3L, 15, 53L, new WinCondition("goldenIsMy..."));
+        Player p4 = new Player();
+        pPlayer(p4, 4L, 15, 53L, new WinCondition("goldenIsMy..."));
+        GameFlow.addPlayer(p1);
+        GameFlow.addPlayer(p2);
+        GameFlow.addPlayer(p3);
+        GameFlow.addPlayer(p4);
+        GameFlow.setTurnPlayerId(2L);
+        GameFlow.setCurrentTurn();
+        GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
+        p1.addCardNames("S1");
+        JSONObject updateCardPositions = Getem.getCards().get("S1");
+        JSONArray movesArray = updateCardPositions.getJSONArray("moves");
+
+        int moves = movesArray.getInt(0);
+        System.out.println(Getem.getCards().get("B14"));
+        return GameFlow.updateCardPositions(Getem.getCards().get("B14"));
+
+    }
+
+    @GetMapping("/cards")
+    public static HashMap<String, JSONObject> getCards() {
+        return Getem.getCards();
     }
 }

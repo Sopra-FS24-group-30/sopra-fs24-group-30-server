@@ -13,17 +13,17 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.Arrays;
+
 
 @RestController
 //TODO: Celine whut the fuck? macht kaputt sobald in production nöd?
@@ -234,5 +234,7 @@ public class UserController {
         return players;
 
     }
+
+
 
 }

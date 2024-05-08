@@ -1,4 +1,24 @@
 {
-  "1": {"updateCardPositions": {"player": "current","moves": "0"}},
-  "2": {"updateCardPositions": {"player": "current","moves": "1"}}
+  "B14": {"category":"Bronze", "updateCardPositions": {"player": "current","moves": ["1", "4"]}},
+  "B26": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["2", "6"]}},
+  "B35": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["3", "5"]}},
+  "B135": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["1", "3", "5"]}},
+  "B246": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["2", "4", "6"]}},
+  "B123": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["1", "2", "3"]}},
+  "B456": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["4", "5", "6"]}},
+  "B07": {"category": "Bronze","updateCardPositions": {"player": "current","moves": ["0", "7"]}},
+  "S0": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["0"]}},
+  "S1": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["1"]}},
+  "S2": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["2"]}},
+  "S3": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["3"]}},
+  "S4": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["4"]}},
+  "S5": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["5"]}},
+  "S6": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["6"]}},
+  "S7": {"category": "Silver","updateCardPositions": {"player": "current","moves": ["7"]}},
+  "G13": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["1", "3"]}},
+  "G26": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["2", "6"]}},
+  "G45": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["4", "5"]}},
+  "G04": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["0", "4"]}},
+  "G37": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["3", "7"]}},
+  "G1256": {"category": "Gold","updateCardPositions": {"player": "current","moves": ["1", "2", "5", "6"]}}
 }
