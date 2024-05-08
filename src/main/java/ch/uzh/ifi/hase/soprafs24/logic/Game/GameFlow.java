@@ -495,9 +495,58 @@ public class GameFlow {
     }
 
     //TODO: GAME OVER FUNCTION
-    private static Map<String, Object> doGameOver(){
+    private static Map<String, Object> doGameOverWinCondi(Player player){
         Map<String, Object> mappi = Map.of("okee", "lessgo");
-        System.out.println(mappi);
+        System.out.println(player.getWinCondition().getWinConditionName());
+        return mappi;
+    }
+
+    private static Map<String, Object> doGameOverMaxTurns(List<Long> rich){
+        Map<String, Object> mappi = new HashMap<>();
+        Set<String> winners = new HashSet<>();
+        List<Object> reason = new ArrayList<>();
+        List<String> winnersReason = new ArrayList<>();
+
+        for (Player player : players){
+            if (player.getWinCondition().getWinConditionName().equals("JackSparrow")){
+                winners.add(players[player.getPlayerId().intValue()-1].getTeammateId().toString());
+                winnersReason.add(player.getPlayerId().toString());
+                reason.add(winnersReason);
+                reason.add("JackSparrow");
+                mappi.put("winners", winners);
+                mappi.put("reason", reason);
+                return mappi;
+            }
+        }
+
+        for (Long pId : rich){
+            winners.add(pId.toString());
+            winners.add(players[pId.intValue()-1].getTeammateId().toString());
+            winnersReason.add(pId.toString());
+        }
+
+        reason.add(winnersReason);
+        reason.add("maxCash");
+
+        if (winners.size() > 2){
+            Set<String> altWinners = new HashSet<>();
+            int randNum = (int) (Math.random()*rich.size());
+            for (int i=0; i<rich.size(); i++){
+                if (i == randNum){
+                    reason.clear();
+                    winnersReason.clear();
+                    winnersReason.add(rich.get(i).toString());
+                    reason.add(winnersReason);
+                    reason.add("maxCash");
+                    altWinners.add(rich.get(i).toString());
+                    altWinners.add(players[rich.get(i).intValue()-1].getTeammateId().toString());
+                }
+            }
+            winners = altWinners;
+        }
+
+        mappi.put("winners", winners);
+        mappi.put("reason", reason);
         return mappi;
     }
 
@@ -508,7 +557,7 @@ public class GameFlow {
             GameWebSocketController.juncMove(toMove(player, listi, moves, color));
             System.out.println("canwin  " + toMove(player, listi, moves, color));
             // GAME OVER
-            GameWebSocketController.endy(doGameOver());
+            GameWebSocketController.endy(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
@@ -538,7 +587,7 @@ public class GameFlow {
         return response;
     }
 
-    //normal walk
+    //normal walk TODO refactor
     public static Map<String, Object> move(int moves, long posi) {
         Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
@@ -566,11 +615,10 @@ public class GameFlow {
             nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
             color = nextSpace.getColor(); //NOSONAR
 
-            //set player to next posi already
             currPosi = nextPosi;
             player.setPosition(currPosi);
 
-            // check if game is over, or player gets cash
+            // check if game is over, or player gets cash, in usual case
             if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
                 return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
             }
@@ -641,9 +689,11 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            GameWebSocketController.endy(doGameOver());
+            GameWebSocketController.endy(doGameOverMaxTurns(findMostCash(players)));
+            System.out.println(doGameOverMaxTurns(findMostCash(players)));
         }
         return Collections.emptyMap();
+
     }
 
     // helper for finding Space by Id
@@ -664,6 +714,22 @@ public class GameFlow {
             }
         }
         return null;
+    }
+
+    //helper to find player with the most cash
+    private static List<Long> findMostCash(Player[] players){
+        List<Long> richest = new ArrayList<>();
+        int maxCash = players[0].getCash();
+        for (Player player : players){
+            if (player.getCash() == maxCash){
+                richest.add(player.getPlayerId());
+            } else if (player.getCash() > maxCash){
+                richest.clear();
+                richest.add(player.getPlayerId());
+                maxCash = player.getCash();
+            }
+        }
+        return richest;
     }
 
     //helper for data representation as dict, move

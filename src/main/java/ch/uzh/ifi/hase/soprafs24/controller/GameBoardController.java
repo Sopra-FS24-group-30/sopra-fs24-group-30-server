@@ -75,8 +75,9 @@ public class GameBoardController {
      * should be deleted at the end
      * or like implemented as actual test
      */
-    public void pPlayer(Player player, long pId, int cash, long posi, WinCondition wincondi){
+    public void pPlayer(Player player, Long teammateId, long pId, int cash, long posi, WinCondition wincondi){
         player.setPlayerId(pId);
+        player.setTeammateId(teammateId);
         player.setCash(cash);
         player.setPosition(posi);
         player.setWinCondition(wincondi);
@@ -86,22 +87,23 @@ public class GameBoardController {
         Long lobbyId = GameManagementService.createGame("1");
         GameFlow.setGameBoard(lobbyId);
         Player p1 = new Player();
-        pPlayer(p1, 1L, 15, 53L, new WinCondition("goldenIsMy..."));
+        pPlayer(p1, 3L, 1L, 150, 53L, new WinCondition("JackSparrow"));
         p1.addItemNames("TheBrotherAndCo");
         Player p2 = new Player();
-        pPlayer(p2, 2L, 15, 53L, new WinCondition("goldenIsMy..."));
+        pPlayer(p2, 4L, 2L, 150, 53L, new WinCondition("golden"));
         p2.setLandYellow(7);
         Player p3 = new Player();
-        pPlayer(p3, 3L, 15, 53L, new WinCondition("goldenIsMy..."));
+        pPlayer(p3, 1L, 3L, 150, 53L, new WinCondition("drunk"));
         Player p4 = new Player();
-        pPlayer(p4, 4L, 15, 53L, new WinCondition("goldenIsMy..."));
+        pPlayer(p4, 2L, 4L, 150, 53L, new WinCondition("drunk"));
+        p4.setLandCat(2);
         GameFlow.addPlayer(p1);
         GameFlow.addPlayer(p2);
         GameFlow.addPlayer(p3);
         GameFlow.addPlayer(p4);
-        GameFlow.setTurnPlayerId(2L);
+        GameFlow.setTurnPlayerId(1L);
         GameFlow.setCurrentTurn(lobbyId);
         GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
-        return GameFlow.move(3, 24L);
+        return GameFlow.move(6, 24L);
     }
 }
