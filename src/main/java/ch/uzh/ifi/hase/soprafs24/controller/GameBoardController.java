@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.json.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.util.*;
+
 
 /**
  * GameBoard Controller
@@ -30,6 +33,8 @@ import org.json.*;
 public class GameBoardController {
 
     private final GameBoardService gameBoardService;
+    @Autowired
+    private GameManagementService gameManagementService;
 
     GameBoardController(GameBoardService gameBoardService) {
         this.gameBoardService = gameBoardService;
@@ -70,6 +75,12 @@ public class GameBoardController {
         GameBoard gameBoard = gameBoardService.getGameBoard(id);
         return DTOMapper.INSTANCE.convertEntityToGameBoardGetDTO(gameBoard);
     }
+
+    /**
+     * test move function with rest
+     * should be deleted at the end
+     * or like implemented as actual test
+     */
 
     public void pPlayer(Player player, long pId, int cash, long posi, WinCondition wincondi){
         player.setPlayerId(pId);

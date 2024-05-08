@@ -36,10 +36,11 @@ public class GameWebSocketController {
     private static Game currGame;
     public static Game getCurrGame() {
         return currGame;
-    }
+
+     }
     public static void setCurrGame(Game currentGame) {
-        currGame = currentGame;
-    }
+     currGame = currentGame;
+     }
 
     //saving the moves (dice throws or card usages), used to call the move function in GameFlow
     private static int movesLeft;
@@ -72,6 +73,7 @@ public class GameWebSocketController {
     public static void handleCards(String msg){
         //idk what to do here
     }
+
 
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable")
@@ -268,6 +270,7 @@ public class GameWebSocketController {
         response.put("players", playerNames);
         return response;
     }
+
 
     @MessageMapping("/game/setTeammate")
     public void setTeammates(String msg){
