@@ -494,10 +494,33 @@ public class GameFlow {
         return retour;
     }
 
-    //TODO: GAME OVER FUNCTION
     private static Map<String, Object> doGameOverWinCondi(Player player){
-        Map<String, Object> mappi = Map.of("okee", "lessgo");
-        System.out.println(player.getWinCondition().getWinConditionName());
+        Map<String, Object> mappi = new HashMap<>();
+        Set<String> winners = new HashSet<>();
+        List<Object> reason = new ArrayList<>();
+        List<String> winnersReason = Arrays.asList(player.getPlayerId().toString());
+
+        Long jack = 50L;
+
+        for (Player p : players) {
+            if (p.getWinCondition().getWinConditionName().equals("JackSparrow")) {
+                jack = p.getPlayerId();
+            }
+        }
+
+        reason.add(winnersReason);
+        reason.add(player.getWinCondition().getWinConditionName());
+        winners.add(player.getPlayerId().toString());
+
+        if (!player.getTeammateId().equals(jack)){
+            winners.add(player.getTeammateId().toString());
+            if (jack!=50L){
+                winners.add(jack.toString());
+            }
+        }
+        mappi.put("winners", winners);
+        mappi.put("reason", reason);
+
         return mappi;
     }
 
@@ -558,6 +581,7 @@ public class GameFlow {
             System.out.println("canwin  " + toMove(player, listi, moves, color));
             // GAME OVER
             GameWebSocketController.endy(doGameOverWinCondi(player));
+            System.out.println(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
