@@ -63,6 +63,7 @@
 |---|---|---|---|
 | 05.05.2024 | Marius | [#34](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/34), [#38](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/38), [#39](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/39), [#43](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/43), [#55](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/55), [#56](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/56) | Pretty UI |
 | 07.05.2024 | Ambros | [#108](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/108), [#105](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/105), [#109](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/109) | extensive Voicechat |
+| 08.05.2024 | Carlos | [#121](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/121), [#122](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/122)| bronze and silver cards |
 |   |   |   |   |
 
 
