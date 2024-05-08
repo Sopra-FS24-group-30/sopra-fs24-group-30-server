@@ -67,6 +67,12 @@ public class GameWebSocketController {
         return response;
     }
 
+    @MessageMapping("/board/cards")
+    @SendTo("/topic/board/cards")
+    public static void handleCards(String msg){
+        //idk what to do here
+    }
+
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable")
     @SendTo("/topic/board/cash")
