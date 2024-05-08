@@ -5,7 +5,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
-
+import org.json.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 public class GameFlow {
@@ -303,6 +304,31 @@ public class GameFlow {
         GameWebSocketController.returnMoney(cashData);
     }
 
+    public static Map<String, Object> updateCardPositions (JSONObject args){
+        System.out.println(args);
+        JSONArray movesArray = args.getJSONArray("moves");
+        String category = args.getString("category");
+        switch (category){
+            case "Silver":
+                int moves = movesArray.getInt(0);
+                Long playerId = getTurnPlayerId();
+                System.out.println(playerId);
+                System.out.println(moves);
+                move(moves, players[(int) (long) playerId-1].getPosition());
+                break;
+            case "Bronze":
+                int movesArrayLength = movesArray.length();
+                SecureRandom random = new SecureRandom();
+                int randomIndex = random.nextInt(movesArrayLength);
+                int randomMoves = movesArray.getInt(randomIndex);
+                Long randomPlayerId = getTurnPlayerId();
+                move(randomMoves, players[(int) (long) randomPlayerId-1].getPosition());
+                break;
+        }
+
+        return Collections.emptyMap();
+    }
+
     /**
      * give in how much each player should pay in order to get how much they will pay based on how much cash they have
      * @param amounts the parameters to be processed
@@ -499,6 +525,7 @@ public class GameFlow {
         if (player.getCanWin()) {
             GameWebSocketController.juncMove(toMove(player, listi, moves, color));
 //            System.out.println("canwin  " + toMove(player, listi, moves, color));
+
             // GAME OVER
             GameWebSocketController.endy(doGameOver());
             return Collections.emptyMap();
@@ -577,6 +604,7 @@ public class GameFlow {
                         GameWebSocketController.setMovesLeft(movies);
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                         GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+
 //                        System.out.println("junctioon  " + toMove(player, listi, moves, color));
 //                        System.out.println(toJunction(player, currPosi, unlock, lock));
                         return Collections.emptyMap();
@@ -591,12 +619,15 @@ public class GameFlow {
                                 lock.add(nextSpace.getNext().get(1));
                                 GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                                 GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
+
+
 //                                System.out.println("gateBro  " + toMove(player, listi, moves, color));
 //                                System.out.println(toJunction(player, currPosi, unlock, lock));
                                 return Collections.emptyMap();
                             }
                         }
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+
 //                        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
                         return move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
@@ -604,7 +635,9 @@ public class GameFlow {
                         GameWebSocketController.setMovesLeft(movies);
                         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
                         GameWebSocketController.specItem(toItem(player));
+
 //                        System.out.println("specitem  " + toMove(player, listi, moves, color));
+
                         return move(GameWebSocketController.getMovesLeft(), player.getPosition());
                     }
                     default -> {
@@ -624,7 +657,10 @@ public class GameFlow {
         }
 
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+
+
 //        System.out.println("endee  " + toMove(player, listi, moves, color));
+
 
         //TODO: Space Effect
         System.out.println("OnSpaceEffect nr: " + nextSpace.getOnSpace());
@@ -741,3 +777,4 @@ public class GameFlow {
      */
 
 }
+

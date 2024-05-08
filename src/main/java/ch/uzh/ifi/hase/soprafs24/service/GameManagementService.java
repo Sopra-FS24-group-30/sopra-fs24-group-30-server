@@ -1,3 +1,4 @@
+
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
@@ -10,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
+import ch.uzh.ifi.hase.soprafs24.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -97,6 +99,7 @@ public class GameManagementService {
         System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
+        GameWebSocketController.setCurrGame(allGames.get(gameId));
         return gameId;
     }
 

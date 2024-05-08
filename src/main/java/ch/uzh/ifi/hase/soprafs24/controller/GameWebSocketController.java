@@ -36,6 +36,7 @@ public class GameWebSocketController {
     private static Game currGame;
     public static Game getCurrGame() {
         return currGame;
+
      }
     public static void setCurrGame(Game currentGame) {
      currGame = currentGame;
@@ -66,6 +67,13 @@ public class GameWebSocketController {
         response.put("gameId", String.valueOf(gameId));//NOSONAR
         return response;
     }
+
+    @MessageMapping("/board/cards")
+    @SendTo("/topic/board/cards")
+    public static void handleCards(String msg){
+        //idk what to do here
+    }
+
 
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable")
@@ -262,6 +270,7 @@ public class GameWebSocketController {
         response.put("players", playerNames);
         return response;
     }
+
 
     @MessageMapping("/game/setTeammate")
     public void setTeammates(String msg){
