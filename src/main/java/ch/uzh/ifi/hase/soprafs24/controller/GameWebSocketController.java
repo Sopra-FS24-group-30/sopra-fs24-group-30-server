@@ -47,10 +47,10 @@ public class GameWebSocketController {
     private static Game currGame;
     public static Game getCurrGame() {
         return currGame;
-     }
+    }
     public static void setCurrGame(Game currentGame) {
-     currGame = currentGame;
-     }
+        currGame = currentGame;
+    }
 
     //saving the moves (dice throws or card usages), used to call the move function in GameFlow
     private static int movesLeft;
@@ -68,14 +68,19 @@ public class GameWebSocketController {
     private GameManagementService gameManagementService;
 
     @MessageMapping("/game/create")
-    @SendTo("/topic/gameCreated")
-    public Map<String, Object> createGame(String playerString) {
+    public void createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = GameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
+        String userId = playerDict.get("playerId");
+
+        System.out.println(userId);
+
+        Long gameId = GameManagementService.createGame(userId);//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
         response.put("gameId", String.valueOf(gameId));//NOSONAR
-        return response;
+
+        String destination = "/queue/gameCreated";
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     //TODO: add handling here add support for choices
