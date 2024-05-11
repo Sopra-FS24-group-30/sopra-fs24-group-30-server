@@ -5,7 +5,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
-
+import org.json.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 public class GameFlow {
@@ -59,7 +60,8 @@ public class GameFlow {
     }
 
     public GameFlow(){
-
+        //setGameBoard();
+        //setCurrentTurn();
     }
 
     /*
@@ -314,6 +316,31 @@ public class GameFlow {
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
         GameWebSocketController.returnMoney(cashData);
+    }
+
+    public static Map<String, Object> updateCardPositions (JSONObject args){
+        System.out.println(args);
+        JSONArray movesArray = args.getJSONArray("moves");
+        String category = args.getString("category");
+        switch (category){
+            case "Silver":
+                int moves = movesArray.getInt(0);
+                Long playerId = getTurnPlayerId();
+                System.out.println(playerId);
+                System.out.println(moves);
+                move(moves, players[(int) (long) playerId-1].getPosition());
+                break;
+            case "Bronze":
+                int movesArrayLength = movesArray.length();
+                SecureRandom random = new SecureRandom();
+                int randomIndex = random.nextInt(movesArrayLength);
+                int randomMoves = movesArray.getInt(randomIndex);
+                Long randomPlayerId = getTurnPlayerId();
+                move(randomMoves, players[(int) (long) randomPlayerId-1].getPosition());
+                break;
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
