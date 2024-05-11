@@ -12,14 +12,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
 
 @Controller
 public class GameWebSocketController {
+
+    //TODO SIMP NOT STATIC BUT FINAL
+    private static SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    public GameWebSocketController(SimpMessagingTemplate messagingTemplate){
+        GameWebSocketController.messagingTemplate = messagingTemplate;
+    }
+
+    private static Long gameId;
+    public static Long getGameId() {
+        return gameId;
+    }
+    public static void setGameId(Long gameId) {
+        GameWebSocketController.gameId = gameId;
+    }
 
     //saving the current Game at the beginning
     private static HashMap<Long,Game> allGames = new HashMap<>();
@@ -35,7 +54,7 @@ public class GameWebSocketController {
      }
 
     //TODO: Setup the game
-    private static GameFlow gameFlow = new GameFlow();
+    private GameFlow gameFlow = new GameFlow();
 
     @Autowired
     private GameManagementService gameManagementService;
@@ -54,7 +73,7 @@ public class GameWebSocketController {
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable/{gameId}")
     @SendTo("/topic/board/cash")
-    public static void handleEffect(String msg){
+    public void handleEffect(String msg){
         JSONObject jsonObject = new JSONObject(msg);
         String key = jsonObject.keys().next();
         String usable = jsonObject.getString(key);
@@ -207,73 +226,81 @@ public class GameWebSocketController {
         gameManagementService.changeGameStatus(gameId, GameStatus.SETUP);
     }
 
-    @MessageMapping("/game/status")
-    @SendTo("/topic/game/status")
-    public Map<String, String> gameStatus(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+    @MessageMapping("/game/{gameId}/status")
+    public void gameStatus(@DestinationVariable Long gameId){
+        System.out.println("Get Status");
+
         GameStatus status = gameManagementService.getGameStatus(gameId);
         Map<String, String> response = new HashMap<>();
         response.put("status", status.name());
-        return response;
+        System.out.println(response);
+
+        String destination = "/topic/game/status/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
-    @MessageMapping("/board/dice")
-    public void diceWalk(){
+
+    @MessageMapping("/board/dice/{gameId}")
+    public void diceWalk(@DestinationVariable Long gameId){
         rollOneDice();
         move();
         //space effect maybe
         //call next player somehow
     }
 
-    @MessageMapping("/board/junction")
-    public Map<String, Object> contJunction(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        long selectedSpace = Long.parseLong(message.get("selectedSpace"));
-        return GameFlow.move(GameFlow.getMovesLeft(), selectedSpace);
+    @MessageMapping("/board/junction/{gameId}")
+    public void contJunction(@DestinationVariable Long gameId, @Payload Map<String, Long> payload){
+        long selectedSpace = payload.get("selectedSpace");
+        String destination = "/topic/board/junction/" + gameId;
+        messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
-    @SendTo("/topic/board/dice")
-    public Map<String, Object> rollOneDice() { //one die throw
+    public static void rollOneDice() { //one die throw
         Map<String, Object> response = new HashMap<>();
         List<Integer> dice = GameFlow.throwDice();
         GameFlow.setMovesLeft(dice.get(0));
         response.put("results", dice);
-        return response;
+        String destination = "/topic/board/dice/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
-    @SendTo("/topic/board/move")
-    public Map<String, Object> move(){
-        return GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition());
+    public static void move(){
+        String destination = "/topic/board/move/" + gameId;
+        messagingTemplate.convertAndSend(destination, GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition()));
     }
 
-    @SendTo("/topic/board/move")
-    public static Map<String, Object> juncMove(Map<String, Object> partialMoveMsg){
-        return partialMoveMsg;
+    public static void juncMove(Map<String, Object> partialMoveMsg){
+        String destination = "/topic/board/move/" + gameId;
+        messagingTemplate.convertAndSend(destination, partialMoveMsg);
     }
 
-    @SendTo("/topic/board/junction")
-    public static Map<String, Object> juncJunc(Map<String, Object> chooseJunctionMsg){
-        return chooseJunctionMsg;
+    public static void juncJunc(Map<String, Object> chooseJunctionMsg, Long playerId){
+        String destination = "/topic/board/junction/" + gameId + "/" + playerId;
+        messagingTemplate.convertAndSend(destination, chooseJunctionMsg);
     }
 
-    @SendTo("/topic/board/goal")
-    public static Map<String, Long> changeGoal(List<GameBoardSpace> spaces){
-        return GameFlow.setBoardGoal(spaces);
+    public static void changeGoal(List<GameBoardSpace> spaces){
+        String destination = "/topic/board/goal/" + gameId;
+        messagingTemplate.convertAndSend(destination, GameFlow.setBoardGoal(spaces));
     }
 
-    @SendTo("/topic/board/newActivePlayer")
-    public static Map<String, Object> newPlayer(Map<String, Object> nextTurnMsg){
-        return nextTurnMsg;
+    public static void newPlayer(Map<String, Object> nextTurnMsg){
+        String destination = "/topic/board/newActivePlayer/" + gameId;
+        messagingTemplate.convertAndSend(destination, nextTurnMsg);
     }
 
-    @SendTo("/topic/board/gameEnd")
-    public static Map<String, Object> endy(Map<String, Object> endGameMsg){
-        return endGameMsg;
+    public static void endy(Map<String, Object> endGameMsg){
+        String destination = "/topic/board/gameEnd/" + gameId;
+        messagingTemplate.convertAndSend(destination, endGameMsg);
     }
 
-    @SendTo("/topic/board/usable")
-    public static Map<String, Object> specItem(Map<String, Object> getItemMsg){
-        return getItemMsg;
+    public static void specItem(Map<String, Object> getItemMsg){
+        String destination = "/topic/board/usable/" + gameId;
+        messagingTemplate.convertAndSend(destination, getItemMsg);
+    }
+
+    public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long playerId){
+        String destination = "/topic/board/winCondition/" + gameId + "/" + playerId;
+        messagingTemplate.convertAndSend(destination, winCondiUpdate);
     }
 }
