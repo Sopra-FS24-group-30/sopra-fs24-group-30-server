@@ -54,14 +54,14 @@ public class GameWebSocketController {
     public static Game getCurrGame() {
         return currGame;
 
-     }
+    }
     public static void setCurrGame(HashMap<Long,Game> currentGame) {
         allGames = currentGame;
-     }
+    }
 
-     public static void addGame(Long lobbyId, Game game){
+    public static void addGame(Long lobbyId, Game game){
         allGames.put(lobbyId,game);
-     }
+    }
 
     //TODO: Setup the game
     private static GameFlow gameFlow = new GameFlow();
@@ -80,11 +80,7 @@ public class GameWebSocketController {
         return response;
     }
 
-    @MessageMapping("/board/cards")
-    @SendTo("/topic/board/cards")
-    public static void handleCards(String msg){
-        //idk what to do here
-    }
+
 
 
     //TODO: add handling here add support for choices
@@ -301,6 +297,23 @@ public class GameWebSocketController {
         //space effect maybe
         //call next player somehow
     }
+    @MessageMapping("/board/cards")
+    //@SendTo("/topic/board/cards")
+    public void handleCardPosition(@Payload Map<String, String> payload){
+        String selectedCard = payload.get("usableUsed");
+        int count = -123;
+
+        if (payload.get("choice")!= null){
+            JSONObject choiceJson = new JSONObject(payload.get("choice"));
+            Map<String, Object> choice = choiceJson.toMap();
+            // Extract the count value from the choice map
+            count = (int) choice.getOrDefault("count", -123);
+        }
+        JSONObject card = Getem.getCards().get(selectedCard);
+        String destination = "/topic/board/cards";
+        messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, count));
+    }
+
 
     @MessageMapping("/board/junction/{gameId}")
     public void contJunction(@DestinationVariable Long gameId, @Payload Map<String, Long> payload){

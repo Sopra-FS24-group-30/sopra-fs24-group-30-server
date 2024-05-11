@@ -318,7 +318,7 @@ public class GameFlow {
         GameWebSocketController.returnMoney(cashData);
     }
 
-    public static Map<String, Object> updateCardPositions (JSONObject args){
+    public static Map<String, Object> updateCardPositions (JSONObject args, int count){
         System.out.println(args);
         JSONArray movesArray = args.getJSONArray("moves");
         String category = args.getString("category");
@@ -337,6 +337,9 @@ public class GameFlow {
                 int randomMoves = movesArray.getInt(randomIndex);
                 Long randomPlayerId = getTurnPlayerId();
                 move(randomMoves, players[(int) (long) randomPlayerId-1].getPosition());
+                break;
+            case "Gold":
+                move(count, players[(int) (long) getTurnPlayerId()-1].getPosition());
                 break;
         }
 

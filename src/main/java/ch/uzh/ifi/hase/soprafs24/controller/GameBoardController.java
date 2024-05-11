@@ -139,7 +139,7 @@ public class GameBoardController {
 
         int moves = movesArray.getInt(0);
         System.out.println(Getem.getCards().get("B14"));
-        return GameFlow.updateCardPositions(Getem.getCards().get("B14"));
+        return GameFlow.updateCardPositions(Getem.getCards().get("G13"), 3);
 
     }
 
