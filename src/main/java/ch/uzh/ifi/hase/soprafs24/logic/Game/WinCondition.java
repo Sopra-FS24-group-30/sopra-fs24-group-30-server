@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import java.util.ArrayList;
 import java.util.List;
-import java.security.SecureRandom;
 
 /**
  * At the start of a game the player gets one of the WinConditions randomly.
@@ -13,27 +13,18 @@ import java.security.SecureRandom;
  * - drunk: Land on a tsunami Space thrice.
  */
 public class WinCondition {
-    private String winConditionName;
 
-    public WinCondition(String winConditionName) {
-        this.winConditionName = winConditionName;
-    }
-
-    public String getWinConditionName(){
-        return winConditionName;
-    }
-
-    public static List<WinCondition> getAllWinConditions(){
-        List<WinCondition> allWinConditions = new ArrayList<>();
-        allWinConditions.add(new WinCondition("JackSparrow"));
-        allWinConditions.add(new WinCondition("Marooned"));
-        allWinConditions.add(new WinCondition("Golden"));
-        allWinConditions.add(new WinCondition("Drunk"));
+    public static List<String> getAllWinConditions(){
+        List<String> allWinConditions = new ArrayList<>();
+        allWinConditions.add("JackSparrow");
+        allWinConditions.add("Marooned");
+        allWinConditions.add("Golden");
+        allWinConditions.add("Drunk");
         return allWinConditions;
     }
 
-    public boolean checkWinConditionMet(Player player){
-        return switch (winConditionName) {
+    public static boolean checkWinConditionMet(Player player){
+        return switch (player.getWinCondition()) {
             case "JackSparrow" -> false; //NOSONAR
             case "Marooned" ->
                     player.getCash() == 0 && player.getCardNames().isEmpty() && player.getItemNames().isEmpty();
@@ -43,12 +34,8 @@ public class WinCondition {
         };
     }
 
-    public static WinCondition getRandomWinCondition() {
-        List<WinCondition> allWinConditions = getAllWinConditions();
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] bytes = new byte[allWinConditions.size()];
-        secureRandom.nextBytes(bytes);
-        int randomIndex = Math.abs(secureRandom.nextInt()) % allWinConditions.size(); //NOSONAR
-        return allWinConditions.get(randomIndex);
+    public static String getRandomWinCondition(Long id, Game game) {
+        List<String> allWinConditions = game.getListOfAllCondition();
+        return allWinConditions.get(id.intValue()-1);
     }
 }

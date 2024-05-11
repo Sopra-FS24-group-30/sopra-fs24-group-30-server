@@ -557,7 +557,7 @@ public class GameFlow {
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
 
-        if (player.getWinCondition().getWinConditionName().equals("Marooned")){
+        if (player.getWinCondition().equals("Marooned")){
             int mCash = (player.getCash() == 0) ? 1 : 0;
             int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
             int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
@@ -695,14 +695,14 @@ public class GameFlow {
         Long jack = 50L;
 
         for (Player p : players) {
-            if (p.getWinCondition().getWinConditionName().equals("JackSparrow")) {
+            if (p.getWinCondition().equals("JackSparrow")) {
                 jack = p.getPlayerId();
                 break;
             }
         }
 
         reason.add(player.getPlayerId().toString());
-        reason.add(player.getWinCondition().getWinConditionName());
+        reason.add(player.getWinCondition());
         winners.add(player.getPlayerId().toString());
 
         if (!player.getTeammateId().equals(jack)){
@@ -723,7 +723,7 @@ public class GameFlow {
         List<String> reason = new ArrayList<>();
 
         for (Player player : players) {
-            if (player.getWinCondition().getWinConditionName().equals("JackSparrow")) {
+            if (player.getWinCondition().equals("JackSparrow")) {
                 winners.add(players[player.getPlayerId().intValue() - 1].getTeammateId().toString());
                 reason.add(player.getPlayerId().toString());
                 reason.add("JackSparrow");
@@ -795,19 +795,19 @@ public class GameFlow {
     private static void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace){
         if ("Yellow".equals(color)){
             player.setLandYellow(player.getLandYellow()+1);
-            if (player.getWinCondition().getWinConditionName().equals("Golden")){
+            if (player.getWinCondition().equals("Golden")){
                 GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId());
                 System.out.println(toWinCondi(player, player.getLandYellow(), 7));
             }
         }
         else if ("Catnami".equals(color) || "26".equals(currentSpace.getOnSpace())){
             player.setLandCat(player.getLandCat()+1);
-            if (player.getWinCondition().getWinConditionName().equals("Drunk")){
+            if (player.getWinCondition().equals("Drunk")){
                 GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId());
                 System.out.println(toWinCondi(player, player.getLandCat(), 3));
             }
         }
-        else if (player.getWinCondition().getWinConditionName().equals("Marooned")){
+        else if (player.getWinCondition().equals("Marooned")){
             int mCash = (player.getCash() == 0) ? 1 : 0;
             int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
             int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
@@ -858,7 +858,7 @@ public class GameFlow {
 
     private static Map<String, Object> toWinCondi(Player player, int progress, int needed){
         Map<String, Object> retour = new HashMap<>();
-        retour.put("name", player.getWinCondition().getWinConditionName());
+        retour.put("name", player.getWinCondition());
         retour.put("progress", progress);
         retour.put("total", needed);
         return retour;

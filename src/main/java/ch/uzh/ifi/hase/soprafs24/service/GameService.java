@@ -1,15 +1,11 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
-import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Ultimate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -51,7 +47,7 @@ public class GameService {
         return id;
     }
 
-    public Player createPlayerForGame(User user, int currentPlayerCount) {
+    public Player createPlayerForGame(User user, int currentPlayerCount, Game game) {
         // This method could be part of setting up a new game or joining an existing one
         if (currentPlayerCount >= 4) {
             throw new IllegalStateException("Cannot add more players to the game. The game is full.");
@@ -63,7 +59,8 @@ public class GameService {
         // Initialize other properties of Player
         player.setPlayerName(user.getUsername());
         player.setCash(15);
-        player.setWinCondition(WinCondition.getRandomWinCondition());
+        player.setWinCondition(WinCondition.getRandomWinCondition(player.getPlayerId(), game));
+        player.setUltimate(Ultimate.getRandomUltis(player.getPlayerId(), game));
         return player;
     }
     public Game setUpGame() {

@@ -15,8 +15,8 @@ public class Player {
     private ArrayList<String> cardNames = new ArrayList<>();
     private transient User user;
 
-    private Ultimate ultimate;
-    private WinCondition winCondition;
+    private String ultimate;
+    private String winCondition;
 
     private Long userId;
     private Long teammateId;
@@ -119,11 +119,11 @@ public class Player {
         this.position = position;
     }
 
-    public Ultimate getUltimate() {
+    public String getUltimate() {
         return ultimate;
     }
 
-    public void setUltimate(Ultimate ultimate) {
+    public void setUltimate(String ultimate) {
         this.ultimate = ultimate;
     }
 
@@ -167,15 +167,15 @@ public class Player {
         this.landCat = landCat;
     }
 
-    public WinCondition getWinCondition() {
+    public String getWinCondition() {
         return winCondition;
     }
 
-    public void setWinCondition(WinCondition winCondition) {
+    public void setWinCondition(String winCondition) {
         this.winCondition = winCondition;
     }
 
     public boolean getCanWin() {
-        return winCondition.checkWinConditionMet(this);
+        return WinCondition.checkWinConditionMet(this);
     }
 }

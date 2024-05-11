@@ -8,12 +8,8 @@ import ch.uzh.ifi.hase.soprafs24.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Random;
-import java.util.Map;
-import java.util.HashMap;
 
 @Service
 public class GameManagementService {
@@ -72,7 +68,9 @@ public class GameManagementService {
 
         playerList.add(userId);
         User user = userService.findUserWithId(Long.valueOf(userId));
-        Player player = gameService.createPlayerForGame(user, 1);
+        Collections.shuffle(game.getListOfAllCondition());
+        Collections.shuffle(game.getListOfAllUltis());
+        Player player = gameService.createPlayerForGame(user, 1, game);
 
         players.add(player);
         game.setPlayers(playerList);
@@ -129,7 +127,7 @@ public class GameManagementService {
             return true;
         }
         User user = userService.findUserWithId(Long.valueOf(userId));
-        Player player = gameService.createPlayerForGame(user, game.getPlayers().size());
+        Player player = gameService.createPlayerForGame(user, game.getPlayers().size(), game);
         game.addNEWPlayer(player);
         game.addPlayer(userId); // add player to the game
 

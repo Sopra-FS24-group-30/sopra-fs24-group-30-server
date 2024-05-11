@@ -7,6 +7,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Ultimate;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
@@ -52,6 +55,11 @@ public class Game implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
     @JsonManagedReference
     private GameBoard gameBoard;
+
+    @ElementCollection
+    private List<String> listOfAllCondition = WinCondition.getAllWinConditions();
+    @ElementCollection
+    private List<String> listOfAllUltis = Ultimate.getAllUltims();
 
     public List<Player> getactive_Players() {
         return active_players;
@@ -118,5 +126,13 @@ public class Game implements Serializable {
 
     public void removePlayer(String Id){
         this.players.remove(Id);
+    }
+
+    public List<String> getListOfAllCondition() {
+        return listOfAllCondition;
+    }
+
+    public List<String> getListOfAllUltis() {
+        return listOfAllUltis;
     }
 }

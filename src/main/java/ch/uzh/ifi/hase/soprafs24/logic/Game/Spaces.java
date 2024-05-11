@@ -65,7 +65,7 @@ public class Spaces {
         //player swap wincondi with unused
 
         System.out.println("meow");
-        List<WinCondition> allWCs = new ArrayList<>();
+        List<String> allWCs = new ArrayList<>();
         for (Player p : players){
             allWCs.add(p.getWinCondition());
         }
