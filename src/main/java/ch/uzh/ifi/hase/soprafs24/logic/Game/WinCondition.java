@@ -26,19 +26,19 @@ public class WinCondition {
     public static List<WinCondition> getAllWinConditions(){
         List<WinCondition> allWinConditions = new ArrayList<>();
         allWinConditions.add(new WinCondition("JackSparrow"));
-        allWinConditions.add(new WinCondition("theMarooned"));
-        allWinConditions.add(new WinCondition("goldenIsMy..."));
-        allWinConditions.add(new WinCondition("drunk"));
+        allWinConditions.add(new WinCondition("Marooned"));
+        allWinConditions.add(new WinCondition("Golden"));
+        allWinConditions.add(new WinCondition("Drunk"));
         return allWinConditions;
     }
 
     public boolean checkWinConditionMet(Player player){
         return switch (winConditionName) {
-            case "JackSparrow" -> false;
-            case "theMarooned" -> //NOSONAR
+            case "JackSparrow" -> false; //NOSONAR
+            case "Marooned" ->
                     player.getCash() == 0 && player.getCardNames().isEmpty() && player.getItemNames().isEmpty();
-            case "goldenIsMy..." -> player.getLandYellow() >= 7;
-            case "drunk" -> player.getLandCat() >= 3;
+            case "Golden" -> player.getLandYellow() >= 7;
+            case "Drunk" -> player.getLandCat() >= 3;
             default -> false;
         };
     }
@@ -48,7 +48,7 @@ public class WinCondition {
         SecureRandom secureRandom = new SecureRandom();
         byte[] bytes = new byte[allWinConditions.size()];
         secureRandom.nextBytes(bytes);
-        int randomIndex = Math.abs(secureRandom.nextInt()) % allWinConditions.size();
+        int randomIndex = Math.abs(secureRandom.nextInt()) % allWinConditions.size(); //NOSONAR
         return allWinConditions.get(randomIndex);
     }
 }

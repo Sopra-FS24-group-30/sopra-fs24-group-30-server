@@ -53,15 +53,21 @@
 |---|---|---|---|
 | 29.04.2024 | Marius | [#65](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/65) | |
 | 02.05.2024 | Marius | [#35](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/35), [#44](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/44), [#46](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/46), [#49](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/49), [#67](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/67) | Mainly concerning Items and Cards (Frontend). |
+| 02.05.2024 | Tam Gian | [#53](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/53) | |
+| 04.05.2024 | Ambros | [#70](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/70), [#97](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/97) | Voice Chat basic                              |
 |   |   |   |   |
-
 
 ## <font style="color: #ff3f3f">Week 6 *(04.05 – 10.05)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
 | 05.05.2024 | Marius | [#34](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/34), [#38](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/38), [#39](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/39), [#43](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/43), [#55](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/55), [#56](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/56) | Pretty UI |
+| 07.05.2024 | Ambros | [#108](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/108), [#105](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/105), [#109](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/109) | extensive Voicechat |
+| 08.05.2024 | Tam Gian | [#113](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/113), [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/86), [#109](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/109), [#27](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/27), [#29](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/29), [#30](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/30) | Game Over |
+| 08.05.2024 | Carlos | [#121](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/121), [#122](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/122) | bronze and silver cards |
+| 10.05.2024 | Marius | [#47](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/47), [#66](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/66), [#68](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/68), [#113](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/113) | |
 |   |   |   |   |
+
 
 ## <font style="color: #ff9f10">Week 7 *(11.05 – 28.05)*</font>
 
@@ -74,3 +80,4 @@
 | Date | Name | Links to Github Issues | Comments |
 |---|---|---|---|
 |   |   |   |   |
+
