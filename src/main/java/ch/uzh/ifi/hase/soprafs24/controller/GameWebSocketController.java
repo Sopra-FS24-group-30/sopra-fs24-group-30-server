@@ -283,6 +283,18 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/board/start")
+    public void startGame(@DestinationVariable Long gameId){
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
+
+        response.put("turn order", players.keySet());
+        response.put("players", players);
+        String destination = "/topic/game/" + gameId +"/board/start";
+
+        messagingTemplate.convertAndSend(destination, response);
+    }
+
     @MessageMapping("/board/dice")
     public void diceWalk(){
         rollOneDice();
