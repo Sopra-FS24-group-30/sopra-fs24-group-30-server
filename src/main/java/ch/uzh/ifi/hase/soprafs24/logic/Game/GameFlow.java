@@ -11,7 +11,7 @@ import java.util.*;
 
 public class GameFlow {
 
-    private static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
+    protected static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
 
     private static Player[] players = new Player[4];
     public static Player[] getPlayers() {
@@ -86,7 +86,7 @@ public class GameFlow {
      * @param playerId
      * @return left or right starting field Id
      */
-    private Long findStart(Integer playerId){
+    public static Long findStart(Integer playerId){
         switch (playerId){
             case 1, 2:
                 return 53L;
@@ -516,7 +516,7 @@ public class GameFlow {
         return Collections.singletonList((int) (Math.random() * 6) + 1);
     }
 
-    private static String randoItem(){
+    public static String randoItem(){
         return allItems[(int) (Math.random()*allItems.length)];
     }
 
@@ -645,7 +645,15 @@ public class GameFlow {
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
         System.out.println("endee  " + toMove(player, listi, moves, color));
 
-        ((Spaces.runFunc<Player, Player[]>) Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(player, players);
+        if (moves == 0) {
+            ((Spaces.runFunc<Player, Player[]>) Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(player, players);
+        } else{
+            ((Spaces.runFunc<Player, Player[]>) Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(player, players);
+        }
+//        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition());
+//        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition());
+//        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition());
+//        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition());
 
         endOfWalkCheck(player, color, currentSpace);
 

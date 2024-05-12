@@ -295,9 +295,9 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/board/dice/{gameId}")
-    public void diceWalk(@DestinationVariable Long gameIde){
-        rollOneDice(gameIde);
-        move(gameIde);
+    public static void diceWalk(){
+        rollOneDice();
+        move();
         //space effect maybe
         //call next player somehow
     }
@@ -309,17 +309,18 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
-    public static void rollOneDice(Long gameIde) { //one die throw
+    public static void rollOneDice() { //one die throw
         Map<String, Object> response = new HashMap<>();
         List<Integer> dice = GameFlow.throwDice();
+        System.out.println("diceee: "+dice);
         GameFlow.setMovesLeft(dice.get(0));
         response.put("results", dice);
-        String destination = "/topic/board/dice/" + gameIde;
+        String destination = "/topic/board/dice/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
 
-    public static void move(Long gameIde){
-        String destination = "/topic/board/move/" + gameIde;
+    public static void move(){
+        String destination = "/topic/board/move/" + gameId;
         messagingTemplate.convertAndSend(destination, GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition()));
     }
 
