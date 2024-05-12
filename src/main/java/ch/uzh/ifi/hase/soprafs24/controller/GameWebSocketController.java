@@ -30,7 +30,7 @@ import java.util.ArrayList;
 @Controller
 public class GameWebSocketController {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    private static SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     public GameWebSocketController(SimpMessagingTemplate messagingTemplate){
@@ -60,7 +60,6 @@ public class GameWebSocketController {
         currGame = currentGame;
     }
 
-    }
     public static void setCurrGame(HashMap<Long,Game> currentGame) {
         allGames = currentGame;
     }
@@ -308,8 +307,9 @@ public class GameWebSocketController {
 
     @MessageMapping("/board/dice")
     public void diceWalk(){
-        rollOneDice();
-        move();
+        // TODO: Change the arguments being passed on
+        rollOneDice(1L);
+        move(1L);
         //space effect maybe
         //call next player somehow
     }
@@ -347,8 +347,8 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, response);
     }
 
-    public static void move(Long gameIde){
-        String destination = "/topic/board/move/" + gameIde;
+    public static void move(Long gameId){
+        String destination = "/topic/board/move/" + gameId;
         messagingTemplate.convertAndSend(destination, GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition()));
     }
 
