@@ -115,7 +115,6 @@ public class GameManagementService {
     }
 
     public boolean joinGame(Long gameId, String userId) {
-        // change
         Game game = findGame(gameId);
         System.out.println(gameId);
         System.out.println(userId);
@@ -250,5 +249,30 @@ public class GameManagementService {
 
         game.setStatus(GameStatus.PLAYING);
 
+    }
+
+    public List<String> getUsables(Player player){
+        List<String> usables = player.getItemNames();
+        if(player.getCardNames() != null){
+            for (String card: player.getCardNames()){
+                usables.add(card);
+            }
+        }
+        return usables;
+    }
+
+    public Map<String, Object> getInformationPlayers(Long gameId){
+        Game game = findGame(gameId);
+        Map<String, Object> players = new HashMap<>();
+
+        for (Player player: game.getactive_Players()){
+            Map<String, Object> dictionary = new HashMap<>();
+
+            dictionary.put("cash", player.getCash());
+            dictionary.put("usables", getUsables(player));
+
+            players.put(String.valueOf(player.getPlayerId()), dictionary);
+        }
+        return players;
     }
 }

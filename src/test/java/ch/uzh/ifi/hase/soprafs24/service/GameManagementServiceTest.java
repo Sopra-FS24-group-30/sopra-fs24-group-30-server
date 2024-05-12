@@ -1,8 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,20 +11,49 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 
+import java.lang.reflect.Field;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class GameManagementServiceTest {
 
     @Autowired
     private GameManagementService gameManagementService;
+
+    private static ConcurrentHashMap<Long, Game> allGames;
+
+    @Mock
+    private GameRepository gameRepository;
+
+    @BeforeEach
+    void setUp(){
+        MockitoAnnotations.initMocks(this);
+
+        try {
+            Field allGamesField = GameManagementService.class.getDeclaredField("allGames");
+            allGamesField.setAccessible(true);
+
+            allGames = new ConcurrentHashMap<>();
+            allGamesField.set(null, allGames);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void testSetTeams_sorted(){
@@ -142,5 +170,58 @@ public class GameManagementServiceTest {
         gameManagementService.setTeams(game, "player 1", "player 4");
 
         assert (GameStatus.PLAYING == game.getStatus());
+    }
+
+    @Test
+    void test_getUsables(){
+        Player player = new Player();
+
+        ArrayList<String> items = new ArrayList<>();
+        items.add("usable1");
+
+        ArrayList<String> cards = new ArrayList<>();
+        cards.add("usable2");
+
+        player.setItemNames(items);
+        player.setCardNames(cards);
+
+        player.addItemNames("usable3");
+        player.addCardNames("usable4");
+
+        List<String> usables = new ArrayList<>();
+        usables.add("usable1");
+        usables.add("usable3");
+        usables.add("usable2");
+        usables.add("usable4");
+
+        assertEquals(usables, gameManagementService.getUsables(player));
+    }
+
+    @Test
+    void test_getInformationPlayers(){
+        Game game = new Game();
+        game.setId(1L);
+
+        List<Player> playerList = new ArrayList<>();
+
+        for(int i=1; i<5; i++){
+            Player player = new Player();
+            player.setPlayerId((long) i);
+            player.setCash(15);
+            playerList.add(player);
+        }
+
+        game.setactive_players(playerList);
+        allGames.put(1L, game);
+
+        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId());
+        System.out.println(results);
+
+        assertEquals(4, results.size(), "There should be information for four players");
+
+        for(Map.Entry<String, Object> entry: results.entrySet()){
+            Map<String, Object> playerInfo = (Map<String, Object>) entry.getValue();
+            assertEquals(15, playerInfo.get("cash"));
+        }
     }
 }

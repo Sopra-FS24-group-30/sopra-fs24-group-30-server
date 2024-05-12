@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 
@@ -19,6 +20,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -26,14 +30,14 @@ import java.util.ArrayList;
 @Controller
 public class GameWebSocketController {
 
-    //TODO SIMP NOT STATIC BUT FINAL
-    private static SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     public GameWebSocketController(SimpMessagingTemplate messagingTemplate){
-        GameWebSocketController.messagingTemplate = messagingTemplate;
+        this.messagingTemplate = messagingTemplate;
     }
 
+    //saving GameId at the beginning
     private static Long gameId;
     public static Long getGameId() {
         return gameId;
@@ -51,8 +55,10 @@ public class GameWebSocketController {
     public static Game getCurrGame(Long lobbyId) {
         return allGames.get(lobbyId);
     }
-    public static Game getCurrGame() {
-        return currGame;
+
+    public static void setCurrGame(Game currentGame) {
+        currGame = currentGame;
+    }
 
     }
     public static void setCurrGame(HashMap<Long,Game> currentGame) {
@@ -70,14 +76,19 @@ public class GameWebSocketController {
     private GameManagementService gameManagementService;
 
     @MessageMapping("/game/create")
-    @SendTo("/topic/gameCreated")
-    public Map<String, Object> createGame(String playerString) {
+    public void createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        Long gameId = GameManagementService.createGame(playerDict.get("playerId"));//NOSONAR
+        String userId = playerDict.get("playerId");
+
+        System.out.println(userId);
+
+        Long gameId = GameManagementService.createGame(userId);//NOSONAR
         Map <String, Object> response = new HashMap<>();
         response.put("message", "game created");
         response.put("gameId", String.valueOf(gameId));//NOSONAR
-        return response;
+
+        String destination = "/queue/gameCreated";
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
 
@@ -201,27 +212,25 @@ public class GameWebSocketController {
         return response;
     }
 
-    @MessageMapping("/game/lobby")
-    @SendTo("/topic/players")
-    public List<String> lobby(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+    @MessageMapping("/game/{gameId}/lobby")
+    public void lobby(@DestinationVariable Long gameId){
         List<String> response = gameManagementService.lobbyPlayers(gameId);
-        return response;
+      
+        String destination = "/topic/players/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
-    @MessageMapping("/gameReady")
-    @SendTo("/topic/gameReady")
-    public Map<String, Object> gameReady(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+    @MessageMapping("/game/{gameId}/gameReady")
+    public void gameReady(@DestinationVariable Long gameId){
         Map<String, Object> response = new HashMap<>();
         if (gameManagementService.getPlayersInGame(gameId).size() == 4){
             response.put("gameReady", true);
         } else{
             response.put("gameReady", false);
         }
-        return response;
+
+        String destination = "/topic/gameReady/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
     @MessageMapping("/game/leave")
@@ -233,34 +242,29 @@ public class GameWebSocketController {
         gameManagementService.leaveGame(gameId, playerId);
     }
 
-    @MessageMapping("/game/setUp")
-    public void setUpGame(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+    @MessageMapping("/game/{gameId}/setUp")
+    public void setUpGame(@DestinationVariable Long gameId){
         gameManagementService.changeGameStatus(gameId, GameStatus.SETUP);
     }
 
-    @MessageMapping("/game/status")
-    @SendTo("/topic/game/status")
-    public Map<String, String> gameStatus(String msg){
+    @MessageMapping("/game/{gameId}/status")
+    public void gameStatus(@DestinationVariable Long gameId){
         System.out.println("Get Status");
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+
         GameStatus status = gameManagementService.getGameStatus(gameId);
         Map<String, String> response = new HashMap<>();
         response.put("status", status.name());
         System.out.println(response);
-        return response;
+
+        String destination = "/topic/game/status/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
-    @MessageMapping("/game/players")
-    @SendTo("/topic/game/players")
-    public Map<String, Object> getPlayers(String msg){
+    @MessageMapping("/game/{gameId}/players")
+    public void getPlayers(@DestinationVariable Long gameId, @Payload Map<String, Object> payload){
         System.out.println("getPlayers");
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
 
-        String hostName = message.get("host");
+        String hostName = (String) payload.get("host");
         System.out.println(hostName);
 
         List<Player> players = gameManagementService.getActivePlayers(gameId);
@@ -275,25 +279,37 @@ public class GameWebSocketController {
         playerNames.remove(hostName);
         Map<String, Object> response = new HashMap<>();
         response.put("players", playerNames);
-        return response;
+
+        String destination = "/topic/game/players/" + gameId;
+        messagingTemplate.convertAndSend(destination, response);
     }
 
-
-    @MessageMapping("/game/setTeammate")
-    public void setTeammates(String msg){
-        Map<String, String> message = gameManagementService.manualParse(msg);
-        Long gameId = Long.valueOf(message.get("gameId"));
+    @MessageMapping("/game/{gameId}/setTeammate")
+    public void setTeammates(@DestinationVariable Long gameId, @Payload Map<String, Object> payload){
         Game game = gameManagementService.findGame(gameId);
-        String player1 = message.get("host");
-        String player2 = message.get("teammate");
+        String player1 = (String) payload.get("host");
+        String player2 = (String) payload.get("teammate");
 
         gameManagementService.setTeams(game, player1, player2);
     }
 
-    @MessageMapping("/board/dice/{gameId}")
-    public void diceWalk(@DestinationVariable Long gameIde){
-        rollOneDice(gameIde);
-        move(gameIde);
+
+    @MessageMapping("/game/{gameId}/board/start")
+    public void startGame(@DestinationVariable Long gameId){
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
+
+        response.put("turn order", players.keySet());
+        response.put("players", players);
+        String destination = "/topic/game/" + gameId +"/board/start";
+
+        messagingTemplate.convertAndSend(destination, response);
+    }
+
+    @MessageMapping("/board/dice")
+    public void diceWalk(){
+        rollOneDice();
+        move();
         //space effect maybe
         //call next player somehow
     }
