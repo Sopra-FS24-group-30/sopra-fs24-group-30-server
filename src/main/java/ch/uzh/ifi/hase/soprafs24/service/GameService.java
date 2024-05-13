@@ -76,6 +76,7 @@ public class GameService {
         game.setactive_players(players);
         return game;
     }
+
     public long createGame(String playerID){
         try{
             Game game = setUpGame();
@@ -91,6 +92,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
         }
     }
+
     public Game getGame(Long id) {
         Optional<Game> game = gameRepository.findById(id);
         return game.orElse(null);
