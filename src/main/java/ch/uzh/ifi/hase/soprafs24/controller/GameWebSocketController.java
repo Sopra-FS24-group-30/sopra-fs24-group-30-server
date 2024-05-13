@@ -57,7 +57,7 @@ public class GameWebSocketController {
         System.out.println("items" + gameFlow.getPlayer(2).getItemNames());
     }
 
-    */
+     */
 
 
     private static SimpMessagingTemplate messagingTemplate;
@@ -430,7 +430,7 @@ public class GameWebSocketController {
 
     public static void returnMoney(CashData cashData, Long gameId) {
         String destination = "/topic/board/" + gameId;
-        //messagingTemplate.convertAndSend(destination,cashData);
+        messagingTemplate.convertAndSend(destination,cashData);
     }
 
     public static void returnMoves(MoveData moveData, Long gameId) {
