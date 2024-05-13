@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
 import org.json.*;
@@ -11,7 +12,7 @@ import java.util.*;
 
 public class GameFlow {
 
-    protected static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
+    protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
 
     private static Player[] players = new Player[4];
     public static Player[] getPlayers() {
@@ -682,7 +683,7 @@ public class GameFlow {
             return Collections.emptyMap();
         }
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-        GameWebSocketController.changeMoney(player, +15);
+        GameWebSocketController.changeCash(toMoney(player, +15));
         System.out.println("canotwin  " + toMove(player, listi, moves, color));
 
         if (player.getWinCondition().equals("ThirdTime")) {
@@ -888,6 +889,16 @@ public class GameFlow {
         return retour;
     }
 
+    private static Map<String, Object> toMoney(Player player, int change) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Integer> details = new HashMap<>();
+        int newAmount = Math.max(player.getCash()+change, 0);
+        player.setCash(newAmount);
+        details.put("newAmountOfMoney", newAmount);
+        details.put("changeAmountOfMoney", change);
+        response.put(player.getPlayerId().toString(), details);
+        return response;
+    }
 
     private void run(){} //NOSONAR
     private void setup(){} //NOSONAR

@@ -1,18 +1,16 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
-import ch.uzh.ifi.hase.soprafs24.logic.Game.Ultimate;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 
@@ -57,9 +55,9 @@ public class Game implements Serializable {
     private GameBoard gameBoard;
 
     @ElementCollection
-    private List<String> listOfAllCondition = WinCondition.getAllWinConditions();
+    private List<String> listOfAllCondition = WinConditionUltimate.getAllWinConditions();
     @ElementCollection
-    private List<String> listOfAllUltis = Ultimate.getAllUltims();
+    private List<String> listOfAllUltis = new ArrayList<>(Getem.getUltimates().keySet());
 
     public List<Player> getactive_Players() {
         return active_players;

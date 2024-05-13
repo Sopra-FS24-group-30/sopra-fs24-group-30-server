@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
 import java.util.ArrayList;
-import java.util.List;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 
 public class Player {
@@ -185,6 +184,6 @@ public class Player {
     }
 
     public boolean getCanWin() {
-        return WinCondition.checkWinConditionMet(this);
+        return WinConditionUltimate.checkWinConditionMet(this);
     }
 }

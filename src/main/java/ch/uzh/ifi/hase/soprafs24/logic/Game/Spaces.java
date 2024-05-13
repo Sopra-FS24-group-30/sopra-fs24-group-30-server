@@ -266,7 +266,7 @@ public class Spaces {
         } else {
             System.out.println("randoStuff 2");
             ArrayList<String> goldItems = getItemsByColor().get("gold");
-            currPlayer.addItemNames(goldItems.get(0));
+            currPlayer.addItemNames(goldItems.get(randomInt(goldItems.size())));
         }
     }
     public static void gift10Money(Object player, Object players) {
@@ -338,9 +338,9 @@ public class Spaces {
      *
      */
     private static Map<String, ArrayList<String>> getItemsByColor(){
-        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo", "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"));
-        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom", "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"));
-        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub", "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"));
+        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo")); // "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"
+        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom")); // "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
         return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
     }
     private static Map<String, ArrayList<String>> getCardsByColor(){

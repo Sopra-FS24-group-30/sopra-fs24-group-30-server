@@ -144,46 +144,6 @@ public class GameWebSocketController {
         return usableData;
     }
 
-    @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
-        return changeMoneys(Map.of(player, change));
-    }
-
-    //#region
-
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2){
-        return changeMoneys(Map.of(player, change, player2, change2));
-    }
-
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3) {
-        return changeMoneys(Map.of(player, change, player2, change2, player3, change3));
-    }
-
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3, Player player4, int change4) { //NOSONAR overloading
-        return changeMoneys(Map.of(player, change, player2, change2, player3, change3, player4, change4));
-    }
-
-    private static Map<String, Map<String, Integer>> changeMoneys(Map<Player, Integer> hoi) {
-        Map<String, Map<String, Integer>> response = new HashMap<>();
-        for (Map.Entry<Player, Integer> entry : hoi.entrySet()) {
-            Player player = entry.getKey();
-            int change = entry.getValue();
-            int newAmount = Math.max(player.getCash()+change, 0);
-            player.setCash(newAmount);
-
-            // Prepare a detailed response for each player
-            Map<String, Integer> details = new HashMap<>();
-            details.put("newAmountOfMoney", newAmount);
-            details.put("changeAmountOfMoney", change);
-            response.put(player.getPlayerId().toString(), details);
-        }
-        return response;
-    }
-    //#endregion
-
     @MessageMapping("/game/join")
     @SendTo("/topic/gameJoined")
     public  Map<String, Object> joinGame(String msg) {
@@ -357,5 +317,10 @@ public class GameWebSocketController {
     public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long playerId){
         String destination = "/topic/board/winCondition/" + gameId + "/" + playerId;
         messagingTemplate.convertAndSend(destination, winCondiUpdate);
+    }
+
+    public static void changeCash(Map<String, Object> cashmsg){
+        String destination = "/topic/board/money/" + gameId;
+        messagingTemplate.convertAndSend(destination, cashmsg);
     }
 }

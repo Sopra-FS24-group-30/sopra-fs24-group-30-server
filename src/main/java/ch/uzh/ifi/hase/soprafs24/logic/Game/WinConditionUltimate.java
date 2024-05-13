@@ -12,7 +12,7 @@ import java.util.List;
  * - Golden: Land on seven golden spaces.
  * - drunk: Land on a tsunami Space thrice.
  */
-public class WinCondition {
+public class WinConditionUltimate {
 
     public static List<String> getAllWinConditions(){
         List<String> allWinConditions = new ArrayList<>();
@@ -41,5 +41,10 @@ public class WinCondition {
     public static String getRandomWinCondition(Long id, Game game) {
         List<String> allWinConditions = game.getListOfAllCondition();
         return allWinConditions.get(id.intValue()-1);
+    }
+
+    public static String getRandomUltimate(Long id, Game game) {
+        List<String> allUltimates = game.getListOfAllUltis();
+        return allUltimates.get(id.intValue()-1);
     }
 }

@@ -4,10 +4,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.Ultimate;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,8 +57,8 @@ public class GameService {
         // Initialize other properties of Player
         player.setPlayerName(user.getUsername());
         player.setCash(15);
-        player.setWinCondition(WinCondition.getRandomWinCondition(player.getPlayerId(), game));
-        player.setUltimate(Ultimate.getRandomUltis(player.getPlayerId(), game));
+        player.setWinCondition(WinConditionUltimate.getRandomWinCondition(player.getPlayerId(), game));
+        player.setUltimate(WinConditionUltimate.getRandomUltimate(player.getPlayerId(), game));
         return player;
     }
     public Game setUpGame() {
