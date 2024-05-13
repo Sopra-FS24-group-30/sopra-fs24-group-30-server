@@ -13,6 +13,7 @@ import java.util.*;
 public class GameFlow {
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
+    protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
 
     private static Player[] players = new Player[4];
     public static Player[] getPlayers() {
@@ -519,6 +520,10 @@ public class GameFlow {
 
     public static String randoItem(){
         return allItems[(int) (Math.random()*allItems.length)];
+    }
+
+    public static String randoCard(){
+        return allCards[(int) (Math.random()*allCards.length)];
     }
 
     private static List<Long> findMostCash(Player[] players){
