@@ -129,6 +129,12 @@ public class GameFlow {
                 return findStart(playerId);
             case "choice": //NOSONAR
                 return Long.valueOf(choices.getString("field"));
+            case "randomPlayer":
+                int player;
+                do{
+                    player = (int) (Math.random() * 3 + 1);
+                }while (player == turnPlayerId);
+                return players[player-1].getPosition();
             default:
                 return (long) Integer.parseInt(fieldId);
         }
@@ -300,7 +306,7 @@ public class GameFlow {
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
-                    int select = (int) Math.random()*playerCards.size()+1;
+                    int select = (int) (Math.random()*playerCards.size());
                     returnCards.add(playerCards.get(select));
                     playerCards.remove(select);
                 }
