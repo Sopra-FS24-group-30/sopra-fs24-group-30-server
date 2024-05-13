@@ -24,6 +24,7 @@ public class Player {
 
     private int landYellow;
     private int landCat;
+    private int passGoal;
 
     public User getUser() {
         return user;
@@ -127,6 +128,14 @@ public class Player {
         this.ultimate = ultimate;
     }
 
+    public String getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(String winCondition) {
+        this.winCondition = winCondition;
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -167,12 +176,12 @@ public class Player {
         this.landCat = landCat;
     }
 
-    public String getWinCondition() {
-        return winCondition;
+    public int getPassGoal() {
+        return passGoal;
     }
 
-    public void setWinCondition(String winCondition) {
-        this.winCondition = winCondition;
+    public void setPassGoal(int passGoal) {
+        this.passGoal = passGoal;
     }
 
     public boolean getCanWin() {

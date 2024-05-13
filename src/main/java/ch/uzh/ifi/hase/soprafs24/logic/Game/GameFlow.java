@@ -557,12 +557,8 @@ public class GameFlow {
         int movies = moves;
         List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
 
-        if (player.getWinCondition().equals("Marooned")){
-            int mCash = (player.getCash() == 0) ? 1 : 0;
-            int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
-            int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
-            GameWebSocketController.winCondiProgress(toWinCondi(player,mCash+mCard+mItem, 3), player.getPlayerId());
-            System.out.println(toWinCondi(player, mCash+mCard+mItem, 3));
+        if (player.getWinCondition().equals("Marooned") || player.getWinCondition().equals("Company")){
+            maroonedCompany(player);
         }
 
         List<Long> listi = new ArrayList<>(); //list of spaceIds that player moves over
@@ -688,6 +684,13 @@ public class GameFlow {
         GameWebSocketController.juncMove(toMove(player, listi, moves, color));
         GameWebSocketController.changeMoney(player, +15);
         System.out.println("canotwin  " + toMove(player, listi, moves, color));
+
+        if (player.getWinCondition().equals("ThirdTime")) {
+            player.setPassGoal(player.getPassGoal()+1);
+            GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), player.getPlayerId());
+            System.out.println(toWinCondi(player, player.getPassGoal(), 2));
+        }
+
         GameWebSocketController.changeGoal(allSpaces);
         if (movies <= 0){
             return Collections.emptyMap();
@@ -815,14 +818,27 @@ public class GameFlow {
                 System.out.println(toWinCondi(player, player.getLandCat(), 3));
             }
         }
-        else if (player.getWinCondition().equals("Marooned")){
-            int mCash = (player.getCash() == 0) ? 1 : 0;
-            int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
-            int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
-            GameWebSocketController.winCondiProgress(toWinCondi(player,mCash+mCard+mItem, 3), player.getPlayerId());
-            System.out.println(toWinCondi(player, mCash+mCard+mItem, 3));
+        else if (player.getWinCondition().equals("Marooned") || player.getWinCondition().equals("Company")){
+            maroonedCompany(player);
         }
         //TODO when win condition gets shuffled, how to send to frontend the new updated progress
+    }
+
+    private static void maroonedCompany(Player player){
+        switch (player.getWinCondition()){
+            case "Marooned" -> {
+                int mCash = (player.getCash() == 0) ? 1 : 0;
+                int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
+                int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
+                GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getPlayerId());
+                System.out.println(toWinCondi(player, mCash + mCard + mItem, 3));
+            }
+            case "Company" -> {
+                int over60 = (player.getCash()>=60) ? 1 : 0;
+                GameWebSocketController.winCondiProgress(toWinCondi(player, over60, 1), player.getPlayerId());
+                System.out.println(toWinCondi(player, over60, 1));
+            }
+        }
     }
 
 
