@@ -30,6 +30,31 @@ import java.util.ArrayList;
 @Controller
 public class GameWebSocketController {
 
+
+    /* testing purposes
+
+    public static void main(String[] args){
+        GameFlow gameFlow = new GameFlow();
+        for(int i=1; i<=4; i++){
+            Player p = new Player();
+            p.setPlayerId((long) i);
+            p.setCash(100);
+            p.setPosition(30L);
+            gameFlow.addPlayer(p);
+        }
+        gameFlow.setTurnPlayerId(1L);
+        gameFlow.setGameId(123456L);
+        gameFlows.put(123456L,gameFlow);
+        handleItems("{\"itemUsed\": \"OnlyFansAbo\"}",123456L);
+        System.out.println("player 1");
+        System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
+        System.out.println("player 2");
+        System.out.println("cash: " + gameFlow.getPlayer(2).getCash());
+    }
+
+
+     */
+
     private static SimpMessagingTemplate messagingTemplate;
     private static Long gameId;
     private static Game currGame;
@@ -196,21 +221,6 @@ public class GameWebSocketController {
 
     }
 
-    @SendTo("/topic/board/cash")
-    public static CashData returnMoney(CashData cashData) {
-        return cashData;
-    }
-
-    @SendTo("/topic/board/move")
-    public static MoveData returnMoves(MoveData move) {
-        return move;
-    }
-
-    @SendTo("/topic/board/usable")
-    public static UsableData returnUsables(UsableData usableData) {
-        return usableData;
-    }
-
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
         return changeMoneys(Map.of(player, change));
@@ -277,6 +287,7 @@ public class GameWebSocketController {
         }
 
         GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameId(gameId);
         gameFlow.setGameBoard(gameId);
         //TODO: change this to players, not active Players
         List<Player> players = allGames.get(gameId).getactive_Players();
@@ -446,5 +457,25 @@ public class GameWebSocketController {
     public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long playerId){
         String destination = "/topic/board/winCondition/" + gameId + "/" + playerId;
         messagingTemplate.convertAndSend(destination, winCondiUpdate);
+    }
+
+    public static void returnMoney(CashData cashData, Long gameId) {
+        String destination = "/topic/board/" + gameId;
+        messagingTemplate.convertAndSend(destination,cashData);
+    }
+
+    public static void returnMoves(MoveData moveData, Long gameId) {
+        String destination = "/topic/board/" + gameId;
+        messagingTemplate.convertAndSend(destination, moveData);
+    }
+
+    public static void returnUsables(UsableData usableData, Long gameId) {
+        String destination = "/topic/board/" + gameId;
+        messagingTemplate.convertAndSend(destination, usableData);
+    }
+
+    public static void returnDice(DiceData diceData, Long gameId){
+        String destination = "/topic/board/" + gameId;
+        messagingTemplate.convertAndSend(destination, diceData);
     }
 }

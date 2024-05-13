@@ -13,12 +13,19 @@ public class GameFlow {
 
     private static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
 
+    private Long gameId;
     private Player[] players = new Player[4];
     private GameBoard gameBoard;
     private Long turnPlayerId;
     private int currentTurn;
     private int movesLeft;
 
+    public Long getGameId() {
+        return gameId;
+    }
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
     public Player[] getPlayers() {
         return players;
     }
@@ -139,7 +146,7 @@ public class GameFlow {
 
         MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
 
-        GameWebSocketController.returnMoves(moveData);
+        GameWebSocketController.returnMoves(moveData,gameId);
     }
 
 
@@ -182,7 +189,7 @@ public class GameFlow {
         UsableData usableData = new UsableData();
         usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
         usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
-        GameWebSocketController.returnUsables(usableData);
+        GameWebSocketController.returnUsables(usableData,gameId);
     }
 
     /**
@@ -316,7 +323,7 @@ public class GameFlow {
         CashData cashData = new CashData();
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
-        GameWebSocketController.returnMoney(cashData);
+        GameWebSocketController.returnMoney(cashData,gameId);
     }
 
     public Map<String, Object> updateCardPositions (JSONObject args, int count){
@@ -482,7 +489,7 @@ public class GameFlow {
      * @return the dice throws
      */
     //TODO: send to frontend infos about money and call move with total
-    public ArrayList<Integer> givePlayerDice(JSONObject definition){
+    public void givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");
         int bonusCount = definition.getInt("bonusCount");
@@ -496,9 +503,14 @@ public class GameFlow {
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
+                CashData cashData = new CashData();
+                int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
+                cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
+                GameWebSocketController.returnMoney(cashData,gameId);
             }
         }
-        return diceThrows;
+        DiceData diceData = new DiceData(diceThrows);
+        GameWebSocketController.returnDice(diceData,gameId);
     }
 
     /**
