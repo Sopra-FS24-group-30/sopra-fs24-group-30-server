@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -292,6 +293,13 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/playerAtLP")
+    public void playersAtLoadingPage(@DestinationVariable Long gameId, @Payload Map<String, String> player){
+        String playerName = player.get("username");
+        gameManagementService.changePlayerStatus(gameId, playerName, PlayerStatus.READY);
+        gameManagementService.setGameReady(gameId);
+
+    }
 
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId){

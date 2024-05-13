@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs24.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class GameManagementService {
 
         playerList.add(userId);
         User user = userService.findUserWithId(Long.valueOf(userId));
-        Player player = gameService.createPlayerForGame(user, 1);
+        Player player = gameService.createPlayerForGame(user, 0);
 
         players.add(player);
         game.setPlayers(playerList);
@@ -246,9 +247,6 @@ public class GameManagementService {
         playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
         playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
         playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
-
-        game.setStatus(GameStatus.PLAYING);
-
     }
 
     public List<String> getUsables(Player player){
@@ -274,5 +272,42 @@ public class GameManagementService {
             players.put(String.valueOf(player.getPlayerId()), dictionary);
         }
         return players;
+    }
+
+    private static Player findPlayerInGame(Game game, String playerName){
+        List<Player> playerList = game.getactive_Players();
+
+        for(Player player: playerList){
+            if(playerName.equals(player.getPlayerName())){
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public void changePlayerStatus(Long gameId, String playerName, PlayerStatus status){
+        Game game = findGame(gameId);
+        Player player = findPlayerInGame(game, playerName);
+
+        if(player == null){
+            throw new IllegalStateException("Player not found");
+        }
+        player.setStatus(status);
+    }
+
+    public void setGameReady(Long gameId){
+
+        Game game = findGame(gameId);
+        List<Player> playerList = game.getactive_Players();
+        int i = 0;
+        for(Player player: playerList){
+            if(player.getStatus()==PlayerStatus.READY){
+                i=i+1;
+            }
+        }
+        System.out.println(i);
+        if(i==4){
+            changeGameStatus(gameId, GameStatus.READY);
+        }
     }
 }
