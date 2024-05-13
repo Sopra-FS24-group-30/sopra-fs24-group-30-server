@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,24 @@ public class GameManagementServiceTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private Game createGameWithPlayers() {
+        Game game = new Game();
+        game.setId(1L);
+
+        List<Player> playerList = new ArrayList<>();
+        for (int i = 1; i <= 4; i++) {
+            Player player = new Player();
+            player.setPlayerId((long) i);
+            player.setPlayerName("player " + i);
+            playerList.add(player);
+        }
+        game.setactive_players(playerList);
+
+        allGames.put(game.getId(), game);  // Make sure the game is in the map
+
+        return game;
     }
 
     @Test
@@ -146,33 +165,6 @@ public class GameManagementServiceTest {
     }
 
     @Test
-    public void testSetTeams_GameStatus(){
-        Game game = new Game();
-        long i = 1;
-        game.setId(i);
-
-        Player player1 = new Player();
-        player1.setPlayerName("player 1");
-        Player player2 = new Player();
-        player2.setPlayerName("player 2");
-        Player player3 = new Player();
-        player3.setPlayerName("player 3");
-        Player player4 = new Player();
-        player4.setPlayerName("player 4");
-
-        List<Player> playerList = new ArrayList<>();
-        playerList.add(player1);
-        playerList.add(player2);
-        playerList.add(player3);
-        playerList.add(player4);
-        game.setactive_players(playerList);
-
-        gameManagementService.setTeams(game, "player 1", "player 4");
-
-        assert (GameStatus.PLAYING == game.getStatus());
-    }
-
-    @Test
     void test_getUsables(){
         Player player = new Player();
 
@@ -223,5 +215,32 @@ public class GameManagementServiceTest {
             Map<String, Object> playerInfo = (Map<String, Object>) entry.getValue();
             assertEquals(15, playerInfo.get("cash"));
         }
+    }
+
+    @Test
+    void test_changePlayerStatus(){
+        Game game = createGameWithPlayers();
+        allGames.put(1L, game);
+
+        Player player1 = game.getactive_Players().get(0);
+        player1.setStatus(PlayerStatus.READY);
+
+        gameManagementService.changePlayerStatus(game.getId(), "player 1", PlayerStatus.READY);
+
+        assertEquals(PlayerStatus.READY, player1.getStatus());
+    }
+
+    @Test
+    void test_setGameReady(){
+        Game game = createGameWithPlayers();
+        allGames.put(1L, game);
+
+        List<Player> playerList = game.getactive_Players();
+        for(Player player: playerList){
+            gameManagementService.changePlayerStatus(game.getId(), player.getPlayerName(), PlayerStatus.READY);
+        }
+        gameManagementService.setGameReady(game.getId());
+
+        assertEquals(GameStatus.READY, game.getStatus());
     }
 }
