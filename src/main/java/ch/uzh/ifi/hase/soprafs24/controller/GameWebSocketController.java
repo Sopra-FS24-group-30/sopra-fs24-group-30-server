@@ -6,13 +6,13 @@ import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
-import ch.uzh.ifi.hase.soprafs24.entity.Game;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -292,6 +292,12 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/playerAtLP")
+    public void playersAtLoadingPage(@DestinationVariable Long gameId, @Payload Map<String, String> player){
+        String playerName = player.get("username");
+        gameManagementService.changePlayerStatus(gameId, playerName, PlayerStatus.READY);
+        gameManagementService.setGameReady(gameId);
+    }
 
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId){
@@ -303,6 +309,7 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId +"/board/start";
 
         messagingTemplate.convertAndSend(destination, response);
+        gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
 
     @MessageMapping("/board/dice")
