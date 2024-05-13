@@ -31,6 +31,12 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
     private static SimpMessagingTemplate messagingTemplate;
+    private static Long gameId;
+    private static Game currGame;
+
+    //saving the current Game at the beginning
+    private static HashMap<Long,Game> allGames = new HashMap<>();
+    private static HashMap<Long,GameFlow> gameFlows = new HashMap<>();
 
     @Autowired
     public GameWebSocketController(SimpMessagingTemplate messagingTemplate){
@@ -38,7 +44,7 @@ public class GameWebSocketController {
     }
 
     //saving GameId at the beginning
-    private static Long gameId;
+
     public static Long getGameId() {
         return gameId;
     }
@@ -46,10 +52,7 @@ public class GameWebSocketController {
         GameWebSocketController.gameId = gameId;
     }
 
-    private static Game currGame;
 
-    //saving the current Game at the beginning
-    private static HashMap<Long,Game> allGames = new HashMap<>();
 
     //TODO WHICH GET CURR GAME
     public static Game getCurrGame(Long lobbyId) {
@@ -69,7 +72,6 @@ public class GameWebSocketController {
     }
 
     //TODO: Setup the game
-    private static HashMap<Long,GameFlow> gameFlows = new HashMap<>();
 
     private static void addGameFlow(Long lobbyId, GameFlow gameFlow){
         gameFlows.put(lobbyId,gameFlow);
@@ -104,6 +106,52 @@ public class GameWebSocketController {
 
 
 
+    @MessageMapping("/board/item/{gameId}")
+    public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject jsonObject = new JSONObject(msg);
+        String itemName = jsonObject.getString("itemUsed");
+        String effectName;
+        JSONObject effectParas;
+        HashMap<String, JSONObject> items = Getem.getItems();
+        JSONObject effectComplete = items.get(itemName);
+        effectName = effectComplete.keys().next();
+        effectParas = effectComplete.getJSONObject(effectName);
+        handleEffects(effectName,effectParas, gameId);
+    }
+
+    @MessageMapping("/board/ultimate/{gameId}")
+    public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject jsonObject = new JSONObject(msg);
+        String usable = jsonObject.getString("ultimateUsed");
+        String effectName;
+        JSONObject effectParas;
+        HashMap<String, JSONObject> items = Getem.getUltimates();
+        JSONObject effectComplete = items.get(usable);
+        effectName = effectComplete.keys().next();
+        effectParas = effectComplete.getJSONObject(effectName);
+        handleEffects(effectName,effectParas,gameId);
+    }
+
+    public static void handleEffects(String effect, JSONObject effectParas, Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
+        switch (effect){
+            case "updateMoney":
+                gameFlow.updateMoney(effectParas);
+                break;
+            case "exchange":
+                //TODO: insert choices here
+                gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
+                break;
+            case "givePlayerDice":
+                gameFlow.givePlayerDice(effectParas);
+                break;
+            case "updatePositions":
+                gameFlow.updatePositions(effectParas);
+                break;
+            default:
+                throw new RuntimeException("the defined effect does not exist");
+        }
+    }
 
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable/{gameId}")
@@ -170,20 +218,7 @@ public class GameWebSocketController {
 
     //#region
 
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2){
-        return changeMoneys(Map.of(player, change, player2, change2));
-    }
 
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3) {
-        return changeMoneys(Map.of(player, change, player2, change2, player3, change3));
-    }
-
-    @SendTo("/topic/board/money")
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change, Player player2, int change2, Player player3, int change3, Player player4, int change4) { //NOSONAR overloading
-        return changeMoneys(Map.of(player, change, player2, change2, player3, change3, player4, change4));
-    }
 
     private static Map<String, Map<String, Integer>> changeMoneys(Map<Player, Integer> hoi) {
         Map<String, Map<String, Integer>> response = new HashMap<>();
@@ -239,6 +274,14 @@ public class GameWebSocketController {
             response.put("gameReady", true);
         } else{
             response.put("gameReady", false);
+        }
+
+        GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameBoard(gameId);
+        //TODO: change this to players, not active Players
+        List<Player> players = allGames.get(gameId).getactive_Players();
+        for(Player player : players){
+            gameFlow.addPlayer(player);
         }
 
         String destination = "/topic/gameReady/" + gameId;
@@ -326,9 +369,9 @@ public class GameWebSocketController {
         //space effect maybe
         //call next player somehow
     }
-    @MessageMapping("/board/cards")
+    @MessageMapping("/board/cards/{gameId}")
     //@SendTo("/topic/board/cards")
-    public void handleCardPosition(@Payload Map<String, String> payload){
+    public void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
         String selectedCard = payload.get("usableUsed");
         int count = -123;
 
@@ -340,6 +383,7 @@ public class GameWebSocketController {
         }
         JSONObject card = Getem.getCards().get(selectedCard);
         String destination = "/topic/board/cards";
+        GameFlow gameFlow = gameFlows.get(gameId);
         messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, count));
     }
 
@@ -348,21 +392,24 @@ public class GameWebSocketController {
     public void contJunction(@DestinationVariable Long gameId, @Payload Map<String, Long> payload){
         long selectedSpace = payload.get("selectedSpace");
         String destination = "/topic/board/junction/" + gameId;
+        GameFlow gameFlow = gameFlows.get(gameId);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
-    public static void rollOneDice(Long gameIde) { //one die throw
+    public static void rollOneDice(Long gameId) { //one die throw
         Map<String, Object> response = new HashMap<>();
-        List<Integer> dice = GameFlow.throwDice();
-        GameFlow.setMovesLeft(dice.get(0));
+        GameFlow gameFlow = gameFlows.get(gameId);
+        List<Integer> dice = gameFlow.throwDice();
+        gameFlow.setMovesLeft(dice.get(0));
         response.put("results", dice);
-        String destination = "/topic/board/dice/" + gameIde;
+        String destination = "/topic/board/dice/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
 
     public static void move(Long gameId){
         String destination = "/topic/board/move/" + gameId;
-        messagingTemplate.convertAndSend(destination, GameFlow.move(GameFlow.getMovesLeft(), GameFlow.getPlayers()[(int)(long)(GameFlow.getTurnPlayerId())].getPosition()));
+        GameFlow gameFlow = gameFlows.get(gameId);
+        messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), gameFlow.getPlayers()[(int)(long)(gameFlow.getTurnPlayerId())].getPosition()));
     }
 
     public static void juncMove(Map<String, Object> partialMoveMsg){
@@ -377,7 +424,8 @@ public class GameWebSocketController {
 
     public static void changeGoal(List<GameBoardSpace> spaces){
         String destination = "/topic/board/goal/" + gameId;
-        messagingTemplate.convertAndSend(destination, GameFlow.setBoardGoal(spaces));
+        GameFlow gameFlow = gameFlows.get(gameId);
+        messagingTemplate.convertAndSend(destination, gameFlow.setBoardGoal(spaces));
     }
 
     public static void newPlayer(Map<String, Object> nextTurnMsg){
