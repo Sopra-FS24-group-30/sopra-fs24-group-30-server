@@ -24,6 +24,15 @@ public class Player {
 
     private int landYellow;
     private int landCat;
+    private boolean ultActive;
+
+    public boolean isUltActive() {
+        return ultActive;
+    }
+
+    public void setUltActive(boolean ultActive) {
+        this.ultActive = ultActive;
+    }
 
     public User getUser() {
         return user;

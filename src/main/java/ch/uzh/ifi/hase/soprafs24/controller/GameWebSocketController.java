@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
 
-    /* testing purposes
+    /*
 
     public static void main(String[] args){
         GameFlow gameFlow = new GameFlow();
@@ -40,6 +40,9 @@ public class GameWebSocketController {
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
+            ArrayList<String> itemNames = new ArrayList<>();
+            itemNames.add("OnlyFansAbo");
+            p.addItemNames(itemNames);
             gameFlow.addPlayer(p);
         }
         gameFlow.setTurnPlayerId(1L);
@@ -48,12 +51,14 @@ public class GameWebSocketController {
         handleItems("{\"itemUsed\": \"OnlyFansAbo\"}",123456L);
         System.out.println("player 1");
         System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
+        System.out.println("items" + gameFlow.getPlayer(1).getItemNames());
         System.out.println("player 2");
         System.out.println("cash: " + gameFlow.getPlayer(2).getCash());
+        System.out.println("items" + gameFlow.getPlayer(2).getItemNames());
     }
 
+    */
 
-     */
 
     private static SimpMessagingTemplate messagingTemplate;
     private static Long gameId;
@@ -141,6 +146,9 @@ public class GameWebSocketController {
         JSONObject effectComplete = items.get(itemName);
         effectName = effectComplete.keys().next();
         effectParas = effectComplete.getJSONObject(effectName);
+        //remove the item from the players hand
+        GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).removeItemNames(itemName);
         handleEffects(effectName,effectParas, gameId);
     }
 
@@ -154,6 +162,9 @@ public class GameWebSocketController {
         JSONObject effectComplete = items.get(usable);
         effectName = effectComplete.keys().next();
         effectParas = effectComplete.getJSONObject(effectName);
+        //set the ultimate to disabled
+        GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).setUltActive(false);
         handleEffects(effectName,effectParas,gameId);
     }
 
@@ -178,48 +189,6 @@ public class GameWebSocketController {
         }
     }
 
-    //TODO: add handling here add support for choices
-    @MessageMapping("/board/usable/{gameId}")
-    @SendTo("/topic/board/cash")
-    public static void handleEffect(String msg, @DestinationVariable("gameId") Long gameId){
-        JSONObject jsonObject = new JSONObject(msg);
-        String key = jsonObject.keys().next();
-        String usable = jsonObject.getString(key);
-        String effect;
-        JSONObject effectParas;
-        GameFlow gameFlow = gameFlows.get(gameId);
-
-        if (key.equals("itemUsed")) {
-            HashMap<String, JSONObject> items = Getem.getItems();
-            JSONObject effectComplete = items.get(usable);
-            effect = effectComplete.keys().next();
-            effectParas = effectComplete.getJSONObject(effect);
-        }
-        else{
-            HashMap<String, JSONObject> items = Getem.getUltimates();
-            JSONObject effectComplete = items.get(usable);
-            effect = effectComplete.keys().next();
-            effectParas = effectComplete.getJSONObject(effect);
-        }
-        switch (effect){
-            case "updateMoney":
-                gameFlow.updateMoney(effectParas);
-                break;
-            case "exchange":
-                //TODO: insert choices here
-                gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
-                break;
-            case "givePlayerDice":
-                gameFlow.givePlayerDice(effectParas);
-                break;
-            case "updatePositions":
-                gameFlow.updatePositions(effectParas);
-                break;
-            default:
-                throw new RuntimeException("the defined effect does not exist");
-        }
-
-    }
 
     @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
     public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
@@ -461,7 +430,7 @@ public class GameWebSocketController {
 
     public static void returnMoney(CashData cashData, Long gameId) {
         String destination = "/topic/board/" + gameId;
-        messagingTemplate.convertAndSend(destination,cashData);
+        //messagingTemplate.convertAndSend(destination,cashData);
     }
 
     public static void returnMoves(MoveData moveData, Long gameId) {
