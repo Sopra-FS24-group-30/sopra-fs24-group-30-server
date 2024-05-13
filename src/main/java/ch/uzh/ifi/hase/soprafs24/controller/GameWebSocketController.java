@@ -149,6 +149,7 @@ public class GameWebSocketController {
         //remove the item from the players hand
         GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).removeItemNames(itemName);
+
         handleEffects(effectName,effectParas, gameId);
     }
 
@@ -165,6 +166,7 @@ public class GameWebSocketController {
         //set the ultimate to disabled
         GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).setUltActive(false);
+
         handleEffects(effectName,effectParas,gameId);
     }
 
@@ -258,12 +260,11 @@ public class GameWebSocketController {
         GameFlow gameFlow = new GameFlow();
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard(gameId);
-        //TODO: change this to players, not active Players
         List<Player> players = allGames.get(gameId).getactive_Players();
         for(Player player : players){
             gameFlow.addPlayer(player);
         }
-
+        gameFlows.put(gameId,gameFlow);
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
