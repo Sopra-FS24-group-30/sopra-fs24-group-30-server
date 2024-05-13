@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
-import ch.uzh.ifi.hase.soprafs24.entity.Game;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,7 +297,6 @@ public class GameWebSocketController {
         String playerName = player.get("username");
         gameManagementService.changePlayerStatus(gameId, playerName, PlayerStatus.READY);
         gameManagementService.setGameReady(gameId);
-
     }
 
     @MessageMapping("/game/{gameId}/board/start")
@@ -311,6 +309,7 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId +"/board/start";
 
         messagingTemplate.convertAndSend(destination, response);
+        gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
 
     @MessageMapping("/board/dice")
