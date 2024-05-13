@@ -121,7 +121,7 @@ public class GameWebSocketController {
     @MessageMapping("/game/create")
     public void createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
-        String userId = playerDict.get("playerId");
+        String userId = playerDict.get("playerId");//NOSONAR
 
         System.out.println(userId);
 
@@ -138,16 +138,20 @@ public class GameWebSocketController {
 
     @MessageMapping("/board/item/{gameId}")
     public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
+        //extract Info from message
         JSONObject jsonObject = new JSONObject(msg);
         String itemName = jsonObject.getString("itemUsed");
         String effectName;
         JSONObject effectParas;
+        JSONObject choices = jsonObject.getJSONObject("choices");
+        gameFlow.setChoices(choices);
+        //get the effect with paras
         HashMap<String, JSONObject> items = Getem.getItems();
         JSONObject effectComplete = items.get(itemName);
         effectName = effectComplete.keys().next();
         effectParas = effectComplete.getJSONObject(effectName);
         //remove the item from the players hand
-        GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).removeItemNames(itemName);
 
         handleEffects(effectName,effectParas, gameId);
@@ -155,16 +159,20 @@ public class GameWebSocketController {
 
     @MessageMapping("/board/ultimate/{gameId}")
     public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
+        //extract Info from message
         JSONObject jsonObject = new JSONObject(msg);
         String usable = jsonObject.getString("ultimateUsed");
+        JSONObject choices = jsonObject.getJSONObject("choices");
+        gameFlow.setChoices(choices);
         String effectName;
         JSONObject effectParas;
+        //get the effect with paras
         HashMap<String, JSONObject> items = Getem.getUltimates();
         JSONObject effectComplete = items.get(usable);
         effectName = effectComplete.keys().next();
         effectParas = effectComplete.getJSONObject(effectName);
         //set the ultimate to disabled
-        GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).setUltActive(false);
 
         handleEffects(effectName,effectParas,gameId);
@@ -430,7 +438,7 @@ public class GameWebSocketController {
     }
 
     public static void returnMoney(CashData cashData, Long gameId) {
-        String destination = "/topic/board/" + gameId;
+        String destination = "/topic/board/" + gameId; //NOSONAR
         messagingTemplate.convertAndSend(destination,cashData);
     }
 

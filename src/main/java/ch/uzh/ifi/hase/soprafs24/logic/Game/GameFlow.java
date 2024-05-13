@@ -19,6 +19,15 @@ public class GameFlow {
     private Long turnPlayerId;
     private int currentTurn;
     private int movesLeft;
+    private JSONObject choices;
+
+    public JSONObject getChoices() {
+        return choices;
+    }
+
+    public void setChoices(JSONObject choices) {
+        this.choices = choices;
+    }
 
     public Long getGameId() {
         return gameId;
@@ -119,7 +128,7 @@ public class GameFlow {
             case "start":
                 return findStart(playerId);
             case "choice": //NOSONAR
-                return 10L;
+                return Long.valueOf(choices.getString("field"));
             default:
                 return (long) Integer.parseInt(fieldId);
         }
@@ -255,7 +264,6 @@ public class GameFlow {
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
-                    //TODO: add function from Ta here
                     int select = (int) (Math.random()*playerItems.size());
                     String itemName = playerItems.get(select);
                     returnItems.add(itemName);
@@ -271,6 +279,7 @@ public class GameFlow {
                 players[playerid-1].removeItemNames(exchanges.get(playerid));
                 break;
         }
+
         return returnItems;
     }
 
@@ -349,6 +358,8 @@ public class GameFlow {
             case "Gold":
                 move(count, players[(int) (long) getTurnPlayerId()-1].getPosition());
                 break;
+            default:
+                throw new RuntimeException("the card with type " + category + " does not exist");
         }
 
         return Collections.emptyMap();
@@ -473,9 +484,8 @@ public class GameFlow {
                     playerIds.add(4);
                 }
                 break;
-            //TODO: get from frontend which number
             case "choice":
-                playerIds.add(2);
+                playerIds.add(Integer.valueOf(choices.getString("playerId")));
                 break;
             default:
                 playerIds.add(Integer.valueOf(specialId));
@@ -488,7 +498,7 @@ public class GameFlow {
      * @param definition parameters for givePlayerDiceEffect
      * @return the dice throws
      */
-    //TODO: send to frontend infos about money and call move with total
+    //TODO: call move with total
     public void givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");
