@@ -65,6 +65,9 @@
 | 07.05.2024 | Ambros | [#108](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/108), [#105](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/105), [#109](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/109) | extensive Voicechat |
 | 08.05.2024 | Tam Gian | [#113](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/113), [#86](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/86), [#109](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/109), [#27](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/27), [#29](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/29), [#30](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/30) | Game Over |
 | 08.05.2024 | Carlos | [#121](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/121), [#122](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/122) | bronze and silver cards |
+| 10.05.2024 | Marius | [#47](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/47), [#66](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/66), [#68](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/68), [#113](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/113) | |
+| 12.05.2024 | Marius | [#115](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/115) | |
+| 12.05.2024 | Céline | [#238](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/238), [#245](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/245), [#28](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/28) (frontend) | |
 |   |   |   |   |
 
 

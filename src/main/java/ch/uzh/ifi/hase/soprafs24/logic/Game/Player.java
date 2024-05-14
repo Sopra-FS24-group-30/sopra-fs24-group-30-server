@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import java.util.ArrayList;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
 public class Player {
 
@@ -13,6 +14,7 @@ public class Player {
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<String> cardNames = new ArrayList<>();
     private transient User user;
+    private PlayerStatus status;
 
     private String ultimate;
     private String winCondition;
@@ -25,6 +27,16 @@ public class Player {
     private int landCat;
     private int passGoal;
 
+    private boolean ultActive;
+
+    public boolean isUltActive() {
+        return ultActive;
+    }
+
+    public void setUltActive(boolean ultActive) {
+        this.ultActive = ultActive;
+    }
+
     public User getUser() {
         return user;
     }
@@ -36,6 +48,10 @@ public class Player {
     public Long getPlayerId() {
         return playerId;
     }
+
+    public void setStatus(PlayerStatus status){this.status = status; }
+
+    public PlayerStatus getStatus(){return status; }
 
     public void setPlayerId(Long playerId) {
         this.playerId = playerId;

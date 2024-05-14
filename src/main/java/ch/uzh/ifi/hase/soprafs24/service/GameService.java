@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,6 +56,7 @@ public class GameService {
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
         // Initialize other properties of Player
+        player.setStatus(PlayerStatus.NOT_PLAYING);
         player.setPlayerName(user.getUsername());
         player.setCash(15);
         player.setWinCondition(WinConditionUltimate.getRandomWinCondition(player.getPlayerId(), game));
@@ -69,8 +71,6 @@ public class GameService {
         game.setactive_players(players);
         return game;
     }
-
-
 
     public long createGame(String playerID){
         try{
@@ -87,8 +87,6 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
         }
     }
-
-
 
     public Game getGame(Long id) {
         Optional<Game> game = gameRepository.findById(id);

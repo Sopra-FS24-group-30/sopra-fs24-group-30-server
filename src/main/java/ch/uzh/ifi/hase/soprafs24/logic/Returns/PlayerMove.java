@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class PlayerMove {
 
     private ArrayList<Long> spaces;
+    //amount of moves left in beginning
     private Long  moves = 0L;
     private String spaceColour;
 

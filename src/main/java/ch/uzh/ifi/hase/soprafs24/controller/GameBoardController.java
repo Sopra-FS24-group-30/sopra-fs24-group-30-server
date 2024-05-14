@@ -79,6 +79,8 @@ public class GameBoardController {
      * should be deleted at the end
      * or like implemented as actual test
      */
+
+    /*
     public void pPlayer(Player player, Long teammateId, long pId, int cash, long posi, String wincondi){
         player.setPlayerId(pId);
         player.setTeammateId(teammateId);
@@ -105,10 +107,10 @@ public class GameBoardController {
         GameFlow.addPlayer(p2);
         GameFlow.addPlayer(p3);
         GameFlow.addPlayer(p4);
-        GameFlow.setTurnPlayerId(2L);
+        GameFlow.setTurnPlayerId(1L);
         GameFlow.setCurrentTurn(lobbyId);
         GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
-        return GameFlow.move(5, 27L);
+        return GameFlow.move(1, 53L);
     }
 
     @GetMapping("/cardPosition")
@@ -138,7 +140,7 @@ public class GameBoardController {
 
         int moves = movesArray.getInt(0);
         System.out.println(Getem.getCards().get("B14"));
-        return GameFlow.updateCardPositions(Getem.getCards().get("B14"));
+        return GameFlow.updateCardPositions(Getem.getCards().get("G13"), 3);
 
     }
 
@@ -146,4 +148,5 @@ public class GameBoardController {
     public static HashMap<String, JSONObject> getCards() {
         return Getem.getCards();
     }
+     */
 }
