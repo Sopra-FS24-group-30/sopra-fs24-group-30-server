@@ -130,6 +130,13 @@ public class GameFlow {
         }
     }
 
+    public void updateTurns(JSONObject args){
+        int turn = args.getInt("newTurnNumber");
+        setCurrentTurn(turn);
+        TurnActiveData turnActiveData = TurnActiveData.prepareData(this);
+        GameWebSocketController.returnTurnActive(turnActiveData,gameId);
+    }
+
     public void shuffle(JSONObject args){
         String type = args.getString("type");
         switch (type){

@@ -191,6 +191,9 @@ public class GameWebSocketController {
             case "shuffle":
                 gameFlow.shuffle(effectParas);
                 break;
+            case "updateTurns":
+                gameFlow.updateTurns(effectParas);
+                break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
         }
@@ -467,5 +470,10 @@ public class GameWebSocketController {
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
         String destination = "/topic/board/ultimate" + gameId;
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
+    }
+
+    public static void returnTurnActive(TurnActiveData turnActiveData, Long gameId){
+        String destination = "/topic/board/newActivePlayer" + gameId;
+        messagingTemplate.convertAndSend(destination,turnActiveData);
     }
 }
