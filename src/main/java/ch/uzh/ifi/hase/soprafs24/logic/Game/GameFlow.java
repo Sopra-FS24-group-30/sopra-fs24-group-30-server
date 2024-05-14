@@ -512,9 +512,7 @@ public class GameFlow {
         int cashAmount = definition.getInt("money");
         ArrayList<Integer> diceThrows = new ArrayList<>();
 
-        for(int i=0;i<diceCount;i++){
-            diceThrows.add((int) (Math.random()*6+1));
-        }
+        diceThrows.addAll(throwDice(diceCount));
 
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
@@ -527,6 +525,19 @@ public class GameFlow {
         }
         DiceData diceData = new DiceData(diceThrows);
         GameWebSocketController.returnDice(diceData,gameId);
+        int totalAmount = 0;
+        for(Integer dice : diceThrows){
+            totalAmount += dice;
+        }
+        move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
+    }
+
+    public ArrayList<Integer> throwDice(int amount){
+        ArrayList<Integer> diceThrows = new ArrayList<>();
+        for(int i=0;i<amount;i++){
+            diceThrows.add((int) (Math.random()*6+1));
+        }
+        return diceThrows;
     }
 
     /**
@@ -542,9 +553,6 @@ public class GameFlow {
 
     public void addPlayer(Player player){
         players[(int) (long)player.getPlayerId()-1] = player;
-    }
-    public List<Integer> throwDice() {
-        return Collections.singletonList((int) (Math.random() * 6) + 1);
     }
 
     private String randoItem(){

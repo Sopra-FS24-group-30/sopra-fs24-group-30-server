@@ -18,11 +18,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -395,7 +391,7 @@ public class GameWebSocketController {
     public static void rollOneDice(Long gameId) { //one die throw
         Map<String, Object> response = new HashMap<>();
         GameFlow gameFlow = gameFlows.get(gameId);
-        List<Integer> dice = gameFlow.throwDice();
+        List<Integer> dice = gameFlow.throwDice(1);
         gameFlow.setMovesLeft(dice.get(0));
         response.put("results", dice);
         String destination = "/topic/board/dice/" + gameId;
@@ -445,22 +441,22 @@ public class GameWebSocketController {
     }
 
     public static void returnMoney(CashData cashData, Long gameId) {
-        String destination = "/topic/board/" + gameId; //NOSONAR
+        String destination = "/topic/board/money" + gameId; //NOSONAR
         messagingTemplate.convertAndSend(destination,cashData);
     }
 
     public static void returnMoves(MoveData moveData, Long gameId) {
-        String destination = "/topic/board/" + gameId;
+        String destination = "/topic/board/move" + gameId;
         messagingTemplate.convertAndSend(destination, moveData);
     }
 
     public static void returnUsables(UsableData usableData, Long gameId) {
-        String destination = "/topic/board/" + gameId;
+        String destination = "/topic/board/usables" + gameId;
         messagingTemplate.convertAndSend(destination, usableData);
     }
 
     public static void returnDice(DiceData diceData, Long gameId){
-        String destination = "/topic/board/" + gameId;
+        String destination = "/topic/board/dice" + gameId;
         messagingTemplate.convertAndSend(destination, diceData);
     }
 }
