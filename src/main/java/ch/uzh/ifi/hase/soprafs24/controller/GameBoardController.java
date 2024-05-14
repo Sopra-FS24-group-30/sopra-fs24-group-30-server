@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameBoardGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.*;
@@ -109,7 +108,7 @@ public class GameBoardController {
         GameFlow.setTurnPlayerId(2L);
         GameFlow.setCurrentTurn(lobbyId);
         GameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
-        return GameFlow.move(1, 47L);
+        return GameFlow.move(5, 27L);
     }
 
     @GetMapping("/cardPosition")

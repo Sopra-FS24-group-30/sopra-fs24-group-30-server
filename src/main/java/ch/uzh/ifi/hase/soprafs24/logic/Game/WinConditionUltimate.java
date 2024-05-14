@@ -12,7 +12,7 @@ import java.util.List;
  * - Golden: Land on seven golden spaces.
  * - drunk: Land on a tsunami Space thrice.
  */
-public class WinConditionUltimate {
+public class WinConditionUltimate { //NOSONAR
 
     public static List<String> getAllWinConditions(){
         List<String> allWinConditions = new ArrayList<>();

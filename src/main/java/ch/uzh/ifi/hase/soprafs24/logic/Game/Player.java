@@ -167,6 +167,10 @@ public class Player {
         this.landYellow = landYellow;
     }
 
+    public void addLandYellow() {
+        this.landYellow = this.landYellow + 1;
+    }
+
     public int getLandCat() {
         return landCat;
     }
@@ -175,12 +179,20 @@ public class Player {
         this.landCat = landCat;
     }
 
+    public void addLandCat() {
+        this.landCat = this.landCat + 1;
+    }
+
     public int getPassGoal() {
         return passGoal;
     }
 
     public void setPassGoal(int passGoal) {
         this.passGoal = passGoal;
+    }
+
+    public void addPassGoal() {
+        this.passGoal = this.passGoal + 1;
     }
 
     public boolean getCanWin() {
