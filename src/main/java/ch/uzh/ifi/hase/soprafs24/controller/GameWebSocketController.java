@@ -97,7 +97,6 @@ public class GameWebSocketController {
         allGames.put(lobbyId,game);
     }
 
-    //TODO: Setup the game
 
     private static void addGameFlow(Long lobbyId, GameFlow gameFlow){
         gameFlows.put(lobbyId,gameFlow);
@@ -181,7 +180,6 @@ public class GameWebSocketController {
                 gameFlow.updateMoney(effectParas);
                 break;
             case "exchange":
-                //TODO: insert choices here
                 gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
                 break;
             case "givePlayerDice":
@@ -189,6 +187,9 @@ public class GameWebSocketController {
                 break;
             case "updatePositions":
                 gameFlow.updatePositions(effectParas);
+                break;
+            case "shuffle":
+                gameFlow.shuffle(effectParas);
                 break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
@@ -461,5 +462,10 @@ public class GameWebSocketController {
     public static void returnDice(DiceData diceData, Long gameId){
         String destination = "/topic/board/dice" + gameId;
         messagingTemplate.convertAndSend(destination, diceData);
+    }
+
+    public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
+        String destination = "/topic/board/ultimate" + gameId;
+        messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 }

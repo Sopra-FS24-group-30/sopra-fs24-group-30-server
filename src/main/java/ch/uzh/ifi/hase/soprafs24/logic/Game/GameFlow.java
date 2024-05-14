@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
 import java.security.SecureRandom;
@@ -126,6 +127,27 @@ public class GameFlow {
                 return players[player-1].getPosition();
             default:
                 return (long) Integer.parseInt(fieldId);
+        }
+    }
+
+    public void shuffle(JSONObject args){
+        String type = args.getString("type");
+        switch (type){
+            case "ultimates":
+                ArrayList<String> ultiNames = new ArrayList<>();
+                for(Player player : players){
+                    ultiNames.add(player.getUltimateName());
+                }
+                Collections.shuffle(ultiNames);
+                for(int i=0;i<4;i++){
+                    players[i].setUltimateName(ultiNames.get(i));
+                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
+                }
+                break;
+            default:
+                throw new RuntimeException("this type of shuffling: " + type + " is not yet implemented");
+
         }
     }
 

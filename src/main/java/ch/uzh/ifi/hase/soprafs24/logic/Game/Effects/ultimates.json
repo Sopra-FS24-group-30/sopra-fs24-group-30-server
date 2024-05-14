@@ -1,5 +1,6 @@
 {
   "PickPocket": {"updateMoney": {"type": "relative","amount": {"others":"-50","current":"givenAmount"}}},
   "FreshStart": {"updatePositions": {"player": "others","field": "start"}},
-  "Teleport": {"updatePositions": {"player": "current","field": "choice"}}
+  "Teleport": {"updatePositions": {"player": "current","field": "choice"}},
+  "BigShuffle": {"shuffle": {"type":  "ultimates"}}
 }

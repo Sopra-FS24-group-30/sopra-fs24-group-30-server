@@ -17,7 +17,7 @@ public class Player {
     private transient User user;
     private PlayerStatus status;
 
-    private Ultimate ultimate;
+    private String ultimateName;
     private WinCondition winCondition;
 
     private Long userId;
@@ -134,12 +134,12 @@ public class Player {
         this.position = position;
     }
 
-    public Ultimate getUltimate() {
-        return ultimate;
+    public String getUltimateName() {
+        return ultimateName;
     }
 
-    public void setUltimate(Ultimate ultimate) {
-        this.ultimate = ultimate;
+    public void setUltimateName(String ultimate) {
+        this.ultimateName = ultimate;
     }
 
     public Long getUserId() {
