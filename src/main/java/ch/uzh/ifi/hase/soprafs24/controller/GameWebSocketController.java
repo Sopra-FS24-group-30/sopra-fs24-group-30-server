@@ -260,15 +260,6 @@ public class GameWebSocketController {
         } else{
             response.put("gameReady", false);
         }
-
-        GameFlow gameFlow = new GameFlow();
-        gameFlow.setGameId(gameId);
-        gameFlow.setGameBoard(gameId);
-        List<Player> players = allGames.get(gameId).getactive_Players();
-        for(Player player : players){
-            gameFlow.addPlayer(player);
-        }
-        gameFlows.put(gameId,gameFlow);
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
@@ -348,6 +339,18 @@ public class GameWebSocketController {
         response.put("turn order", players.keySet());
         response.put("players", players);
         String destination = "/topic/game/" + gameId +"/board/start";
+
+        GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameId(gameId);
+        gameFlow.setGameBoard(gameId);
+        gameFlow.setCurrentTurn(1);
+        int startingPlayer = (int) (Math.random()*4+1);
+        gameFlow.setTurnPlayerId((long) startingPlayer);
+        List<Player> activePlayers = allGames.get(gameId).getactive_Players();
+        for(Player player : activePlayers){
+            gameFlow.addPlayer(player);
+        }
+        gameFlows.put(gameId,gameFlow);
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);

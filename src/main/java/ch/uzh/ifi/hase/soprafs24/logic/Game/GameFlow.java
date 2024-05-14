@@ -60,8 +60,8 @@ public class GameFlow {
     public int getCurrentTurn() {
         return currentTurn;
     }
-    public void setCurrentTurn(Long lobbyId) {
-        this.currentTurn = GameWebSocketController.getCurrGame(lobbyId).getRoundNum();
+    public void setCurrentTurn(int currTurn) {
+        this.currentTurn = currTurn;
     }
 
     public void setMovesLeft(int movesLeft) {
@@ -69,17 +69,6 @@ public class GameFlow {
     }
     public int getMovesLeft() {
         return movesLeft;
-    }
-
-    public  void initializeGame(Long gameId){
-        setGameBoard(gameId);
-        setCurrentTurn(gameId);
-        setTurnPlayerId(1L);
-    }
-
-    public GameFlow(){
-        //setGameBoard();
-        //setCurrentTurn();
     }
 
     /*
