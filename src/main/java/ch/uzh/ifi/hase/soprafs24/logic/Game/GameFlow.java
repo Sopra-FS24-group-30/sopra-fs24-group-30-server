@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
@@ -135,6 +136,22 @@ public class GameFlow {
         setCurrentTurn(turn);
         TurnActiveData turnActiveData = TurnActiveData.prepareData(this);
         GameWebSocketController.returnTurnActive(turnActiveData,gameId);
+    }
+
+    public void useRandomUsable(JSONObject args){
+        String type = args.getString("type");
+        Integer amount = args.getInt("amount");
+        switch (type){
+            case "item":
+                for (int i=1;i<=amount;i++){
+                    String itemName = Getem.getNoChoiceItem();
+                    getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
+                    System.out.println("item USed: " + itemName);
+                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                }
+
+        }
+
     }
 
     public void shuffle(JSONObject args){

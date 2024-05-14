@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -30,6 +31,29 @@ public class Getem {
         }
 
         return ret;
+    }
+
+    public static String getNoChoiceItem(){
+        String jsonData;
+        try{
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
+        }catch (IOException e){
+            throw new RuntimeException("the json object could not be created");
+        }
+
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        ArrayList<String> itemNames = new ArrayList<>();
+        Iterator<String> keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            if(!effectComplete.toString().contains("choice")){
+                itemNames.add(key);
+            }
+        }
+        Collections.shuffle(itemNames);
+        return itemNames.get(0);
     }
 
     public static HashMap<String, JSONObject> getUltimates(){

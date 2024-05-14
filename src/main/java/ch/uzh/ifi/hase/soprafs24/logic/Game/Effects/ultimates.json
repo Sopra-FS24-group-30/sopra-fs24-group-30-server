@@ -3,5 +3,6 @@
   "FreshStart": {"updatePositions": {"player": "others","field": "start"}},
   "Teleport": {"updatePositions": {"player": "current","field": "choice"}},
   "BigShuffle": {"shuffle": {"type":  "ultimates"}},
-  "HoldUp": {"updateTurns": {"newTurnNumber": 15}}
+  "HoldUp": {"updateTurns": {"newTurnNumber": 15}},
+  "Chameleon": {"useRandomUsable": {"type": "item", "amount": 1}}
 }

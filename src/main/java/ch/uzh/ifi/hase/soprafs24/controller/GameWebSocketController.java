@@ -27,8 +27,9 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
 
-    /*
 
+
+    /*
     public static void main(String[] args){
         GameFlow gameFlow = new GameFlow();
         for(int i=1; i<=4; i++){
@@ -44,7 +45,7 @@ public class GameWebSocketController {
         gameFlow.setTurnPlayerId(1L);
         gameFlow.setGameId(123456L);
         gameFlows.put(123456L,gameFlow);
-        handleItems("{\"itemUsed\": \"OnlyFansAbo\"}",123456L);
+        handleUltimate("{\"ultimateUsed\": \"Chameleon\",\"choices\": {}}",123456L);
         System.out.println("player 1");
         System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
         System.out.println("items" + gameFlow.getPlayer(1).getItemNames());
@@ -135,6 +136,7 @@ public class GameWebSocketController {
     public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
         //extract Info from message
+        System.out.println(msg);
         JSONObject jsonObject = new JSONObject(msg);
         String itemName = jsonObject.getString("itemUsed");
         String effectName;
@@ -193,6 +195,9 @@ public class GameWebSocketController {
                 break;
             case "updateTurns":
                 gameFlow.updateTurns(effectParas);
+                break;
+            case "useRandomUsable":
+                gameFlow.useRandomUsable(effectParas);
                 break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
