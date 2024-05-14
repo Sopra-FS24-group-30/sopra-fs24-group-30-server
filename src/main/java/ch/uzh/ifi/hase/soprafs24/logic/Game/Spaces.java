@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.UsableData;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
 import java.util.*;
@@ -101,6 +102,39 @@ public class Spaces {
             }
         }
     }
+    public static void gambling(GameFlow gameflow){
+        Player[] players = gameflow.getPlayers();
+        Player currPlayer = players[gameflow.getTurnPlayerId().intValue()-1];
+        int random = randomInt(2);
+        boolean win = random < 2;
+        random = randomInt(2);
+        boolean item = random < 2;
+        if(item) {
+            if (win) {
+                ArrayList<String> items = new ArrayList<>();
+                for(int i=0;i<currPlayer.getItemNames().size();i++){
+                    items.add(GameFlow.randoItem());
+                }
+                currPlayer.addItemNames(items);
+            }else {
+                currPlayer.setItemNames(new ArrayList<>());
+            }
+        }else {
+            //cards
+            if (win) {
+                ArrayList<String> cards = new ArrayList<>();
+                for(int i=0;i<currPlayer.getCardNames().size();i++){
+                    cards.add(GameFlow.randoItem());
+                }
+                currPlayer.addCardNames(cards);
+            }else {
+                currPlayer.setCardNames(new ArrayList<>());
+            }
+        }
+        UsableData usableData = UsableData.prepateDataItems(gameflow);
+        GameWebSocketController.returnUsables(usableData, gameflow.getGameId());
+    }
+
     public static void catnami(Object player, Object players, Object gameId) {
         Player currPlayer = (Player) player;
         Player[] currPlayers = (Player[]) players;
