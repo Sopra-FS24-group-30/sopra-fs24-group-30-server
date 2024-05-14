@@ -1,36 +1,121 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game.Effects;
 import org.json.JSONObject;
-
+import org.json.JSONArray;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class Getem {
 
-    public static HashMap<String, ArrayList<String>> getItems(){
-        String jsonData = null;
+
+    public static HashMap<String, JSONObject> getItems(){
+        String jsonData;
         try{
-            jsonData = getJson();
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
         }catch (IOException e){
             throw new RuntimeException("the json object could not be created");
         }
-        JSONObject obj = new JSONObject(jsonData);
-        //String pageName = obj.getJSONObject("pageInfo").getString("pageName");
+        JSONObject jsonObject = new JSONObject(jsonData);
 
-        HashMap<String, ArrayList<String>> ret = new HashMap<String, ArrayList<String>>();
-        ArrayList<String> m = new ArrayList<>();
-        m.add("1");
-        ret.put("1",m);
+        HashMap<String, JSONObject> ret = new HashMap<>();
+        Iterator<String> keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            ret.put(key,effectComplete);
+        }
+
         return ret;
     }
 
-    private static String getJson() throws IOException {
+    public static HashMap<String, JSONObject> getUltimates(){
+        HashMap<String, JSONObject> ultimates = new HashMap<>();
 
+        String jsonData;
         try{
-            BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/ItemEffects/items.json"));
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json");
+        }catch (IOException e){
+            throw new RuntimeException("the json object could not be created");
+        }
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        Iterator<String> keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            ultimates.put(key,effectComplete);
+        }
+
+        return ultimates;
+    }
+
+    public static HashMap<String, JSONObject> getLandOnSpaces(){
+        HashMap<String, JSONObject> landOns = new HashMap<>();
+
+        String jsonData;
+        try{
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/landOnSpaces.json");
+        }catch (IOException e){
+            throw new RuntimeException("the json object could not be created");
+        }
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        Iterator<String> keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            landOns.put(key,effectComplete);
+        }
+
+        return landOns;
+    }
+
+    public static HashMap<String, JSONObject> getCards() {
+        HashMap<String, JSONObject> cards = new HashMap<>();
+
+        String jsonData;
+        try {
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
+
+        } catch (IOException e) {
+            throw new RuntimeException("the json object could not be created");
+        }
+        JSONObject jsonObject = new JSONObject(jsonData);
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            JSONObject updateCardPositions = effectComplete.getJSONObject("updateCardPositions");
+            // Extracting "player" and "moves" components
+            String category = effectComplete.getString("category");
+            String player = updateCardPositions.getString("player");
+            JSONArray moves = updateCardPositions.getJSONArray("moves");
+
+            // Creating a new JSON object to hold "player" and "moves"
+            JSONObject cardInfo = new JSONObject();
+            cardInfo.put("category", category);
+            cardInfo.put("player", player);
+            cardInfo.put("moves", moves);
+
+            // Putting the card information into the cards map
+            cards.put(key, cardInfo);
+        }
+        System.out.println(cards);
+
+        return cards;
+    }
+
+
+
+    private static String getJson(String path) throws IOException {
+        BufferedReader reader = null;
+        try{
+            //TODO: make try with here
+            reader = new BufferedReader(new FileReader(path));
             StringBuilder stringBuilder = new StringBuilder();
             String line = null;
             String ls = System.lineSeparator();
@@ -45,6 +130,10 @@ public class Getem {
             return stringBuilder.toString();
         }catch(IOException e){
             throw new IOException("error while parsing file");
+        }finally {
+            if(reader != null){
+                reader.close();
+            }
         }
 
     }

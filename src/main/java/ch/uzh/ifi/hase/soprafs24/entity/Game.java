@@ -73,7 +73,6 @@ public class Game implements Serializable {
         return gameBoard;
     }
 
-
     public Long getId() {
         return id;
     }

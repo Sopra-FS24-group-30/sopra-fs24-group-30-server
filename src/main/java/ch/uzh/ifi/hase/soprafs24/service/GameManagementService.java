@@ -1,46 +1,33 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
-import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs24.service.UserService;
-import ch.uzh.ifi.hase.soprafs24.service.GameService;
+import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
+import ch.uzh.ifi.hase.soprafs24.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 
-import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
+
 @Service
 public class GameManagementService {
 
-    private ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
-    private final GameService gameService; // Final field for the injected service
+    private static GameService gameService; // Final field for the injected service
+    private static UserService userService;
 
     @Autowired // Optional if it's the only constructor, Spring will use it by default
-    public GameManagementService(GameService gameService) {
+    public GameManagementService(GameService gameService, UserService userService) {
         this.gameService = gameService; // Assigning the injected service
+        this.userService = userService;
     }
 
     public Map<String, String> manualParse(String message){
@@ -66,7 +53,7 @@ public class GameManagementService {
      * If the game already exists, this method does nothing.
      * @param gameId the unique identifier for the new game
      */
-    public Long createGameId(){
+    public static Long createGameId(){
         Random random = new Random();
         long id;
         do{
@@ -74,7 +61,8 @@ public class GameManagementService {
         } while(allGames.containsKey(id));
         return id;
     }
-    public Long createGame(String playerId) {
+
+    public static Long createGame(String userId) {
         Long gameId = createGameId();
         Game game = gameService.setUpGame();
         game.setId(gameId);
@@ -82,13 +70,22 @@ public class GameManagementService {
 
         List<String> playerList = new ArrayList<>();
         List<Player> players = new ArrayList<>();
-        playerList.add(playerId);
+
+        playerList.add(userId);
+        User user = userService.findUserWithId(Long.valueOf(userId));
+        Player player = gameService.createPlayerForGame(user, 0);
+
+        players.add(player);
         game.setPlayers(playerList);
         game.setactive_players(players);
         System.out.println("These are the active players before:");
         System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
+
+        //when creating the came, saved in GameWebSocketController, for further usage there
+        GameWebSocketController.addGame(gameId,allGames.get(gameId));
+        //GameWebSocketController.setCurrGame(allGames.get(gameId));
         return gameId;
     }
 
@@ -99,7 +96,7 @@ public class GameManagementService {
      * @return true if the client was added successfully, false if the game is full or does not exist
      */
 
-    public Game findGame(Long gameId){
+    public static Game findGame(Long gameId){
         Game game = allGames.get(gameId);
         if (game == null){
             throw new IllegalArgumentException("Game not found");
@@ -107,24 +104,37 @@ public class GameManagementService {
         return game;
     }
 
-    public boolean joinGame(Long gameId, String playerId) {
-        // change
+    public Player findPlayerById(Game game, Long playerID) {
+        for (Player player : game.getactive_Players()) {
+            System.out.println("Checking player ID: " + player.getPlayerId() + " against " + playerID);
+
+            if (player.getPlayerId().equals(playerID)) {
+                return player;
+            }
+        }
+        return null; // Return null or throw an exception if the player is not found
+    }
+
+    public boolean joinGame(Long gameId, String userId) {
         Game game = findGame(gameId);
         System.out.println(gameId);
-        System.out.println(playerId);
+        System.out.println(userId);
+        System.out.println("all players (before adding): " + game.getPlayers());
         if (game == null){
             throw new IllegalStateException("Game does not exist");
-        }
-        if (game.getPlayers().size() >= 4){
+        }else if ((game.getPlayers().size() >= 4) && (!game.getPlayers().contains(userId))){
+            System.out.println("Exception gets thrown here");
             throw new IllegalStateException("Cannot add more players to the game");
-        }
-        if (game.getPlayers().contains(playerId)){
+        }else if (game.getPlayers().contains(userId)){
             return true;
         }
-        game.addPlayer(playerId); // add player to the game
+        User user = userService.findUserWithId(Long.valueOf(userId));
+        Player player = gameService.createPlayerForGame(user, game.getPlayers().size());
+        game.addNEWPlayer(player);
+        game.addPlayer(userId); // add player to the game
 
         System.out.println(gameId);
-        System.out.println(game.getPlayers());
+        System.out.println("all players (after adding)" + game.getPlayers());
         return true;
     }
 
@@ -187,5 +197,117 @@ public class GameManagementService {
     public GameStatus getGameStatus(Long gameId){
         Game game = findGame(gameId);
         return game.getStatus();
+    }
+
+    /**
+     * Gets all the players in a game
+     * Used to return all the players either for team selection
+     * or for getting all the usesrs for the board
+     * @param gameId the game ID to check
+     */
+    public List<Player> getActivePlayers(Long gameId){
+        Game game = findGame(gameId);
+        return game.getactive_Players();
+    }
+
+    public void setTeams(Game game, String player1, String player2) {
+        Player firstPlayer = null;
+        Player secondPlayer = null;
+
+        System.out.println("Setting the teams");
+        List<Player> playerList = game.getactive_Players();
+        System.out.println("actual player list before parsing: " + playerList);
+        for (Player player : playerList) {
+            System.out.println(player.getPlayerName());
+            if (player.getPlayerName().equals(player1)) {
+                System.out.println("host" + player);
+                firstPlayer = player;
+            }
+            else if (player.getPlayerName().equals(player2)) {
+                System.out.println("teammate" + player);
+                secondPlayer = player;
+            }
+        }
+
+        playerList.remove(firstPlayer);
+        playerList.remove(secondPlayer);
+        System.out.println("after removing: "+ playerList);
+        playerList.add(0, firstPlayer);
+        playerList.add(2, secondPlayer);
+        System.out.println("after adding: "+ playerList);
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(playerList.get(i));
+            int j = i+1;
+            playerList.get(i).setPlayerId((Long.valueOf(j)));
+            System.out.println(playerList.get(i).getPlayerName());
+        }
+
+        playerList.get(0).setTeammateId(playerList.get(2).getPlayerId());
+        playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
+        playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
+        playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
+    }
+
+    public List<String> getUsables(Player player){
+        List<String> usables = player.getItemNames();
+        if(player.getCardNames() != null){
+            for (String card: player.getCardNames()){
+                usables.add(card);
+            }
+        }
+        return usables;
+    }
+
+    public Map<String, Object> getInformationPlayers(Long gameId){
+        Game game = findGame(gameId);
+        Map<String, Object> players = new HashMap<>();
+
+        for (Player player: game.getactive_Players()){
+            Map<String, Object> dictionary = new HashMap<>();
+
+            dictionary.put("cash", player.getCash());
+            dictionary.put("usables", getUsables(player));
+
+            players.put(String.valueOf(player.getPlayerId()), dictionary);
+        }
+        return players;
+    }
+
+    private static Player findPlayerInGame(Game game, String playerName){
+        List<Player> playerList = game.getactive_Players();
+
+        for(Player player: playerList){
+            if(playerName.equals(player.getPlayerName())){
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public void changePlayerStatus(Long gameId, String playerName, PlayerStatus status){
+        Game game = findGame(gameId);
+        Player player = findPlayerInGame(game, playerName);
+
+        if(player == null){
+            throw new IllegalStateException("Player not found");
+        }
+        player.setStatus(status);
+    }
+
+    public void setGameReady(Long gameId){
+
+        Game game = findGame(gameId);
+        List<Player> playerList = game.getactive_Players();
+        int i = 0;
+        for(Player player: playerList){
+            if(player.getStatus()==PlayerStatus.READY){
+                i=i+1;
+            }
+        }
+        System.out.println(i);
+        if(i==4){
+            changeGameStatus(gameId, GameStatus.READY);
+        }
     }
 }

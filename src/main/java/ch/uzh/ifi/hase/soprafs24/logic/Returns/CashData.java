@@ -28,6 +28,27 @@ public class CashData {
         player4.setChangeAmountOfMoney(cash4);
     }
 
+    public void setPlayerAmountAndUpdate(int playerId, int newCash, int cashChange){
+        switch (playerId){
+            case 1:
+                player1.setNewAmountOfMoney(newCash);
+                player1.setChangeAmountOfMoney(cashChange);
+                break;
+            case 2:
+                player2.setNewAmountOfMoney(newCash);
+                player2.setChangeAmountOfMoney(cashChange);
+                break;
+            case 3:
+                player3.setNewAmountOfMoney(newCash);
+                player3.setChangeAmountOfMoney(cashChange);
+                break;
+            case 4:
+                player4.setNewAmountOfMoney(newCash);
+                player4.setChangeAmountOfMoney(cashChange);
+                break;
+        }
+    }
+
     public void setPlayer1newAmount(int cash){
         player1.setNewAmountOfMoney(cash);
     }

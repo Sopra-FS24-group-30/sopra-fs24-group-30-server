@@ -5,30 +5,83 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
-
+import org.json.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 public class GameFlow {
 
     private static final String[] allItems = {"TheBrotherAndCo", "MagicMushroom", "SuperMagicMushroom", "UltraMagicMushroom", "OnlyFansSub", "TreasureChest"};
 
-    private static Player[] players = new Player[4];
-    private static GameBoard gameBoard;
-    private static Long turnPlayerId;
-    public static Long getTurnPlayerId() {
-        return turnPlayerId;
+    private Long gameId;
+    private Player[] players = new Player[4];
+    private GameBoard gameBoard;
+    private Long turnPlayerId;
+    private int currentTurn;
+    private int movesLeft;
+    private JSONObject choices;
+
+    public JSONObject getChoices() {
+        return choices;
     }
 
-    public static void setTurnPlayerId(Long turnPlayerId) {
-        GameFlow.turnPlayerId = turnPlayerId;
+    public void setChoices(JSONObject choices) {
+        this.choices = choices;
     }
-    public static Player[] getPlayers(){
+
+    public Long getGameId() {
+        return gameId;
+    }
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+    public Player[] getPlayers() {
         return players;
     }
-
-    public Player getPlayer(Integer playerId){
-        return players[playerId-1];
+    public Player getPlayer(Integer playerId) {
+        return players[playerId - 1];
     }
+
+
+    public GameBoard getGameBoard(){
+        return gameBoard;
+    }
+    public void setGameBoard(Long lobbyId) {
+        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+    }
+
+    public Long getTurnPlayerId() {
+        return turnPlayerId;
+    }
+    public void setTurnPlayerId(Long turnoPlayerId) {
+        this.turnPlayerId = turnoPlayerId;
+    }
+
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+    public void setCurrentTurn(Long lobbyId) {
+        this.currentTurn = GameWebSocketController.getCurrGame(lobbyId).getRoundNum();
+    }
+
+    public void setMovesLeft(int movesLeft) {
+        this.movesLeft = movesLeft;
+    }
+    public int getMovesLeft() {
+        return movesLeft;
+    }
+
+    public  void initializeGame(Long gameId){
+        setGameBoard(gameId);
+        setCurrentTurn(gameId);
+        setTurnPlayerId(1L);
+    }
+
+    public GameFlow(){
+        //setGameBoard();
+        //setCurrentTurn();
+    }
+
     /*
     possible Effects
     Items can have the following effects:
@@ -44,8 +97,6 @@ public class GameFlow {
         force a player to do an action
      */
 
-
-    //TODO: add numbers for the starting
 
     /**
      * find the starting fields for the players
@@ -77,7 +128,13 @@ public class GameFlow {
             case "start":
                 return findStart(playerId);
             case "choice": //NOSONAR
-                return 10L;
+                return Long.valueOf(choices.getString("field"));
+            case "randomPlayer":
+                int player;
+                do{
+                    player = (int) (Math.random() * 3 + 1);
+                }while (player == turnPlayerId);
+                return players[player-1].getPosition();
             default:
                 return (long) Integer.parseInt(fieldId);
         }
@@ -104,7 +161,7 @@ public class GameFlow {
 
         MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
 
-        GameWebSocketController.returnMoves(moveData);
+        GameWebSocketController.returnMoves(moveData,gameId);
     }
 
 
@@ -147,7 +204,7 @@ public class GameFlow {
         UsableData usableData = new UsableData();
         usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
         usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
-        GameWebSocketController.returnUsables(usableData);
+        GameWebSocketController.returnUsables(usableData,gameId);
     }
 
     /**
@@ -213,7 +270,6 @@ public class GameFlow {
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
-                    //TODO: add function from Ta here
                     int select = (int) (Math.random()*playerItems.size());
                     String itemName = playerItems.get(select);
                     returnItems.add(itemName);
@@ -229,9 +285,9 @@ public class GameFlow {
                 players[playerid-1].removeItemNames(exchanges.get(playerid));
                 break;
         }
+
         return returnItems;
     }
-
 
     /**
      * remove the cards from the player and give the cards gained this way back in a list
@@ -250,7 +306,7 @@ public class GameFlow {
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
-                    int select = (int) Math.random()*playerCards.size()+1;
+                    int select = (int) (Math.random()*playerCards.size());
                     returnCards.add(playerCards.get(select));
                     playerCards.remove(select);
                 }
@@ -282,7 +338,37 @@ public class GameFlow {
         CashData cashData = new CashData();
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
-        GameWebSocketController.returnMoney(cashData);
+        GameWebSocketController.returnMoney(cashData,gameId);
+    }
+
+    public Map<String, Object> updateCardPositions (JSONObject args, int count){
+        System.out.println(args);
+        JSONArray movesArray = args.getJSONArray("moves");
+        String category = args.getString("category");
+        switch (category){
+            case "Silver":
+                int moves = movesArray.getInt(0);
+                Long playerId = getTurnPlayerId();
+                System.out.println(playerId);
+                System.out.println(moves);
+                move(moves, players[(int) (long) playerId-1].getPosition());
+                break;
+            case "Bronze":
+                int movesArrayLength = movesArray.length();
+                SecureRandom random = new SecureRandom();
+                int randomIndex = random.nextInt(movesArrayLength);
+                int randomMoves = movesArray.getInt(randomIndex);
+                Long randomPlayerId = getTurnPlayerId();
+                move(randomMoves, players[(int) (long) randomPlayerId-1].getPosition());
+                break;
+            case "Gold":
+                move(count, players[(int) (long) getTurnPlayerId()-1].getPosition());
+                break;
+            default:
+                throw new RuntimeException("the card with type " + category + " does not exist");
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
@@ -344,7 +430,6 @@ public class GameFlow {
         return calculatedAmount;
     }
 
-
     /**
      * helperfunction for calculating how much money is given
      * @param description the defined amount
@@ -405,9 +490,8 @@ public class GameFlow {
                     playerIds.add(4);
                 }
                 break;
-            //TODO: get from frontend which number
             case "choice":
-                playerIds.add(2);
+                playerIds.add(Integer.valueOf(choices.getString("playerId")));
                 break;
             default:
                 playerIds.add(Integer.valueOf(specialId));
@@ -415,28 +499,43 @@ public class GameFlow {
         return playerIds;
     }
 
-
     /**
      * throws multiple dice and gives money if the numbers match, returns the summed number which was thrown
      * @param definition parameters for givePlayerDiceEffect
      * @return the dice throws
      */
-    //TODO: send to frontend infos about money and call move with total
-    private ArrayList<Integer> givePlayerDice(JSONObject definition){
+    //TODO: call move with total
+    public void givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");
         int bonusCount = definition.getInt("bonusCount");
         int cashAmount = definition.getInt("money");
         ArrayList<Integer> diceThrows = new ArrayList<>();
 
-        for(int i=0;i<diceCount;i++){
-            diceThrows.add((int) (Math.random()*6+1));
-        }
+        diceThrows.addAll(throwDice(diceCount));
 
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
+                CashData cashData = new CashData();
+                int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
+                cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
+                GameWebSocketController.returnMoney(cashData,gameId);
             }
+        }
+        DiceData diceData = new DiceData(diceThrows);
+        GameWebSocketController.returnDice(diceData,gameId);
+        int totalAmount = 0;
+        for(Integer dice : diceThrows){
+            totalAmount += dice;
+        }
+        move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
+    }
+
+    public ArrayList<Integer> throwDice(int amount){
+        ArrayList<Integer> diceThrows = new ArrayList<>();
+        for(int i=0;i<amount;i++){
+            diceThrows.add((int) (Math.random()*6+1));
         }
         return diceThrows;
     }
@@ -454,20 +553,272 @@ public class GameFlow {
 
     public void addPlayer(Player player){
         players[(int) (long)player.getPlayerId()-1] = player;
-    } //NOSONAR
-
-    //TODO: notify frontend about turn is done
-    private void endTurn(Long playerId){} //NOSONAR
-
-
-    public static List<Integer> throwDice(){
-        return Collections.singletonList((int) (Math.random() * 6) + 1);
     }
 
-    //maybe split update player up into cash,item,card,posi?
-    private void updatePlayer(){} //NOSONAR
+    private String randoItem(){
+        return allItems[(int) (Math.random()*allItems.length)];
+    }
 
-    public static Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){
+    private List<Long> findMostCash(Player[] players){
+        List<Long> richest = new ArrayList<>();
+        int maxCash = players[0].getCash();
+        for (Player player : players){
+            if (player.getCash() == maxCash){
+                richest.add(player.getPlayerId());
+            } else if (player.getCash() > maxCash){
+                richest.clear();
+                richest.add(player.getPlayerId());
+                maxCash = player.getCash();
+            }
+        }
+        return richest;
+    }
+
+    private Map<String, Object> nextPlayer() {
+        long maxi = 4L;
+        turnPlayerId++;
+        if (turnPlayerId > maxi) {
+            currentTurn++;
+            turnPlayerId = 1L;
+        }
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", currentTurn);
+        retour.put("activePlayer", turnPlayerId.toString());
+        return retour;
+    }
+
+
+    //normal walk TODO refactor
+    public Map<String, Object> move(int moves, long posi) {
+        //currentTurn = 20;
+        Player player = players[(int) (turnPlayerId-1)];
+        Long currPosi = posi;
+        int movies = moves;
+        List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
+
+        if (player.getWinCondition().getWinConditionName().equals("Marooned")){
+            int mCash = (player.getCash() == 0) ? 1 : 0;
+            int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
+            int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
+            GameWebSocketController.winCondiProgress(toWinCondi(player,mCash+mCard+mItem, 3), player.getPlayerId());
+            System.out.println(toWinCondi(player, mCash+mCard+mItem, 3));
+        }
+
+        List<Long> listi = new ArrayList<>(); //list of spaceIds that player moves over
+
+        GameBoardSpace currentSpace = findSpaceById(allSpaces, currPosi); //space currently on initialize
+        List<String> nextSpaceIds = currentSpace.getNext(); //list of next spaces of space currently on
+        Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
+        GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi);
+        String color = currentSpace.getColor(); //color of next space
+
+        //check if game is over, or player gets cash, in case the player moves 0
+        if (moves==0 && "BlueGoal".equals(color) && currentSpace.getIsGoal()){
+            return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
+        }
+
+        while (movies > 0) {
+            currentSpace = findSpaceById(allSpaces, currPosi);
+            nextSpaceIds = currentSpace.getNext(); //NOSONAR
+            nextPosi = Long.parseLong(nextSpaceIds.get(0));
+            listi.add(nextPosi);
+            nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
+            color = nextSpace.getColor(); //NOSONAR
+
+            currPosi = nextPosi;
+            player.setPosition(currPosi);
+
+            // check if game is over, or player gets cash, in usual case
+            if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
+                return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
+            }
+
+            // "partial end of walk", check on what decision can be done.
+            // walk can never end in these space types btw (junction, gate, specialItem)
+            if (nextSpace.getOnSpace() == null) {
+                switch (color) {
+                    case "Junction" -> {
+                        List<String> unlock = nextSpace.getNext();
+                        List<String> lock = new ArrayList<>();
+                        setMovesLeft(movies);
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId());
+                        System.out.println("junctioon  " + toMove(player, listi, moves, color));
+                        System.out.println(toJunction(player, currPosi, unlock, lock));
+                        return Collections.emptyMap();
+                    }
+                    case "Gate" -> {
+                        List<String> unlock = new ArrayList<>();
+                        List<String> lock = new ArrayList<>();
+                        setMovesLeft(movies);
+                        for (String item : player.getItemNames()) {
+                            if (item.equals("TheBrotherAndCo")) {
+                                unlock.add(nextSpace.getNext().get(0));
+                                lock.add(nextSpace.getNext().get(1));
+                                GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                                GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId());
+                                System.out.println("gateBro  " + toMove(player, listi, moves, color));
+                                System.out.println(toJunction(player, currPosi, unlock, lock));
+                                return Collections.emptyMap();
+                            }
+                        }
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
+                        return move(getMovesLeft(), player.getPosition());
+                    }
+                    case "SpecialItem" -> {
+                        setMovesLeft(movies);
+                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+                        GameWebSocketController.specItem(toItem(player));
+                        System.out.println("specitem  " + toMove(player, listi, moves, color));
+                        return move(getMovesLeft(), player.getPosition());
+                    }
+                    default -> {
+                        return Collections.emptyMap();
+                    }
+                }
+            }
+            movies--;
+        }
+
+        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+        System.out.println("endee  " + toMove(player, listi, moves, color));
+
+        ((Spaces.runFunc<Player, Player[]>) Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(player, players);
+
+        endOfWalkCheck(player, color, currentSpace);
+
+        GameWebSocketController.newPlayer(nextPlayer());
+
+        //check if Game is over
+        if (currentTurn >= 21){
+            GameWebSocketController.endy(doGameOverMaxTurns(findMostCash(players)));
+            System.out.println(doGameOverMaxTurns(findMostCash(players)));
+        }
+
+        return Collections.emptyMap();
+    }
+
+
+
+    /**
+     *
+     * GameOver related functions
+     *
+     */
+    private Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
+        setMovesLeft(movies);
+        if (player.getCanWin()) {
+            GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+            System.out.println("canwin  " + toMove(player, listi, moves, color));
+            // GAME OVER
+            GameWebSocketController.endy(doGameOverWinCondi(player));
+            System.out.println(doGameOverWinCondi(player));
+            return Collections.emptyMap();
+        }
+        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
+        GameWebSocketController.changeMoney(player, +15);
+        System.out.println("canotwin  " + toMove(player, listi, moves, color));
+        GameWebSocketController.changeGoal(allSpaces);
+        if (movies <= 0){
+            return Collections.emptyMap();
+        }
+        return move(getMovesLeft(), player.getPosition());
+    }
+
+    private Map<String, Object> doGameOverWinCondi(Player player){
+        Map<String, Object> mappi = new HashMap<>();
+        Set<String> winners = new HashSet<>();
+        List<String> reason = new ArrayList<>();
+
+        Long jack = 50L;
+
+        for (Player p : players) {
+            if (p.getWinCondition().getWinConditionName().equals("JackSparrow")) {
+                jack = p.getPlayerId();
+                break;
+            }
+        }
+
+        reason.add(player.getPlayerId().toString());
+        reason.add(player.getWinCondition().getWinConditionName());
+        winners.add(player.getPlayerId().toString());
+
+        if (!player.getTeammateId().equals(jack)){
+            winners.add(player.getTeammateId().toString());
+            if (jack!=50L){
+                winners.add(jack.toString());
+            }
+        }
+        mappi.put("winners", winners);
+        mappi.put("reason", reason);
+
+        return mappi;
+    }
+
+    private Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
+        Map<String, Object> mappi = new HashMap<>();
+        Set<String> winners = new HashSet<>();
+        List<String> reason = new ArrayList<>();
+
+        for (Player player : players) {
+            if (player.getWinCondition().getWinConditionName().equals("JackSparrow")) {
+                winners.add(players[player.getPlayerId().intValue() - 1].getTeammateId().toString());
+                reason.add(player.getPlayerId().toString());
+                reason.add("JackSparrow");
+                mappi.put("winners", winners);
+                mappi.put("reason", reason);
+                return mappi;
+            }
+        }
+
+        if (rich.size() == 1) {
+            winners.add(rich.get(0).toString());
+            winners.add(players[rich.get(0).intValue() - 1].getTeammateId().toString());
+            reason.add(rich.get(0).toString());
+            reason.add("maxCash");
+            mappi.put("winners", winners);
+            mappi.put("reason", reason);
+            return mappi;
+        }
+
+        int randNum = (int) (Math.random() * rich.size());
+        winners.add(rich.get(randNum).toString());
+        winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
+        reason.add(rich.get(randNum).toString());
+        reason.add("maxCash");
+
+        mappi.put("winners", winners);
+        mappi.put("reason", reason);
+        return mappi;
+    }
+
+
+
+    /**
+     *
+     * Helper for Board / End related things
+     *
+     */
+    private GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
+        for (GameBoardSpace space : spaces) {
+            if (space.getSpaceId().equals(spaceId)) {
+                return space;
+            }
+        }
+        return null;
+    }
+
+    private Long findGoal(List<GameBoardSpace> spaces){
+        for (GameBoardSpace space : spaces){
+            if (space.getIsGoal()){
+                return space.getSpaceId();
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){
         Map<String, Long> response = new HashMap<>();
         GameBoardSpace oldGoal = findSpaceById(spaces, findGoal(spaces));
         oldGoal.setIsGoal(false);
@@ -480,134 +831,40 @@ public class GameFlow {
         return response;
     }
 
-    //normal walk
-    public static Map<String, Object> move(int moves, long posi) {
-        Player player = players[(int) (turnPlayerId-1)];
-        Long currPosi = posi;
-        int movies = moves;
-        List<GameBoardSpace> allSpaces = gameBoard.getSpaces(); //list of all spaces
-
-        List<Long> listi = new ArrayList<>(); //list of spaceIds that player moves over
-        String color = null; //color of next space
-
-        GameBoardSpace currentSpace = new GameBoardSpace(); //space currently on initialize
-        List<String> nextSpaceIds; //list of next spaces of space currently on
-
-        while (movies > 0) {
-            currentSpace = findSpaceById(allSpaces, currPosi);
-            nextSpaceIds = currentSpace.getNext(); //NOSONAR
-
-            Long nextPosi = Long.parseLong(nextSpaceIds.get(0));
-            listi.add(nextPosi);
-
-            GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi); // space next on
-            color = nextSpace.getColor(); //NOSONAR
-
-            //set player to next posi already
-            currPosi = nextPosi;
-            player.setPosition(currPosi);
-
-            // check if game is over, or player gets cash
-            if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
-                if (player.getCanWin()) {
-                    // GAME OVER
-                    return toMove(player, listi, moves, color);
-                }
-                //changed from: player.setCash(player.getCash() + 15)
-                GameWebSocketController.changeMoney(player, +15);
-                GameWebSocketController.changeGoal(allSpaces);
-            }
-
-            // "partial end of walk", check on what decision can be done.
-            // walk can never end in these space types btw (junction, gate, specialItem)
-            if (nextSpace.getOnSpace() == null) {
-                switch (color) {
-                    case "Junction" -> {
-                        List<String> unlock = findSpaceById(allSpaces, currPosi).getNext();
-                        List<String> lock = new ArrayList<>();
-                        GameWebSocketController.setMovesLeft(movies);
-                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                        GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
-                        return Collections.emptyMap();
-                    }
-                    case "Gate" -> {
-                        List<String> unlock = new ArrayList<>();
-                        List<String> lock = new ArrayList<>();
-                        GameWebSocketController.setMovesLeft(movies);
-                        for (String item : player.getItemNames()) {
-                            if (item.equals("TheBrotherAndCo")) {
-                                unlock.add(findSpaceById(allSpaces, currPosi).getNext().get(0));
-                                lock.add(findSpaceById(allSpaces, currPosi).getNext().get(1));
-                                GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                                GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock));
-                                return Collections.emptyMap();
-                            }
-                        }
-                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
-                    }
-                    case "SpecialItem" -> {
-                        GameWebSocketController.setMovesLeft(movies);
-                        GameWebSocketController.specItem(toItem(player));
-                        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-                        move(GameWebSocketController.getMovesLeft(), player.getPosition());
-                    }
-                    default -> {
-                        return Collections.emptyMap();
-                    }
-                }
-            }
-            movies--;
-        }
-
-        //at the end of the walk
+    private void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace){
         if ("Yellow".equals(color)){
             player.setLandYellow(player.getLandYellow()+1);
+            if (player.getWinCondition().getWinConditionName().equals("Golden")){
+                GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId());
+                System.out.println(toWinCondi(player, player.getLandYellow(), 7));
+            }
         }
-        else if ("CatNami".equals(color) || "26".equals(currentSpace.getOnSpace())){
+        else if ("Catnami".equals(color) || "26".equals(currentSpace.getOnSpace())){
             player.setLandCat(player.getLandCat()+1);
-        }
-
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color));
-        GameWebSocketController.newPlayer(nextPlayer());
-        return Collections.emptyMap();
-    }
-
-    //update player
-    private static Map<String, Object> nextPlayer(){
-        long maxi = 4L;
-        turnPlayerId++;
-        if (turnPlayerId > maxi){
-            turnPlayerId = 1L;
-        }
-        Map<String, Object> retour = new HashMap<>();
-        retour.put("currentTurn", 1);
-        retour.put("activePlayer", turnPlayerId.toString());
-        return retour;
-    }
-
-    //helper for finding Space by Id
-    private static GameBoardSpace findSpaceById(List<GameBoardSpace> spaces, Long spaceId) {
-        for (GameBoardSpace space : spaces) {
-            if (space.getSpaceId().equals(spaceId)) {
-                return space;
+            if (player.getWinCondition().getWinConditionName().equals("Drunk")){
+                GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId());
+                System.out.println(toWinCondi(player, player.getLandCat(), 3));
             }
         }
-        return null;
-    }
-
-    //helper to find goal and get Id
-    private static Long findGoal(List<GameBoardSpace> spaces){
-        for (GameBoardSpace space : spaces){
-            if (space.getIsGoal()){
-                return space.getSpaceId();
-            }
+        else if (player.getWinCondition().getWinConditionName().equals("Marooned")){
+            int mCash = (player.getCash() == 0) ? 1 : 0;
+            int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
+            int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
+            GameWebSocketController.winCondiProgress(toWinCondi(player,mCash+mCard+mItem, 3), player.getPlayerId());
+            System.out.println(toWinCondi(player, mCash+mCard+mItem, 3));
         }
-        return null;
+        //TODO when win condition gets shuffled, how to send to frontend the new updated progress
     }
 
-    //helper for data representation as dict, move
-    private static Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
+
+
+    /**
+     * Helper for representing ws message dictionary
+     * in case when move ends
+     * in case when the move gets interrupted and needs data from frontend
+     * in case when player gets an item
+     */
+    private Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
         Map<String, Object> data = new HashMap<>();
         data.put("spaces", walkedSpaces);
         data.put("moves", initialMoves);
@@ -618,8 +875,7 @@ public class GameFlow {
         return retour;
     }
 
-    //helper for data representation as dict, junc
-    private static Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
+    private Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
         Map<String, Object> data = new HashMap<>();
         data.put("playerId", player.getPlayerId().toString());
         data.put("currentSpace", currSpace);
@@ -628,22 +884,24 @@ public class GameFlow {
         return data;
     }
 
-    //helper for data representation as dict, item
-    private static Map<String, Object> toItem(Player player){
+    private Map<String, Object> toItem(Player player){
         Map<String, Object> retour = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
-        data.put("items", randoItem());
-        data.put("cards", new ArrayList<>());
+        String randItem = randoItem();
+        player.addItemNames(randItem);
+        data.put("items", player.getItemNames());
+        data.put("cards", player.getCardNames());
         retour.put(player.getPlayerId().toString(), data);
         return retour;
     }
 
-    //get a random Item
-    private static String randoItem(){
-        return allItems[(int) (Math.random()*allItems.length)];
+    private Map<String, Object> toWinCondi(Player player, int progress, int needed){
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("name", player.getWinCondition().getWinConditionName());
+        retour.put("progress", progress);
+        retour.put("total", needed);
+        return retour;
     }
-
-    private void turn(){} //NOSONAR
 
 
     private void run(){} //NOSONAR
@@ -683,8 +941,5 @@ public class GameFlow {
     display cards
     display other players
     display win/ultimate (only for self)
-
      */
-
-
 }
