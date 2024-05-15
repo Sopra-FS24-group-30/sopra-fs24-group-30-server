@@ -71,11 +71,12 @@
 
 ## <font style="color: #ff9f10">Week 7 *(11.05 – 18.05)*</font>
 
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
-| 12.05.2024 | Marius | [#115](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/115) | |
-| 12.05.2024 | Céline | [#238](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/238), [#245](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/245), [#28](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/28) (frontend) | |
-|   |   |   |   |
+| Date       | Name   | Links to Github Issues                                                                                                                                                                                                                                                                                                                                                                                                                             | Comments |
+|------------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| 12.05.2024 | Marius | [#115](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/115)                                                                                                                                                                                                                                                                                                                                                               | |
+| 12.05.2024 | Céline | [#238](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/238), [#245](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/245), [#28](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/28) (frontend)                                                                                                                                                                          | |
+| 13.05.2024 | Ambros | [#146](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/146), [#124](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/124), [#143](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/143), [#48](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/48), [#42](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/42) (backend) | |
+|            |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                    |   |
 
 ## <font style="color: #ffd700">Week 8 *(19.05 – 24.05)*</font>
 
