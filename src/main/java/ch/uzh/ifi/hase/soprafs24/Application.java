@@ -1,14 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24;
 
-import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.User;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.GetBean;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
-import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
-import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.ArrayList;
 
 @RestController
 @SpringBootApplication
