@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,6 +199,7 @@ public class GameManagementServiceTest {
 
         for(int i=1; i<5; i++){
             Player player = new Player();
+            player.setAchievementProgress(new AchievementProgress((long) i));
             player.setPlayerId((long) i);
             player.setCash(15);
             playerList.add(player);

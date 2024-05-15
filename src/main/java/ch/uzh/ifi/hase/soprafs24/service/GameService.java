@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
@@ -27,6 +28,7 @@ import java.util.Random;
 @Transactional
 public class GameService {
 
+    private final Random random = new Random();
     private final GameRepository gameRepository;
     private final GameBoardService gameBoardService;
 
@@ -44,10 +46,14 @@ public class GameService {
      * @return a unique LobbyId
      */
     public Long getLobbyId(){
-        Random rnd = new Random();
-        long id = 100000 + rnd.nextInt(900000);
+        long id = 100000 + this.random.nextInt(900000);
+        int i = 0;
         while (this.gameRepository.findById(id) != null){
-            id = 100000 + rnd.nextInt(900000);
+            id = 100000 + this.random.nextInt(900000);
+            if (i > 10000){
+                break;
+            }
+            i++;
         }
         return id;
     }
@@ -59,6 +65,7 @@ public class GameService {
         }
 
         Player player = new Player();
+        player.setAchievementProgress(new AchievementProgress(user.getId()));
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
         // Initialize other properties of Player

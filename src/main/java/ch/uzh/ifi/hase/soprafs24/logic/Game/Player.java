@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
 import java.util.ArrayList;
-import java.util.List;
+
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
@@ -27,6 +27,24 @@ public class Player {
     private int landYellow;
     private int landCat;
     private boolean ultActive;
+    private AchievementProgress achievementProgress;
+
+
+    public Player(){
+
+    }
+    public Player(Long userId){
+        this.userId = userId;
+        achievementProgress = new AchievementProgress(userId);
+    }
+
+    public AchievementProgress getAchievementProgress() {
+        return achievementProgress;
+    }
+
+    public void setAchievementProgress(AchievementProgress achievementProgress) {
+        this.achievementProgress = achievementProgress;
+    }
 
     public boolean isUltActive() {
         return ultActive;
@@ -34,6 +52,9 @@ public class Player {
 
     public void setUltActive(boolean ultActive) {
         this.ultActive = ultActive;
+        if(!this.ultActive){
+            achievementProgress.setUltimateUsed(true);
+        }
     }
 
     public User getUser() {
@@ -70,10 +91,14 @@ public class Player {
 
     public void setCash(int cash) {
         this.cash = cash;
+        if(this.cash > achievementProgress.getMaxAmountCash()){
+            achievementProgress.setMaxAmountCash(this.cash);
+        }
     }
 
     public void addCash(int amount){
-        this.cash = this.cash + amount;
+        setCash(this.cash + amount);
+
     }
 
     public ArrayList<String> getItemNames() {

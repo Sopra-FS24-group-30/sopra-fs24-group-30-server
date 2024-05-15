@@ -19,6 +19,8 @@ public class GameFlowTest {
         GameFlow gameFlow = new GameFlow();
         for(int i=1; i<=4; i++){
             Player p = new Player();
+            p.setUserId((long)i);
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -34,9 +36,12 @@ public class GameFlowTest {
     private GameFlow extensiveGameFlowSetup(){
         GameFlow gameFlow = new GameFlow();
         for(int i=1; i<=4; i++){
+
             ArrayList<String> itemNames = new ArrayList();
             itemNames.add("OnlyFansAbo");
             Player p = new Player();
+            p.setUserId((long)i);
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);

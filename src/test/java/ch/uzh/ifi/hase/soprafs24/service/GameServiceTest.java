@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,6 @@ public class GameServiceTest {
         user.setUsername("test");
 
         Player player = gameService.createPlayerForGame(user, 0);
-
         assertEquals((long) 1, player.getPlayerId());
         assertEquals(user, player.getUser());
         assertEquals(user.getUsername(), player.getPlayerName());

@@ -22,9 +22,7 @@ public class AchievementService {
 
     public void saveInitialAchievements(User user){
         AchievementStatus ach = new AchievementStatus(user.getId());
-        ach.setUserId(user.getId());
-        ach.setFirst(false);
-        ach.setFirstProgress(0);
+
         this.achievementRepository.save(ach);
         achievementRepository.flush();
     }
