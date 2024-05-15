@@ -16,7 +16,7 @@ public class AchievementStatus {
     @Column
     private boolean noMoney = false;
     @Column
-    private int winLeastAmountMoney;
+    private int winLeastAmountMoney = 1000;
     @Column
     private boolean noUltimate;
 
@@ -65,5 +65,29 @@ public class AchievementStatus {
 
     public void setMaxMoneyInGame(int maxMoneyInGame) {
         this.maxMoneyInGame = maxMoneyInGame;
+    }
+
+    public int getWinLeastAmountMoney() {
+        return winLeastAmountMoney;
+    }
+
+    public void setWinLeastAmountMoney(int winLeastAmountMoney) {
+        this.winLeastAmountMoney = winLeastAmountMoney;
+    }
+
+    public boolean isNoMoney() {
+        return noMoney;
+    }
+
+    public void setNoMoney(boolean noMoney) {
+        this.noMoney = noMoney;
+    }
+
+    public boolean isNoUltimate() {
+        return noUltimate;
+    }
+
+    public void setNoUltimate(boolean noUltimate) {
+        this.noUltimate = noUltimate;
     }
 }

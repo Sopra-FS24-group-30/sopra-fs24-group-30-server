@@ -5,9 +5,19 @@ public class AchievementProgress {
     private Long userId;
     private int maxAmountCash;
     private int cashWhenWinning;
+    private boolean winner;
     private boolean ultimateUsed;
 
     public AchievementProgress(Long userId){
+        this.userId = userId;
+    }
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -25,6 +35,14 @@ public class AchievementProgress {
 
     public void setCashWhenWinning(int cashWhenWinning) {
         this.cashWhenWinning = cashWhenWinning;
+    }
+
+    public boolean isWinner() {
+        return winner;
+    }
+
+    public void setWinner(boolean winner) {
+        this.winner = winner;
     }
 
     public boolean isUltimateUsed() {
