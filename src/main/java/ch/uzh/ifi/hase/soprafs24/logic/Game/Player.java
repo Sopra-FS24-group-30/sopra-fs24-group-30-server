@@ -26,6 +26,7 @@ public class Player {
     private int landYellow;
     private int landCat;
     private int passGoal;
+    private boolean canWinner;
 
     private boolean ultActive;
 
@@ -213,5 +214,13 @@ public class Player {
 
     public boolean getCanWin() {
         return WinConditionUltimate.checkWinConditionMet(this);
+    }
+
+    public boolean getCanWinner() {
+        return canWinner;
+    }
+
+    public void setCanWinner(boolean canWinner) {
+        this.canWinner = canWinner;
     }
 }

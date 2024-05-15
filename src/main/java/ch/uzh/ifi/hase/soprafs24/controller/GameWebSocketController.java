@@ -81,18 +81,26 @@ public class GameWebSocketController {
         allGames.put(lobbyId,game);
     }
 
+    public static void removeGame(Long lobbyId){
+        allGames.remove(lobbyId);
+    }
+
     //TODO: Setup the game
 
-    private static void addGameFlow(Long lobbyId, GameFlow gameFlow){
+    public static GameFlow getGameFlow(Long lobbyId){
+        return gameFlows.get(lobbyId);
+    }
+
+    public static void setGameFlow(HashMap<Long,GameFlow> currentGameFlow) {
+        gameFlows = currentGameFlow;
+    }
+
+    public static void addGameFlow(Long lobbyId, GameFlow gameFlow){
         gameFlows.put(lobbyId,gameFlow);
     }
 
-    private static void removeGameFlow(Long lobbyId){
+    public static void removeGameFlow(Long lobbyId){
         gameFlows.remove(lobbyId);
-    }
-
-    private static GameFlow getGameFlow(Long lobbyId){
-        return gameFlows.get(lobbyId);
     }
 
 
@@ -176,34 +184,6 @@ public class GameWebSocketController {
                 throw new RuntimeException("the defined effect does not exist");
         }
     }
-
-
-    @SendTo("/topic/board/money") //alles wo während em spiel gschickt wird goht an topic/board
-    public static Map<String, Map<String, Integer>> changeMoney(Player player, int change){
-        return changeMoneys(Map.of(player, change));
-    }
-
-    //#region
-
-
-
-    private static Map<String, Map<String, Integer>> changeMoneys(Map<Player, Integer> hoi) {
-        Map<String, Map<String, Integer>> response = new HashMap<>();
-        for (Map.Entry<Player, Integer> entry : hoi.entrySet()) {
-            Player player = entry.getKey();
-            int change = entry.getValue();
-            int newAmount = Math.max(player.getCash()+change, 0);
-            player.setCash(newAmount);
-
-            // Prepare a detailed response for each player
-            Map<String, Integer> details = new HashMap<>();
-            details.put("newAmountOfMoney", newAmount);
-            details.put("changeAmountOfMoney", change);
-            response.put(player.getPlayerId().toString(), details);
-        }
-        return response;
-    }
-    //#endregion
 
     @MessageMapping("/game/join")
     @SendTo("/topic/gameJoined")
@@ -342,7 +322,6 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/board/cards/{gameId}")
-    //@SendTo("/topic/board/cards")
     public void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
         String selectedCard = payload.get("usableUsed");
         int count = -123;

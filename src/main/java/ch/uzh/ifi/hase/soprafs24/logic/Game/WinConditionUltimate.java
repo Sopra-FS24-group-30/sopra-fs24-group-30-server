@@ -22,6 +22,7 @@ public class WinConditionUltimate { //NOSONAR
         allWinConditions.add("Drunk");
         allWinConditions.add("ThirdTime");
         allWinConditions.add("Company");
+        allWinConditions.add("Ship");
         return allWinConditions;
     }
 
@@ -34,6 +35,7 @@ public class WinConditionUltimate { //NOSONAR
             case "Drunk" -> player.getLandCat() >= 3;
             case "ThirdTime" ->  player.getPassGoal() >= 2;
             case "Company" -> player.getCash() >= 60;
+            case "Ship" -> false; //NOSONAR
             default -> false;
         };
     }
