@@ -4,8 +4,13 @@ import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
+import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
+import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import org.json.JSONObject;
 import org.json.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -856,6 +861,14 @@ public class GameFlow {
         //TODO when win condition gets shuffled, how to send to frontend the new updated progress
     }
 
+
+    //TODO call when game is over and add winner status to achievementProgress
+    public void updateAchievements(){
+        for(Player player : players){
+            AchievementService achievementService =  GetBean.getAchievementService();
+            achievementService.updateAchievements(player.getAchievementProgress());
+        }
+    }
 
 
     /**
