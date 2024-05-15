@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -28,5 +31,27 @@ public class UsableData {
         player2Us.setCards(player2);
         player3Us.setCards(player3);
         player4Us.setCards(player4);
+    }
+
+    public static UsableData prepateData(GameFlow gameFlow){
+        UsableData usableData = new UsableData();
+        Player[] players = gameFlow.getPlayers();
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        return usableData;
+    }
+
+    public static UsableData prepateDataItems(GameFlow gameFlow){
+        UsableData usableData = new UsableData();
+        Player[] players = gameFlow.getPlayers();
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        return usableData;
+    }
+
+    public static UsableData prepateDataCards(GameFlow gameFlow){
+        UsableData usableData = new UsableData();
+        Player[] players = gameFlow.getPlayers();
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        return usableData;
     }
 }

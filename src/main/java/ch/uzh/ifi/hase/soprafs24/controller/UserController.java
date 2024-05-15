@@ -146,7 +146,7 @@ public class UserController {
         Game game = gameManagementService.findGame(gameId);
         int currentPlayerCount = game.getactive_Players().size();
         User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());
-        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount, game);
         game.addNEWPlayer(player);
         return game;
     }
@@ -168,7 +168,7 @@ public class UserController {
         System.out.println(game);
         User user = userService.findUser(DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO).getUsername());//NOSONAR
         System.out.println(user);
-        Player player = gameService.createPlayerForGame(user, currentPlayerCount);
+        Player player = gameService.createPlayerForGame(user, currentPlayerCount, game);
         System.out.println(player);
         game.addNEWPlayer(player);
         System.out.println("These are the active players after:");
@@ -217,10 +217,11 @@ public class UserController {
     @GetMapping("/games/cards") // <-- corrected endpoint path
     public ArrayList<Player> getPlayers() {
         GameFlow gameFlow = new GameFlow();
-        Player player1 = gameService.createPlayerForGame(new User(), 0);
-        Player player2 = gameService.createPlayerForGame(new User(), 1);
-        Player player3 = gameService.createPlayerForGame(new User(), 2);
-        Player player4 = gameService.createPlayerForGame(new User(), 3);
+        Game game = new Game();
+        Player player1 = gameService.createPlayerForGame(new User(), 0, game);
+        Player player2 = gameService.createPlayerForGame(new User(), 1, game);
+        Player player3 = gameService.createPlayerForGame(new User(), 2, game);
+        Player player4 = gameService.createPlayerForGame(new User(), 3, game);
 
         gameFlow.addPlayer(player1);
         gameFlow.addPlayer(player2);

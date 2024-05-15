@@ -17,8 +17,8 @@ public class Player {
     private transient User user;
     private PlayerStatus status;
 
-    private Ultimate ultimate;
-    private WinCondition winCondition;
+    private String ultimate;
+    private String winCondition;
 
     private Long userId;
     private Long teammateId;
@@ -26,6 +26,9 @@ public class Player {
 
     private int landYellow;
     private int landCat;
+    private int passGoal;
+    private boolean canWinner;
+
     private boolean ultActive;
     private AchievementProgress achievementProgress;
 
@@ -159,12 +162,20 @@ public class Player {
         this.position = position;
     }
 
-    public Ultimate getUltimate() {
+    public String getUltimate() {
         return ultimate;
     }
 
-    public void setUltimate(Ultimate ultimate) {
+    public void setUltimate(String ultimate) {
         this.ultimate = ultimate;
+    }
+
+    public String getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(String winCondition) {
+        this.winCondition = winCondition;
     }
 
     public Long getUserId() {
@@ -199,6 +210,10 @@ public class Player {
         this.landYellow = landYellow;
     }
 
+    public void addLandYellow() {
+        this.landYellow = this.landYellow + 1;
+    }
+
     public int getLandCat() {
         return landCat;
     }
@@ -207,15 +222,31 @@ public class Player {
         this.landCat = landCat;
     }
 
-    public WinCondition getWinCondition() {
-        return winCondition;
+    public void addLandCat() {
+        this.landCat = this.landCat + 1;
     }
 
-    public void setWinCondition(WinCondition winCondition) {
-        this.winCondition = winCondition;
+    public int getPassGoal() {
+        return passGoal;
+    }
+
+    public void setPassGoal(int passGoal) {
+        this.passGoal = passGoal;
+    }
+
+    public void addPassGoal() {
+        this.passGoal = this.passGoal + 1;
     }
 
     public boolean getCanWin() {
-        return winCondition.checkWinConditionMet(this);
+        return WinConditionUltimate.checkWinConditionMet(this);
+    }
+
+    public boolean getCanWinner() {
+        return canWinner;
+    }
+
+    public void setCanWinner(boolean canWinner) {
+        this.canWinner = canWinner;
     }
 }

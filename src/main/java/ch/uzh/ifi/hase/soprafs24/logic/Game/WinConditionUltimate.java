@@ -1,0 +1,52 @@
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
+
+import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * At the start of a game the player gets one of the WinConditions randomly.
+ * WinConditions and what they do:
+ * - JackSparrow: You win if the other Team wins, and you lose if your Partner wins. If the game ends after 20 Turns, everyone except for your Partner loses.
+ * - Marooned: As long as you have exactly 0 Moneys, 0 Items and 0 Cards the Win Condition is fulfilled.
+ * - Golden: Land on seven golden spaces.
+ * - drunk: Land on a tsunami Space thrice.
+ */
+public class WinConditionUltimate { //NOSONAR
+
+    public static List<String> getAllWinConditions(){
+        List<String> allWinConditions = new ArrayList<>();
+        allWinConditions.add("JackSparrow");
+        allWinConditions.add("Marooned");
+        allWinConditions.add("Golden");
+        allWinConditions.add("Drunk");
+        allWinConditions.add("ThirdTime");
+        allWinConditions.add("Company");
+        allWinConditions.add("Ship");
+        return allWinConditions;
+    }
+
+    public static boolean checkWinConditionMet(Player player){
+        return switch (player.getWinCondition()) {
+            case "JackSparrow" -> false; //NOSONAR
+            case "Marooned" ->
+                    player.getCash() == 0 && player.getCardNames().isEmpty() && player.getItemNames().isEmpty();
+            case "Golden" -> player.getLandYellow() >= 7;
+            case "Drunk" -> player.getLandCat() >= 3;
+            case "ThirdTime" ->  player.getPassGoal() >= 2;
+            case "Company" -> player.getCash() >= 60;
+            case "Ship" -> false; //NOSONAR
+            default -> false;
+        };
+    }
+
+    public static String getRandomWinCondition(Long id, Game game) {
+        List<String> allWinConditions = game.getListOfAllCondition();
+        return allWinConditions.get(id.intValue()-1);
+    }
+
+    public static String getRandomUltimate(Long id, Game game) {
+        List<String> allUltimates = game.getListOfAllUltis();
+        return allUltimates.get(id.intValue()-1);
+    }
+}
