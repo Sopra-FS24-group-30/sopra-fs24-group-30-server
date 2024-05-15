@@ -143,6 +143,74 @@ public class GameFlow {
      * @param args parameters of the updatepositions effect
      * @return key: playerId, value: the new fieldId where the player gets teleported to
      */
+
+    public void givePlayerCardRand(JSONObject args) {
+        String cardType1 = null;
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+        cardType1 = args.getString("card1");
+        Integer playerId = Integer.parseInt(playerSpecialId);
+        for(Integer player : playersToUpdate){
+            if (cardType1 == "random"){
+                String card1 = randoCard();
+                players[playerId - 1].addCardNames(card1);
+            }
+        }
+    }
+    public void givePlayerCardChoice(JSONObject args){
+        String cardType1 = null;
+        String cardType2 = null;
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+        cardType1 = args.getString("card1");
+        if (args.has("card2")) {
+            cardType2 = args.getString("card2");
+        }
+        Integer playerId = Integer.parseInt(playerSpecialId);
+        for(Integer player : playersToUpdate){
+            if (cardType1 == "choice"){
+
+                String card1 = getChoices().getString("card1");
+                players[playerId - 1].addCardNames(card1);
+            }
+            if (cardType2 == "choice"){
+                String card2 = getChoices().getString("card2");
+                players[playerId - 1].addCardNames(card2);
+            }
+        }
+    }
+
+    public void exchangePositions(JSONObject args){
+        HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
+        String playerSpecialId = args.getString("player");
+        String fieldSpecialId = args.getString("field");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+
+        // Get current player and random player
+        Integer currentPlayer = playersToUpdate.get(0);
+        Integer randomPlayer = playersToUpdate.get(new SecureRandom().nextInt(playersToUpdate.size()));
+
+        // Store initial positions of the players
+        Long currentPosition = players[currentPlayer-1].getPosition();
+        Long randomPosition = players[randomPlayer-1].getPosition();
+
+        // Swap positions of the players
+        players[currentPlayer-1].setPosition(randomPosition);
+        players[randomPlayer-1].setPosition(currentPosition);
+
+        // Update positions map
+        ArrayList<Long> currentFieldIds = new ArrayList<>();
+        currentFieldIds.add(randomPosition);
+        updatedPositions.put(currentPlayer, currentFieldIds);
+
+        ArrayList<Long> randomFieldIds = new ArrayList<>();
+        randomFieldIds.add(currentPosition);
+        updatedPositions.put(randomPlayer, randomFieldIds);
+
+        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
+
+        GameWebSocketController.returnMoves(moveData,gameId);
+    }
     public void updatePositions(JSONObject args){
         HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
         String playerSpecialId = args.getString("player");//NOSONAR

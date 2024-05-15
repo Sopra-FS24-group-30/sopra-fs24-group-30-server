@@ -157,12 +157,23 @@ public class GameBoardController {
 
         int moves = movesArray.getInt(0);
         //System.out.println(Getem.getCards().get("B14"));
-        return gameFlow.updateCardPositions(Getem.getCards().get("G13"), 3);
+        return gameFlow.updateCardPositions(Getem.getRandomCard(), 3);
 
     }
 
     @GetMapping("/cards")
     public static HashMap<String, JSONObject> getCards() {
+        System.out.println(Getem.getCards());
         return Getem.getCards();
+    }
+
+    @GetMapping("/RandomCard")
+    public static JSONObject getRandomCard() {
+        System.out.println(Getem.getRandomCard());
+        return Getem.getRandomCard();
+    }
+    @GetMapping("/items")
+    public static HashMap<String, JSONObject> getItems() {
+        return Getem.getItems();
     }
 }

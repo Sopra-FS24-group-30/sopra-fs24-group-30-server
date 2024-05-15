@@ -2,13 +2,14 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game.Effects;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.io.BufferedReader;
-
+import java.security.SecureRandom;
+import java.util.Map;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.AbstractMap;
 public class Getem {
 
 
@@ -28,6 +29,7 @@ public class Getem {
             JSONObject effectComplete = jsonObject.getJSONObject(key);
             ret.put(key,effectComplete);
         }
+        System.out.println(ret);
 
         return ret;
     }
@@ -55,7 +57,6 @@ public class Getem {
 
     public static HashMap<String, JSONObject> getCards() {
         HashMap<String, JSONObject> cards = new HashMap<>();
-
         String jsonData;
         try {
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
@@ -86,6 +87,14 @@ public class Getem {
         //System.out.println(cards);
 
         return cards;
+    }
+
+    public static JSONObject getRandomCard() {
+        HashMap<String, JSONObject> cards = getCards();
+        ArrayList<String> keys = new ArrayList<>(cards.keySet());
+        SecureRandom random = new SecureRandom();
+        String randomKey = keys.get(random.nextInt(keys.size()));
+        return cards.get(randomKey);
     }
 
 

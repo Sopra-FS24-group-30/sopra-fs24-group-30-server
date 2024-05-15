@@ -180,6 +180,16 @@ public class GameWebSocketController {
             case "updatePositions":
                 gameFlow.updatePositions(effectParas);
                 break;
+            case "givePlayerCardRand":
+                gameFlow.givePlayerCardRand(effectParas);
+                break;
+            case "givePlayerCardChoice":
+                gameFlow.givePlayerCardChoice(effectParas);
+                break;
+            case "exchangePositions":
+                gameFlow.exchangePositions(effectParas);
+                break;
+
             default:
                 throw new RuntimeException("the defined effect does not exist");
         }
