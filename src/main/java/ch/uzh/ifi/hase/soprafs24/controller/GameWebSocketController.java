@@ -292,6 +292,14 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/wincondition")
+    public void getWincondition(@DestinationVariable Long gameId, @Payload String userId){
+    }
+
+    @MessageMapping("/game/{gameId}/ultimateAttack")
+    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload String userId){
+    }
+
     @MessageMapping("/game/{gameId}/playerAtLP")
     public void playersAtLoadingPage(@DestinationVariable Long gameId, @Payload Map<String, String> player){
         String playerName = player.get("username");
@@ -300,15 +308,18 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/start")
-    public void startGame(@DestinationVariable Long gameId){
-        Map<String, Object> response = new HashMap<>();
-        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
+    public void startGame(@DestinationVariable Long gameId, @Payload String userId){
+        HashMap<String, Object> response = new HashMap<>();
+        Game game = gameManagementService.findGame(gameId);
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId, Long.valueOf(userId));
 
-        response.put("turn order", players.keySet());
-        response.put("players", players);
+        for(Map.Entry<String, Object> player: players.entrySet()){
+            response.put(player.getKey(), player.getValue());
+        }
+
         String destination = "/topic/game/" + gameId +"/board/start";
 
-        messagingTemplate.convertAndSend(destination, response);
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
 

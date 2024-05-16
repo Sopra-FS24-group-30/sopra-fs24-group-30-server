@@ -259,18 +259,33 @@ public class GameManagementService {
         return usables;
     }
 
-    public Map<String, Object> getInformationPlayers(Long gameId){
+    public Map<String, Object> getInformationPlayers(Long gameId, Long userId){
         Game game = findGame(gameId);
         Map<String, Object> players = new HashMap<>();
 
+        int i = 1;
         for (Player player: game.getactive_Players()){
+            System.out.println(player.getPlayerName());
             Map<String, Object> dictionary = new HashMap<>();
-
+            dictionary.put("playerId", player.getPlayerId());
+            dictionary.put("userId", player.getUserId());
+            dictionary.put("username", player.getPlayerName());
+            dictionary.put("teammateId", player.getTeammateId());
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            players.put(String.valueOf(player.getPlayerId()), dictionary);
+            System.out.println(dictionary);
+            if(dictionary.get("userId") == userId){
+                players.put("thisPlayer", dictionary);
+            }else if(dictionary.get("userId") != userId && dictionary.get("teammateId") == userId ){
+                players.put("Teammate", dictionary);
+            }else{
+                String enemy = "Enemy" +i;
+                players.put(enemy, dictionary);
+                i= i+1;
+            }
         }
+        System.out.println(players);
         return players;
     }
 
