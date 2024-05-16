@@ -299,6 +299,9 @@ public class GameWebSocketController {
         GameFlow gameFlow = new GameFlow();
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard(gameId);
+        gameFlow.setCurrentTurn(1);
+        gameFlow.setTurnPlayerId((long)(Math.random()*4+1));
+
         List<Player> players = allGames.get(gameId).getactive_Players();
         for(Player player : players){
             gameFlow.addPlayer(player);
