@@ -17,6 +17,7 @@ import java.util.*;
 
 public class GameFlow {
 
+    //Kommentar für test
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
 
