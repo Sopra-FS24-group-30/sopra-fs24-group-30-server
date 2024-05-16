@@ -84,6 +84,7 @@ public class GameBoardController {
      * or like implemented as actual test
      */
 
+    /*
     public void pPlayer(Player player, Long teammateId, long pId, int cash, long posi, String wincondi){
         player.setPlayerId(pId);
         player.setTeammateId(teammateId);
@@ -114,14 +115,13 @@ public class GameBoardController {
         p4.setLandCat(2);
         p4.addCardNames("B14");
         p4.addCardNames("B26");
-        p4.setCanWinner(true);
         gameFlow.addPlayer(p1);
         gameFlow.addPlayer(p2);
         gameFlow.addPlayer(p3);
         gameFlow.addPlayer(p4);
         gameFlow.setTurnPlayerId(1L);
         gameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
-        return gameFlow.move(6, 18L);
+        return gameFlow.move(6, 27L);
     }
 
 
@@ -165,4 +165,5 @@ public class GameBoardController {
     public static HashMap<String, JSONObject> getCards() {
         return Getem.getCards();
     }
+    */
 }

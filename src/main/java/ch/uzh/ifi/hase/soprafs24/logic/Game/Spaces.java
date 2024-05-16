@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.CashData;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.MoveData;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.PlayerMove;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.UsableData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +45,6 @@ public class Spaces {
     private static int randomInt(int num){
         return (int) (Math.random()*num); //NOSONAR
     }
-
 
     public static void blue(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
@@ -156,13 +154,13 @@ public class Spaces {
                 }
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), delta);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(cashData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(cashData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else{
             Collections.shuffle(allPosis);
@@ -172,13 +170,13 @@ public class Spaces {
                 p.setPosition(allPosis.get(p.getPlayerId().intValue()-1));
                 moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), posiArr, 0, null);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(moveData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(moveData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             GameWebSocketController.returnMoves(moveData, gameFlow.getGameId());
         }
     }
@@ -199,12 +197,12 @@ public class Spaces {
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
             }
             ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(cashData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(cashData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else {
             teleportToTheirStart(gameFlow);
@@ -290,13 +288,13 @@ public class Spaces {
         }
         currPlayer.addCash(+cash);
         cashData.setPlayerAmountAndUpdate(currPlayer.getPlayerId().intValue(), currPlayer.getCash(), cash);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
     public static void nothing(GameFlow gameFlow) {
@@ -396,12 +394,12 @@ public class Spaces {
             }
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         toUsable(gameFlow);
     }
@@ -459,12 +457,12 @@ public class Spaces {
     private static void toUsable(GameFlow gameFlow){
         UsableData usableData = UsableData.prepateData(gameFlow);
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(usableData);
-            System.out.println(jsonData);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(usableData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
         GameWebSocketController.returnUsables(usableData, gameFlow.getGameId());
     }
 
