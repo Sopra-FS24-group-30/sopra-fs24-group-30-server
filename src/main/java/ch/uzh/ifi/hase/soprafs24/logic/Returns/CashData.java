@@ -1,13 +1,18 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CashData {
 
     @JsonProperty("1")
-    private PlayerCash player2 = new PlayerCash();
-    @JsonProperty("2")
     private PlayerCash player1 = new PlayerCash();
+    @JsonProperty("2")
+    private PlayerCash player2 = new PlayerCash();
     @JsonProperty("3")
     private PlayerCash player3 = new PlayerCash();
     @JsonProperty("4")
@@ -29,7 +34,7 @@ public class CashData {
     }
 
     public void setPlayerAmountAndUpdate(int playerId, int newCash, int cashChange){
-        switch (playerId){
+        switch (playerId){ //NOSONAR
             case 1:
                 player1.setNewAmountOfMoney(newCash);
                 player1.setChangeAmountOfMoney(cashChange);
@@ -46,6 +51,41 @@ public class CashData {
                 player4.setNewAmountOfMoney(newCash);
                 player4.setChangeAmountOfMoney(cashChange);
                 break;
+        }
+    }
+
+    public PlayerCash getPlayerCash(int playerId) {
+        switch (playerId) {
+            case 1 -> {return player1;}
+            case 2 -> {return player2;}
+            case 3 -> {return player3;}
+            case 4 -> {return player4;}
+            default -> {return null;}
+        }
+    }
+
+    public String getPlayerCashJson(int playerId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(Map.of(String.valueOf(playerId), getPlayerCash(playerId)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getPlayerCashJson(int playerId1, int palayerId2) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, PlayerCash> playerCashMap = new HashMap<>();
+        PlayerCash playerCash1 = getPlayerCash(playerId1);
+        playerCashMap.put(String.valueOf(playerId1), playerCash1);
+        PlayerCash playerCash2 = getPlayerCash(playerId1);
+        playerCashMap.put(String.valueOf(playerId1), playerCash2);
+        try {
+            return objectMapper.writeValueAsString(playerCashMap);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

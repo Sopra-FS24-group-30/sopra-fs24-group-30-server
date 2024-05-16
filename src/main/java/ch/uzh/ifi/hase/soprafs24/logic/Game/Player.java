@@ -2,6 +2,9 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 
@@ -26,7 +29,10 @@ public class Player {
     private int landYellow;
     private int landCat;
     private int passGoal;
-    private boolean canWinner;
+    private int shipTemp;
+    private int shipAct;
+    private int lostCash;
+    private HashSet<Long> landedAll = new HashSet<>();
 
     private boolean ultActive;
 
@@ -216,11 +222,44 @@ public class Player {
         return WinConditionUltimate.checkWinConditionMet(this);
     }
 
-    public boolean getCanWinner() {
-        return canWinner;
+    public int getShipTemp() {
+        return shipTemp;
     }
 
-    public void setCanWinner(boolean canWinner) {
-        this.canWinner = canWinner;
+    public void setShipTemp(int shipTemp) {
+        this.shipTemp = shipTemp;
+    }
+
+    public int getShipAct() {
+        return shipAct;
+    }
+
+    public void setShipAct(int shipAct) {
+        this.shipAct = shipAct;
+    }
+
+    public HashSet<Long> getLandedAll() {
+        return landedAll;
+    }
+
+    public void setLandedAll(HashSet<Long> landedAll) {
+        this.landedAll = landedAll;
+    }
+    public void addLandedAll(Long spaceId){
+        this.landedAll.add(spaceId);
+    }
+    public void addLandedAll(HashSet<Long> spaceIds){
+        this.landedAll.addAll(spaceIds);
+    }
+
+    public int getLostCash() {
+        return lostCash;
+    }
+
+    public void setLostCash(int lostCash) {
+        this.lostCash = lostCash;
+    }
+    public void addLostCash(int amount){
+        this.lostCash = this.lostCash + amount;
     }
 }

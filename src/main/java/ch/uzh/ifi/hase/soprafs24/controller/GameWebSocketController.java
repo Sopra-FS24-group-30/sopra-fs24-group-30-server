@@ -384,8 +384,13 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, nextTurnMsg);
     }
 
-    public static void endy(Map<String, Object> endGameMsg, Long gameId){
-        String destination = "/topic/board/gameEnd/" + gameId;
+    public static void endRank(Map<String, Object> endGameMsg, Long gameId){
+        String destination = "/topic/ranking/" + gameId;
+        messagingTemplate.convertAndSend(destination, endGameMsg);
+    }
+
+    public static void endGame(Map<String, String> endGameMsg, Long gameId){
+        String destination = "/topic/board/gameEnd" + gameId;
         messagingTemplate.convertAndSend(destination, endGameMsg);
     }
 
@@ -409,7 +414,17 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination,cashData);
     }
 
+    public static void returnMoney(String cashData, Long gameId) {
+        String destination = "/topic/board/money" + gameId; //NOSONAR
+        messagingTemplate.convertAndSend(destination,cashData);
+    }
+
     public static void returnMoves(MoveData moveData, Long gameId) {
+        String destination = "/topic/board/move" + gameId;
+        messagingTemplate.convertAndSend(destination, moveData);
+    }
+
+    public static void returnMoves(Map<String, Object> moveData, Long gameId) {
         String destination = "/topic/board/move" + gameId;
         messagingTemplate.convertAndSend(destination, moveData);
     }
