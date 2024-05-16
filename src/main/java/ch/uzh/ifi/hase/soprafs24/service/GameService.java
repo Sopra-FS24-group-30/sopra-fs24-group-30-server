@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -57,9 +58,10 @@ public class GameService {
         if (currentPlayerCount >= 4) {
             throw new IllegalStateException("Cannot add more players to the game. The game is full.");
         }
+        GameTimer gameTimer = new GameTimer();
 
         Player player = new Player();
-        player.setAchievementProgress(new AchievementProgress(user.getId()));
+        player.setAchievementProgress(new AchievementProgress(user.getId(), gameTimer));
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
         // Initialize other properties of Player

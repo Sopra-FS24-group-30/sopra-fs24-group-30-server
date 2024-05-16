@@ -23,6 +23,9 @@ import org.springframework.stereotype.Controller;
 import java.util.*;
 import java.util.ArrayList;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 @Controller
 public class GameWebSocketController {
 
@@ -54,6 +57,46 @@ public class GameWebSocketController {
     }
 
      */
+    public static class GameTimer {
+        private Timer timer;
+        private long startTime;
+        private long elapsedTime;
+
+        public GameTimer() {
+            timer = new Timer();
+            startTime = System.currentTimeMillis();
+            elapsedTime = 0;
+        }
+
+        public void startTimer() {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    elapsedTime = System.currentTimeMillis() - startTime;
+                }
+            }, 0, 1000); // Update every second
+        }
+
+        public long getElapsedTime() {
+            return elapsedTime / 1000; // Return elapsed time in seconds
+        }
+
+        // Check if the elapsed time exceeds the maximum time
+        public boolean maxTimeReached(long maxTimeInSeconds) {
+            return getElapsedTime() >= maxTimeInSeconds;
+        }
+
+        public void stopTimer() {
+            timer.cancel();
+        }
+    }
+
+    // Create a GameTimer instance for each game
+    private static Map<Long, GameTimer> gameTimers = new HashMap<>();
+
+    public static Map<Long, GameTimer> getGameTimers() {
+        return gameTimers;
+    }
 
     private static SimpMessagingTemplate messagingTemplate;
 
@@ -238,10 +281,15 @@ public class GameWebSocketController {
         gameFlow.setGameBoard(gameId);
         List<Player> players = allGames.get(gameId).getactive_Players();
         for(Player player : players){
+            GameTimer timer = player.getAchievementProgress().getGameTimer();
+            timer.startTimer();
             gameFlow.addPlayer(player);
         }
         gameFlows.put(gameId,gameFlow);
         String destination = "/topic/gameReady/" + gameId;
+        GameTimer timer = new GameTimer();
+        timer.startTimer();
+        gameTimers.put(gameId, timer);
         messagingTemplate.convertAndSend(destination, response);
     }
 
@@ -396,6 +444,11 @@ public class GameWebSocketController {
 
     public static void endy(Map<String, Object> endGameMsg, Long gameId){
         String destination = "/topic/board/gameEnd/" + gameId;
+        List<Player> players = allGames.get(gameId).getactive_Players();
+        for(Player player : players){
+            GameTimer timer = player.getAchievementProgress().getGameTimer();
+            timer.stopTimer();
+        }
         messagingTemplate.convertAndSend(destination, endGameMsg);
     }
 
@@ -433,4 +486,6 @@ public class GameWebSocketController {
         String destination = "/topic/board/dice" + gameId;
         messagingTemplate.convertAndSend(destination, diceData);
     }
+
+
 }
