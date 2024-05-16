@@ -10,6 +10,10 @@ public class AchievementProgress {
     private boolean ultimateUsed;
     private GameTimer gameTimer;
 
+    public AchievementProgress(Long userId){
+        this.userId = userId;
+    }
+
     public AchievementProgress(Long userId, GameTimer gameTimer){
 
         this.userId = userId;
