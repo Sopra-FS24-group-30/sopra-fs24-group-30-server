@@ -19,6 +19,11 @@ public class AchievementStatus {
     private int winLeastAmountMoney = 1000;
     @Column
     private boolean noUltimate;
+    @Column
+    private boolean endurance1 = false;
+    private boolean endurance2 = false;
+    private boolean endurance3 = false;
+
 
     public AchievementStatus(long id){
         this.userId = id;
@@ -57,6 +62,25 @@ public class AchievementStatus {
 
     public void setBaron3(boolean baron3) {
         this.baron3 = baron3;
+    }
+
+    public boolean isEndurance1() {
+        return endurance1;
+    }
+    public void setEndurance1(boolean endurance1) {
+        this.endurance1 = endurance1;
+    }
+    public boolean isEndurance2() {
+        return endurance2;
+    }
+    public void setEndurance2(boolean endurance2) {
+        this.endurance2 = endurance2;
+    }
+    public boolean isEndurance3() {
+        return endurance3;
+    }
+    public void setEndurance3(boolean endurance3) {
+        this.endurance3 = endurance3;
     }
 
     public int getMaxMoneyInGame() {

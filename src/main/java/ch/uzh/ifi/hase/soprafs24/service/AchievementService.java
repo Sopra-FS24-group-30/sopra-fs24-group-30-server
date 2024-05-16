@@ -2,7 +2,9 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +33,7 @@ public class AchievementService {
 
     public void updateAchievements(AchievementProgress achievementProgress){
         AchievementStatus achievementStatus = this.achievementRepository.findByUserId(achievementProgress.getUserId());
+        //GameWebSocketController gameWebSocketController = new GameWebSocketController();
         //updates for baron achievements
         int maxCash = achievementProgress.getMaxAmountCash();
         if(maxCash >= 200){
@@ -59,6 +62,19 @@ public class AchievementService {
                 achievementStatus.setNoUltimate(true);
             }
         }
+        if (achievementProgress.getGameTimer().getElapsedTime() >= 10800){
+            achievementStatus.setEndurance1(true);
+            achievementStatus.setEndurance2(true);
+            achievementStatus.setEndurance3(true);
+        }
+        else if (achievementProgress.getGameTimer().getElapsedTime() >= 7200){
+            achievementStatus.setEndurance2(true);
+            achievementStatus.setEndurance1(true);
+        }
+        else if (achievementProgress.getGameTimer().getElapsedTime() >= 3600){
+            achievementStatus.setEndurance1(true);
+        }
+
 
 
 
