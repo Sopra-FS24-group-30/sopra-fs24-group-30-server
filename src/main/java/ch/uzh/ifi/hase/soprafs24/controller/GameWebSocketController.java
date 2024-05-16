@@ -233,14 +233,6 @@ public class GameWebSocketController {
             response.put("gameReady", false);
         }
 
-        GameFlow gameFlow = new GameFlow();
-        gameFlow.setGameId(gameId);
-        gameFlow.setGameBoard(gameId);
-        List<Player> players = allGames.get(gameId).getactive_Players();
-        for(Player player : players){
-            gameFlow.addPlayer(player);
-        }
-        gameFlows.put(gameId,gameFlow);
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
@@ -303,6 +295,15 @@ public class GameWebSocketController {
         String player2 = (String) payload.get("teammate");
 
         gameManagementService.setTeams(game, player1, player2);
+
+        GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameId(gameId);
+        gameFlow.setGameBoard(gameId);
+        List<Player> players = allGames.get(gameId).getactive_Players();
+        for(Player player : players){
+            gameFlow.addPlayer(player);
+        }
+        gameFlows.put(gameId,gameFlow);
     }
 
     @MessageMapping("/board/dice/{gameId}")
