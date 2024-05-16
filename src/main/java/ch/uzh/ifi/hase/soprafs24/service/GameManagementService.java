@@ -191,6 +191,9 @@ public class GameManagementService {
         if (game.getStatus() != status) {
             throw new IllegalStateException("Game status couldn't be changed");
         }
+        if (game.getStatus() == GameStatus.PLAYING){
+
+        }
         return true;
     }
 

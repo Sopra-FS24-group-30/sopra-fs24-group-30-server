@@ -18,11 +18,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -52,7 +48,7 @@ public class GameWebSocketController {
     private static HashMap<Long,Game> allGames = new HashMap<>();
 
     //TODO WHICH GET CURR GAME
-    public static Game getCurrGame(Long lobbyId) {
+    public static Game getGameByLobbyId(Long lobbyId) {
         return allGames.get(lobbyId);
     }
 
@@ -317,7 +313,7 @@ public class GameWebSocketController {
             response.put(player.getKey(), player.getValue());
         }
 
-        String destination = "/topic/game/" + gameId +"/board/start";
+        String destination = "/queue/game/" + gameId +"/board/start";
 
         messagingTemplate.convertAndSendToUser(userId, destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);

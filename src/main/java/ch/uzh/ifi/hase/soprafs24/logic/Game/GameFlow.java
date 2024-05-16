@@ -26,7 +26,7 @@ public class GameFlow {
         return gameBoard;
     }
     public static void setGameBoard(Long lobbyId) {
-        GameFlow.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+        GameFlow.gameBoard = GameWebSocketController.getGameByLobbyId(lobbyId).getGameBoard();
     }
 
     private static Long turnPlayerId;
@@ -42,7 +42,7 @@ public class GameFlow {
         return currentTurn;
     }
     public static void setCurrentTurn(Long lobbyId) {
-        GameFlow.currentTurn = GameWebSocketController.getCurrGame(lobbyId).getRoundNum();
+        GameFlow.currentTurn = GameWebSocketController.getGameByLobbyId(lobbyId).getRoundNum();
     }
 
     private static int movesLeft;
