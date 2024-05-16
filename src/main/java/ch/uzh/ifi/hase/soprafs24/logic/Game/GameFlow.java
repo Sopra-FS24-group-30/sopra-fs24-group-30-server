@@ -585,6 +585,7 @@ public class GameFlow {
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
                 CashData cashData = new CashData();
+                cashData.setupCashDataCurrent(this);
                 int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
                 cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
                 GameWebSocketController.returnMoney(cashData,gameId);
