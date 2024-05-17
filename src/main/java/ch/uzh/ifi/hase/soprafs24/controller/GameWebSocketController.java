@@ -120,8 +120,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
-
-
     @MessageMapping("/board/item/{gameId}")
     public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
@@ -295,6 +293,14 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/wincondition")
+    public void getWincondition(@DestinationVariable Long gameId, @Payload String userId){
+    }
+
+    @MessageMapping("/game/{gameId}/ultimateAttack")
+    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload String userId){
+    }
+
     @MessageMapping("/board/dice/{gameId}")
     public static void diceWalk(@DestinationVariable Long gameId){
         rollOneDice(gameId);
@@ -309,15 +315,20 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/start")
-    public void startGame(@DestinationVariable Long gameId){
-        Map<String, Object> response = new HashMap<>();
-        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
+    public void startGame(@DestinationVariable Long gameId, @Payload String userId){
+        HashMap<String, Object> response = new HashMap<>();
+        Game game = gameManagementService.findGame(gameId);
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId, Long.valueOf(userId));
 
-        response.put("turn order", players.keySet());
-        response.put("players", players);
-        String destination = "/topic/game/" + gameId +"/board/start";
+        for(Map.Entry<String, Object> player: players.entrySet()){
+            response.put(player.getKey(), player.getValue());
+        }
 
-        messagingTemplate.convertAndSend(destination, response);
+        //TODO: get the turn order
+
+        String destination = "/queue/game/" + gameId +"/board/start";
+
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
 

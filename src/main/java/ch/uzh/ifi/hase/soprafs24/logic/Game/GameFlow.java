@@ -667,7 +667,7 @@ public class GameFlow {
         if (moves == 0) {
             (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
         } else{
-            ( Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+            (Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
         }
 
         endOfWalkCheck(player, color, currentSpace, moves);
