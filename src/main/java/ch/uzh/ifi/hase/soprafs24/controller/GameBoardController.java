@@ -80,6 +80,7 @@ public class GameBoardController {
      * should be deleted at the end
      * or like implemented as actual test
      */
+    /*
     public void pPlayer(Player player, Long teammateId, long pId, int cash, long posi, WinCondition wincondi){
         player.setPlayerId(pId);
         player.setTeammateId(teammateId);
@@ -147,4 +148,6 @@ public class GameBoardController {
     public static HashMap<String, JSONObject> getCards() {
         return Getem.getCards();
     }
+
+     */
 }
