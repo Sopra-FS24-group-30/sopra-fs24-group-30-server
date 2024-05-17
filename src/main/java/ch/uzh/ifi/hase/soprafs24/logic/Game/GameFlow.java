@@ -652,7 +652,7 @@ public class GameFlow {
 
         endOfWalkCheck(player, color, currentSpace);
 
-        GameWebSocketController.newPlayer(nextPlayer());
+        GameWebSocketController.newActivePlayer(nextPlayer());
 
         //check if Game is over
         if (currentTurn >= 21){

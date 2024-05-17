@@ -47,7 +47,6 @@ public class GameWebSocketController {
     //saving the current Game at the beginning
     private static HashMap<Long,Game> allGames = new HashMap<>();
 
-    //TODO WHICH GET CURR GAME
     public static Game getGameByLobbyId(Long lobbyId) {
         return allGames.get(lobbyId);
     }
@@ -85,9 +84,6 @@ public class GameWebSocketController {
         String destination = "/queue/gameCreated";
         messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
-
-
-
 
     //TODO: add handling here add support for choices
     @MessageMapping("/board/usable/{gameId}")
@@ -313,6 +309,8 @@ public class GameWebSocketController {
             response.put(player.getKey(), player.getValue());
         }
 
+        //TODO: get the turn order
+
         String destination = "/queue/game/" + gameId +"/board/start";
 
         messagingTemplate.convertAndSendToUser(userId, destination, response);
@@ -381,7 +379,7 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, GameFlow.setBoardGoal(spaces));
     }
 
-    public static void newPlayer(Map<String, Object> nextTurnMsg){
+    public static void newActivePlayer(Map<String, Object> nextTurnMsg){
         String destination = "/topic/board/newActivePlayer/" + gameId;
         messagingTemplate.convertAndSend(destination, nextTurnMsg);
     }

@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs24.controller.*;
@@ -192,7 +193,8 @@ public class GameManagementService {
             throw new IllegalStateException("Game status couldn't be changed");
         }
         if (game.getStatus() == GameStatus.PLAYING){
-
+            //TODO: get the gameflow and start it
+            //GameWebSocketController.newActivePlayer(GameFlow.next);
         }
         return true;
     }
@@ -270,23 +272,13 @@ public class GameManagementService {
         for (Player player: game.getactive_Players()){
             System.out.println(player.getPlayerName());
             Map<String, Object> dictionary = new HashMap<>();
-            dictionary.put("playerId", player.getPlayerId());
             dictionary.put("userId", player.getUserId());
             dictionary.put("username", player.getPlayerName());
             dictionary.put("teammateId", player.getTeammateId());
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            System.out.println(dictionary);
-            if(dictionary.get("userId") == userId){
-                players.put("thisPlayer", dictionary);
-            }else if(dictionary.get("userId") != userId && dictionary.get("teammateId") == userId ){
-                players.put("Teammate", dictionary);
-            }else{
-                String enemy = "Enemy" +i;
-                players.put(enemy, dictionary);
-                i= i+1;
-            }
+            players.put(Long.toString(player.getPlayerId()), dictionary);
         }
         System.out.println(players);
         return players;
