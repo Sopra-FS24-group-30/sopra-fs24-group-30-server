@@ -53,27 +53,6 @@ public class Getem {
         return ultimates;
     }
 
-    public static HashMap<String, JSONObject> getLandOnSpaces(){
-        HashMap<String, JSONObject> landOns = new HashMap<>();
-
-        String jsonData;
-        try{
-            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/landOnSpaces.json");
-        }catch (IOException e){
-            throw new RuntimeException("the json object could not be created");
-        }
-        JSONObject jsonObject = new JSONObject(jsonData);
-
-        Iterator<String> keys = jsonObject.keys();
-        while(keys.hasNext()){
-            String key = keys.next();
-            JSONObject effectComplete = jsonObject.getJSONObject(key);
-            landOns.put(key,effectComplete);
-        }
-
-        return landOns;
-    }
-
     public static HashMap<String, JSONObject> getCards() {
         HashMap<String, JSONObject> cards = new HashMap<>();
 
@@ -104,7 +83,7 @@ public class Getem {
             // Putting the card information into the cards map
             cards.put(key, cardInfo);
         }
-        System.out.println(cards);
+        //System.out.println(cards);
 
         return cards;
     }
