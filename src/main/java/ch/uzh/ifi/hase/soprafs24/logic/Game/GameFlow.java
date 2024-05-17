@@ -7,12 +7,16 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
 import org.json.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GameFlow {
+
+    public GameWebSocketController gameWebSocketController;
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
@@ -22,7 +26,9 @@ public class GameFlow {
     private GameBoard gameBoard;
     private Long turnPlayerId;
     private int currentTurn;
+    private int turnCounter;
     private int movesLeft;
+    private Map<String, Object> winMsg;
     private JSONObject choices;
 
     public JSONObject getChoices() {
@@ -39,13 +45,13 @@ public class GameFlow {
     public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
+
     public Player[] getPlayers() {
         return players;
     }
     public Player getPlayer(Integer playerId) {
         return players[playerId - 1];
     }
-
 
     public GameBoard getGameBoard(){
         return gameBoard;
@@ -73,6 +79,20 @@ public class GameFlow {
     }
     public int getMovesLeft() {
         return movesLeft;
+    }
+
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+    public void setTurnCounter(int turnCounter) {
+        this.turnCounter = turnCounter;
+    }
+
+    public Map<String, Object> getWinMsg() {
+        return winMsg;
+    }
+    public void setWinMsg(Map<String, Object> winMsg) {
+        this.winMsg = winMsg;
     }
 
     public GameFlow(){}
@@ -330,9 +350,13 @@ public class GameFlow {
 
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
-        CashData cashData = new CashData();
+        CashData cashData = new CashData(GameWebSocketController.getGameFlow(gameId));
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
+        HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
+        for (Long key : hashi.keySet()){
+            getPlayer(key.intValue()-1).addLostCash(-hashi.get(key));
+        }
         GameWebSocketController.returnMoney(cashData,gameId);
     }
 
@@ -512,7 +536,7 @@ public class GameFlow {
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
-                CashData cashData = new CashData();
+                CashData cashData = new CashData(GameWebSocketController.getGameFlow(gameId));
                 int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
                 cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
                 GameWebSocketController.returnMoney(cashData,gameId);
@@ -575,11 +599,13 @@ public class GameFlow {
     }
 
     private Map<String, Object> nextPlayer() {
-        long maxi = 4L;
         turnPlayerId++;
-        if (turnPlayerId > maxi) {
-            currentTurn++;
+        turnCounter++;
+        if (turnPlayerId > 4L){
             turnPlayerId = 1L;
+        }
+        if (turnCounter%4 == 0) {
+            currentTurn++;
         }
         Map<String, Object> retour = new HashMap<>();
         retour.put("currentTurn", currentTurn);
@@ -594,7 +620,7 @@ public class GameFlow {
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
 
-        maroonedCompanyShip(player, moves);
+        maroonedCompanyShipUnlucky(player, moves);
 
         List<Long> listi = new ArrayList<>();
 
@@ -636,7 +662,7 @@ public class GameFlow {
             movies--;
         }
 
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
         if (moves == 0) {
             (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
@@ -650,8 +676,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            GameWebSocketController.endGame(endGameMsg(), getGameId());
-            GameWebSocketController.endRank(doGameOverMaxTurns(findMostCash(players)), getGameId());
+            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
         return Collections.emptyMap();
@@ -667,13 +693,13 @@ public class GameFlow {
     private Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
         setMovesLeft(movies);
         if (player.getCanWin()) {
-            GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+            GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
             // GAME OVER
-            GameWebSocketController.endGame(endGameMsg(), getGameId());
-            GameWebSocketController.endRank(doGameOverWinCondi(player), getGameId());
+            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            setWinMsg(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.changeCash(toMoney(player, +15), getGameId());
 
         player.addPassGoal();
@@ -807,7 +833,7 @@ public class GameFlow {
         checkWinCondition(player);
     }
 
-    public void maroonedCompanyShip(Player player, int moves){
+    public void maroonedCompanyShipUnlucky(Player player, int moves){
         int move15 = (moves >= 15) ? 1 : 0;
         if (move15==1){
             player.setShipTemp(1);
@@ -853,8 +879,8 @@ public class GameFlow {
         List<String> unlock = nextSpace.getNext();
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-        GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
         return Collections.emptyMap();
     }
 
@@ -866,18 +892,18 @@ public class GameFlow {
             if (item.equals("TheBrotherAndCo")) {
                 unlock.add(nextSpace.getNext().get(0));
                 lock.add(nextSpace.getNext().get(1));
-                GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-                GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+                GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
                 return Collections.emptyMap();
             }
         }
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         return move(getMovesLeft(), player.getPosition());
     }
 
     private Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
         setMovesLeft(movies);
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.specItem(toItem(player), getGameId());
         return move(getMovesLeft(), player.getPosition());
     }

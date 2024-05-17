@@ -363,12 +363,7 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), gameFlow.getPlayers()[(int)(long)(gameFlow.getTurnPlayerId())].getPosition()));
     }
 
-    public static void juncMove(Map<String, Object> partialMoveMsg, Long gameId){
-        String destination = "/topic/board/move/" + gameId;
-        messagingTemplate.convertAndSend(destination, partialMoveMsg);
-    }
-
-    public static void juncJunc(Map<String, Object> chooseJunctionMsg, Long gameId, Long playerId){
+    public static void returnJunction(Map<String, Object> chooseJunctionMsg, Long gameId, Long playerId){
         String destination = "/topic/board/junction/" + gameId + "/" + playerId;
         messagingTemplate.convertAndSend(destination, chooseJunctionMsg);
     }
@@ -382,16 +377,6 @@ public class GameWebSocketController {
     public static void newPlayer(Map<String, Object> nextTurnMsg, Long gameId){
         String destination = "/topic/board/newActivePlayer/" + gameId;
         messagingTemplate.convertAndSend(destination, nextTurnMsg);
-    }
-
-    public static void endRank(Map<String, Object> endGameMsg, Long gameId){
-        String destination = "/topic/ranking/" + gameId;
-        messagingTemplate.convertAndSend(destination, endGameMsg);
-    }
-
-    public static void endGame(Map<String, String> endGameMsg, Long gameId){
-        String destination = "/topic/board/gameEnd" + gameId;
-        messagingTemplate.convertAndSend(destination, endGameMsg);
     }
 
     public static void specItem(Map<String, Object> getItemMsg, Long gameId){
@@ -414,11 +399,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination,cashData);
     }
 
-    public static void returnMoney(String cashData, Long gameId) {
-        String destination = "/topic/board/money" + gameId; //NOSONAR
-        messagingTemplate.convertAndSend(destination,cashData);
-    }
-
     public static void returnMoves(MoveData moveData, Long gameId) {
         String destination = "/topic/board/move" + gameId;
         messagingTemplate.convertAndSend(destination, moveData);
@@ -437,5 +417,18 @@ public class GameWebSocketController {
     public static void returnDice(DiceData diceData, Long gameId){
         String destination = "/topic/board/dice" + gameId;
         messagingTemplate.convertAndSend(destination, diceData);
+    }
+
+    public void endGame(Map<String, String> endGameMsg, Long gameId){
+        String destination = "/topic/board/gameEnd" + gameId;
+        messagingTemplate.convertAndSend(destination, endGameMsg);
+        gameManagementService.changeGameStatus(gameId, GameStatus.NOT_PLAYING);
+    }
+
+    @MessageMapping("/game/ranking/{gameId}")
+    public void gameRank(@DestinationVariable Long gameId){
+        Map<String, Object> winMsg = getGameFlow(gameId).getWinMsg();
+        String destination = "/topic/ranking/" + gameId;
+        messagingTemplate.convertAndSend(destination, winMsg);
     }
 }

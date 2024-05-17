@@ -144,7 +144,7 @@ public class Spaces {
             int partial = allCash / 4;
             int initial;
             int delta;
-            CashData cashData = new CashData();
+            CashData cashData = new CashData(gameFlow);
             for ( Player p : currPlayers){
                 initial = p.getCash();
                 p.setCash(partial);
@@ -189,14 +189,14 @@ public class Spaces {
             currPlayer.addCash(-cash);
             toCash(currPlayer, -cash, gameFlow);
         } else if (x==1){
-            CashData cashData = new CashData();
+            CashData cashData = new CashData(gameFlow);
             for (Player p : currPlayers){
                 int cash = Math.min(10, p.getCash());
                 p.addCash(-cash);
                 p.addLostCash(cash);
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
+//            ObjectMapper objectMapper = new ObjectMapper();
 //            try {
 //                String jsonData = objectMapper.writeValueAsString(cashData);
 //                System.out.println(jsonData);
@@ -276,7 +276,7 @@ public class Spaces {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
         int cash = 0;
-        CashData cashData = new CashData();
+        CashData cashData = new CashData(gameFlow);
         for (Player p : currPlayers){
             if (!p.equals(currPlayer)){
                 int maxi = Math.min(10, p.getCash());
@@ -381,7 +381,7 @@ public class Spaces {
     public static void getOthersCards(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
-        CashData cashData = new CashData();
+        CashData cashData = new CashData(gameFlow);
         for (Player p : currPlayers){
             if (p.getCardNames().isEmpty()){
                 int cash = Math.min(5, p.getCash());
@@ -393,7 +393,7 @@ public class Spaces {
                 p.removeCardNames(cardname);
             }
         }
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
 //        try {
 //            String jsonData = objectMapper.writeValueAsString(cashData);
 //            System.out.println(jsonData);
@@ -456,7 +456,7 @@ public class Spaces {
 
     private static void toUsable(GameFlow gameFlow){
         UsableData usableData = UsableData.prepateData(gameFlow);
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
 //        try {
 //            String jsonData = objectMapper.writeValueAsString(usableData);
 //            System.out.println(jsonData);
@@ -470,23 +470,33 @@ public class Spaces {
         if (change<0){
             player.addLostCash(-change);
         }
-        CashData cashData = new CashData();
+        CashData cashData = new CashData(gameFlow);
         cashData.setPlayerAmountAndUpdate(player.getPlayerId().intValue(), player.getCash(), change);
-        String oneCashData = cashData.getPlayerCashJson(player.getPlayerId().intValue());
-//        System.out.println(oneCashData);
-        GameWebSocketController.returnMoney(oneCashData, gameFlow.getGameId());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
 
     private static void toCash(Player player1, Player player2, int change, GameFlow gameFlow){
         if (change<0){
             player1.addLostCash(-change);
         }
-        CashData cashData = new CashData();
+        CashData cashData = new CashData(gameFlow);
         cashData.setPlayerAmountAndUpdate(player1.getPlayerId().intValue(), player1.getCash(), change);
         cashData.setPlayerAmountAndUpdate(player2.getPlayerId().intValue(), player2.getCash(), -change);
-        String twoCashData = cashData.getPlayerCashJson(player1.getPlayerId().intValue(),player2.getPlayerId().intValue());
-//        System.out.println(twoCashData);
-        GameWebSocketController.returnMoney(twoCashData, gameFlow.getGameId());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
 
     private static void toMoveTp(Player player, GameFlow gameFlow){

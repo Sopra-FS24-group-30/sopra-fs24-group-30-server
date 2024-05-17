@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
-import java.util.Map;
+
+/**
+ * this class is only to be used if you update all the players
+ */
 
 public class CashData {
 
@@ -18,6 +22,17 @@ public class CashData {
     @JsonProperty("4")
     private PlayerCash player4 = new PlayerCash();
 
+
+    public CashData(GameFlow gameFlow){
+        player1setNewAmountOfMoney(gameFlow.getPlayer(1).getCash());
+        player2setNewAmountOfMoney(gameFlow.getPlayer(2).getCash());
+        player3setNewAmountOfMoney(gameFlow.getPlayer(3).getCash());
+        player4setNewAmountOfMoney(gameFlow.getPlayer(4).getCash());
+        player1setChangeAmountOfMoney(0);
+        player2setChangeAmountOfMoney(0);
+        player3setChangeAmountOfMoney(0);
+        player4setChangeAmountOfMoney(0);
+    }
 
     public void setPlayersNewCash(int cash1, int cash2, int cash3, int cash4){
         player1.setNewAmountOfMoney(cash1);
@@ -54,70 +69,53 @@ public class CashData {
         }
     }
 
-    public PlayerCash getPlayerCash(int playerId) {
-        switch (playerId) {
-            case 1 -> {return player1;}
-            case 2 -> {return player2;}
-            case 3 -> {return player3;}
-            case 4 -> {return player4;}
-            default -> {return null;}
+    //userId and positive
+    public HashMap<Long,Integer> checkNegativeChanges(){
+        HashMap<Long,Integer> negativeUpdates = new HashMap<>();
+        if(player1.getChangeAmountOfMoney() < 0){
+            negativeUpdates.put(1L,player1.getChangeAmountOfMoney());
         }
+        if(player2.getChangeAmountOfMoney() < 0){
+            negativeUpdates.put(2L,player2.getChangeAmountOfMoney());
+        }
+        if(player3.getChangeAmountOfMoney() < 0){
+            negativeUpdates.put(3L,player3.getChangeAmountOfMoney());
+        }
+        if(player4.getChangeAmountOfMoney() < 0){
+            negativeUpdates.put(4L,player4.getChangeAmountOfMoney());
+        }
+        return negativeUpdates;
     }
 
-    public String getPlayerCashJson(int playerId) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(Map.of(String.valueOf(playerId), getPlayerCash(playerId)));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public String getPlayerCashJson(int playerId1, int palayerId2) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, PlayerCash> playerCashMap = new HashMap<>();
-        PlayerCash playerCash1 = getPlayerCash(playerId1);
-        playerCashMap.put(String.valueOf(playerId1), playerCash1);
-        PlayerCash playerCash2 = getPlayerCash(playerId1);
-        playerCashMap.put(String.valueOf(playerId1), playerCash2);
-        try {
-            return objectMapper.writeValueAsString(playerCashMap);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public void setPlayer1newAmount(int cash){
+    public void player1setNewAmountOfMoney(int cash){
         player1.setNewAmountOfMoney(cash);
     }
 
-    public void setPlayer2newAmount(int cash){
+    public void player2setNewAmountOfMoney(int cash){
         player2.setNewAmountOfMoney(cash);
     }
 
-    public void setPlayer3newAmount(int cash){
+    public void player3setNewAmountOfMoney(int cash){
         player3.setNewAmountOfMoney(cash);
     }
 
-    public void setPlayer4newAmount(int cash){
+    public void player4setNewAmountOfMoney(int cash){
         player4.setNewAmountOfMoney(cash);
     }
 
-    public void setPlayer1changeAmount(int cash){
+    public void player1setChangeAmountOfMoney(int cash){
         player1.setChangeAmountOfMoney(cash);
     }
 
-    public void setPlayer2changeAmount(int cash){
+    public void player2setChangeAmountOfMoney(int cash){
         player2.setChangeAmountOfMoney(cash);
     }
 
-    public void setPlayer3changeAmount(int cash){
+    public void player3setChangeAmountOfMoney(int cash){
         player3.setChangeAmountOfMoney(cash);
     }
 
-    public void setPlayer4changeAmount(int cash){
+    public void player4setChangeAmountOfMoney(int cash){
         player4.setChangeAmountOfMoney(cash);
     }
 
