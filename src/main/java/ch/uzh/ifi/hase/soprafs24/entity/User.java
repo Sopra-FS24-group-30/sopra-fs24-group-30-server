@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 
 @Entity
 @Table (name="User")
@@ -22,6 +23,8 @@ public class User implements Serializable {
     @Column(nullable = true)
     private LocalDate birthday;
     @Column int amountGamesCompleted;
+    @Column(nullable = false)
+    private UserStatus status;
     @Column
     private int amountWins;
 
@@ -60,6 +63,10 @@ public class User implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setStatus(UserStatus status){this.status = status; }
+
+    public UserStatus getStatus(){return status; }
 
     public LocalDate getCreationDate() {
         return creationDate;

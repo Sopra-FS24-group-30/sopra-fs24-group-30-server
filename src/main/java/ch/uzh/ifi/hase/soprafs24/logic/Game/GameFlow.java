@@ -48,8 +48,13 @@ public class GameFlow {
     public GameBoard getGameBoard(){
         return gameBoard;
     }
+
     public void setGameBoard(Long lobbyId) {
         this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+    }
+  
+    public static void setGameBoard(Long lobbyId) {
+        this.gameBoard = GameWebSocketController.getGameByLobbyId(lobbyId).getGameBoard();
     }
 
     public Long getTurnPlayerId() {
@@ -62,8 +67,8 @@ public class GameFlow {
     public int getCurrentTurn() {
         return currentTurn;
     }
-    public void setCurrentTurn(Long lobbyId) {
-        this.currentTurn = GameWebSocketController.getCurrGame(lobbyId).getRoundNum();
+    public static void setCurrentTurn(Long lobbyId) {
+        this.currentTurn = GameWebSocketController.getGameByLobbyId(lobbyId).getRoundNum();
     }
 
     public void setMovesLeft(int movesLeft) {
@@ -690,7 +695,7 @@ public class GameFlow {
 
         endOfWalkCheck(player, color, currentSpace);
 
-        GameWebSocketController.newPlayer(nextPlayer());
+        GameWebSocketController.newActivePlayer(nextPlayer());
 
         //check if Game is over
         if (currentTurn >= 21){
