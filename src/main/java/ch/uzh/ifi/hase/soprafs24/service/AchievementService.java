@@ -61,7 +61,22 @@ public class AchievementService {
             if(!achievementProgress.isUltimateUsed()){
                 achievementStatus.setNoUltimate(true);
             }
+            //update for gamer and doingYourBest
+            achievementStatus.setLoseStreak(0);
+            achievementStatus.incTotalGamesWon();
+            achievementStatus.incWinStreak();
+            if(achievementStatus.getWinStreak() >= 3){
+                achievementStatus.setGamer(true);
+            }
+        }else {
+            //update for gamer and doingYourBest
+            achievementStatus.setWinStreak(0);
+            achievementStatus.incLoseStreak();
+            if(achievementStatus.getLoseStreak() >= 3){
+                achievementStatus.setDoingYourBest(true);
+            }
         }
+
         if (achievementProgress.getGameTimer().getElapsedTime() >= 10800){
             achievementStatus.setEndurance1(true);
             achievementStatus.setEndurance2(true);
@@ -75,9 +90,8 @@ public class AchievementService {
             achievementStatus.setEndurance1(true);
         }
 
-
-
-
+        this.achievementRepository.save(achievementStatus);
+        this.achievementRepository.flush();
     }
 
 }

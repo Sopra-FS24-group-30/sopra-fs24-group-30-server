@@ -21,9 +21,20 @@ public class AchievementStatus {
     private boolean noUltimate;
     @Column
     private boolean endurance1 = false;
+    @Column
     private boolean endurance2 = false;
+    @Column
     private boolean endurance3 = false;
-
+    @Column
+    private boolean gamer = false;
+    @Column
+    private int totalGamesWon = 0;
+    @Column
+    private int winStreak = 0;
+    @Column
+    private boolean doingYourBest = false;
+    @Column
+    private int loseStreak = 0;
 
     public AchievementStatus(long id){
         this.userId = id;
@@ -113,5 +124,57 @@ public class AchievementStatus {
 
     public void setNoUltimate(boolean noUltimate) {
         this.noUltimate = noUltimate;
+    }
+
+    public boolean isGamer() {
+        return gamer;
+    }
+
+    public void setGamer(boolean gamer) {
+        this.gamer = gamer;
+    }
+
+    public int getTotalGamesWon() {
+        return totalGamesWon;
+    }
+
+    public void setTotalGamesWon(int totalGamesWon) {
+        this.totalGamesWon = totalGamesWon;
+    }
+
+    public void incTotalGamesWon(){
+        this.totalGamesWon += 1;
+    }
+
+    public int getWinStreak() {
+        return winStreak;
+    }
+
+    public void setWinStreak(int winStreak) {
+        this.winStreak = winStreak;
+    }
+
+    public void incWinStreak(){
+        this.winStreak += 1;
+    }
+
+    public boolean isDoingYourBest() {
+        return doingYourBest;
+    }
+
+    public void setDoingYourBest(boolean doingYourBest) {
+        this.doingYourBest = doingYourBest;
+    }
+
+    public int getLoseStreak() {
+        return loseStreak;
+    }
+
+    public void setLoseStreak(int loseStreak) {
+        this.loseStreak = loseStreak;
+    }
+
+    public void incLoseStreak(){
+        this.loseStreak += 1;
     }
 }
