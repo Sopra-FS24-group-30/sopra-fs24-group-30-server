@@ -48,12 +48,8 @@ public class GameFlow {
     public GameBoard getGameBoard(){
         return gameBoard;
     }
-
-    public void setGameBoard(Long lobbyId) {
-        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
-    }
   
-    public static void setGameBoard(Long lobbyId) {
+    public void setGameBoard(Long lobbyId) {
         this.gameBoard = GameWebSocketController.getGameByLobbyId(lobbyId).getGameBoard();
     }
 
@@ -67,7 +63,7 @@ public class GameFlow {
     public int getCurrentTurn() {
         return currentTurn;
     }
-    public static void setCurrentTurn(Long lobbyId) {
+    public void setCurrentTurn(Long lobbyId) {
         this.currentTurn = GameWebSocketController.getGameByLobbyId(lobbyId).getRoundNum();
     }
 
@@ -76,12 +72,6 @@ public class GameFlow {
     }
     public int getMovesLeft() {
         return movesLeft;
-    }
-
-    public  void initializeGame(Long gameId){
-        setGameBoard(gameId);
-        setCurrentTurn(gameId);
-        setTurnPlayerId(1L);
     }
 
     public GameFlow(){

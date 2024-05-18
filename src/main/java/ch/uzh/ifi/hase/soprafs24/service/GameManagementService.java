@@ -192,10 +192,6 @@ public class GameManagementService {
         if (game.getStatus() != status) {
             throw new IllegalStateException("Game status couldn't be changed");
         }
-        if (game.getStatus() == GameStatus.PLAYING){
-            //TODO: get the gameflow and start it
-            //GameWebSocketController.newActivePlayer(GameFlow.next);
-        }
         return true;
     }
 
@@ -264,11 +260,10 @@ public class GameManagementService {
         return usables;
     }
 
-    public Map<String, Object> getInformationPlayers(Long gameId, Long userId){
+    public List<Object> getInformationPlayers(Long gameId){
         Game game = findGame(gameId);
-        Map<String, Object> players = new HashMap<>();
+        List<Object> players = new ArrayList();
 
-        int i = 1;
         for (Player player: game.getactive_Players()){
             System.out.println(player.getPlayerName());
             Map<String, Object> dictionary = new HashMap<>();
@@ -278,10 +273,28 @@ public class GameManagementService {
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            players.put(Long.toString(player.getPlayerId()), dictionary);
+            players.add(dictionary);
         }
+
         System.out.println(players);
         return players;
+    }
+
+    public List<String> getTurnOrder(Long startPlayer){
+        List<String> turnOrder = new ArrayList<>();
+        turnOrder.add(Long.toString(startPlayer));
+
+        int j = startPlayer.intValue();
+        for(int i = 1; i<4; i++){
+            if(j==4){
+                j = 1;
+            } else{
+                j = j+1;
+            }
+            turnOrder.add(String.valueOf(j));
+        }
+
+        return turnOrder;
     }
 
     private static Player findPlayerInGame(Game game, String playerName){

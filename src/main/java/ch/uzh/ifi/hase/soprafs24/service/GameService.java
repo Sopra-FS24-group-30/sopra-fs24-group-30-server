@@ -61,6 +61,7 @@ public class GameService {
         Player player = new Player();
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
+        player.setUserId(user.getId());
         // Initialize other properties of Player
         player.setStatus(PlayerStatus.NOT_PLAYING);
         player.setPlayerName(user.getUsername());
