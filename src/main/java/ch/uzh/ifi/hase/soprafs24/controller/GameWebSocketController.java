@@ -141,6 +141,14 @@ public class GameWebSocketController {
         handleEffects(effectName,effectParas, gameId);
     }
 
+    @MessageMapping("/board/test/{gameId}")
+    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(5);
+        DiceData diceData = new DiceData(dice);
+        messagingTemplate.convertAndSend("/topic/board/goal/" + gameId, diceData);
+    }
+
     @MessageMapping("/board/ultimate/{gameId}")
     public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
@@ -314,11 +322,14 @@ public class GameWebSocketController {
         gameManagementService.setGameReady(gameId);
     }
 
+    ///user/queue/game/${gameId}/board/start
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId, @Payload String userId){
+        JSONObject userData = new JSONObject(userId);
+        Long id = Long.valueOf(userData.getString("userId"));
         HashMap<String, Object> response = new HashMap<>();
         Game game = gameManagementService.findGame(gameId);
-        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId, Long.valueOf(userId));
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId, id);
 
         for(Map.Entry<String, Object> player: players.entrySet()){
             response.put(player.getKey(), player.getValue());
@@ -327,8 +338,8 @@ public class GameWebSocketController {
         //TODO: get the turn order
 
         String destination = "/queue/game/" + gameId +"/board/start";
-
-        messagingTemplate.convertAndSendToUser(userId, destination, response);
+        //messagingTemplate.convertAndSend("/topic/board/goal/" + gameId, response);
+        messagingTemplate.convertAndSendToUser(id.toString(), destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
 
