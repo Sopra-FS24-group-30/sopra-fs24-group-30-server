@@ -95,7 +95,7 @@ public class GameManagementService {
      * @return true if the client was added successfully, false if the game is full or does not exist
      */
 
-    public static Game findGame(Long gameId){
+    public Game findGame(Long gameId){
         Game game = allGames.get(gameId);
         if (game == null){
             throw new IllegalArgumentException("Game not found");
@@ -195,6 +195,12 @@ public class GameManagementService {
             //GameWebSocketController.newActivePlayer(GameFlow.next);
         }
         return true;
+    }
+    public static void changeGameStatus(Game game, GameStatus status){
+        game.setStatus(status);
+        if (game.getStatus() != status) {
+            throw new IllegalStateException("Game status couldn't be changed");
+        }
     }
 
     public GameStatus getGameStatus(Long gameId){

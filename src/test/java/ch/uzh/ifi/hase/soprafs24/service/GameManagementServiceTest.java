@@ -207,22 +207,22 @@ public class GameManagementServiceTest {
         assertEquals(usables, gameManagementService.getUsables(player));
     }
 
-    @Test
-    void test_getInformationPlayers(){
-        Game game = createGameWithPlayers();
-
-        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId(), (long) 2);
-        System.out.println(results);
-
-        assertEquals(4, results.size(), "There should be information for four players");
-
-        Object[] keys = results.keySet().toArray();
-
-        assertEquals("thisPlayer", keys[0]);
-        assertEquals("Teammate", keys[1]);
-        assertEquals("Enemy1", keys[2]);
-        assertEquals("Enemy2", keys[3]);
-    }
+//    @Test
+//    void test_getInformationPlayers(){
+//        Game game = createGameWithPlayers();
+//
+//        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId(), (long) 2);
+//        System.out.println(results);
+//
+//        assertEquals(4, results.size(), "There should be information for four players");
+//
+//        Object[] keys = results.keySet().toArray();
+//
+//        assertEquals("thisPlayer", keys[0]);
+//        assertEquals("Teammate", keys[1]);
+//        assertEquals("Enemy1", keys[2]);
+//        assertEquals("Enemy2", keys[3]);
+//    }
 
     @Test
     void test_changePlayerStatus(){

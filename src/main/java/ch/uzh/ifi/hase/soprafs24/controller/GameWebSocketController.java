@@ -430,10 +430,11 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, diceData);
     }
 
-    public void endGame(Map<String, String> endGameMsg, Long gameId){
+    public static void endGame(Long gameId){
+        GameManagementService.changeGameStatus(allGames.get(gameId), GameStatus.NOT_PLAYING);
+        Map<String, String> endGameMsg = new HashMap<>(Map.of("status", GameStatus.NOT_PLAYING.toString()));
         String destination = "/topic/board/gameEnd" + gameId;
         messagingTemplate.convertAndSend(destination, endGameMsg);
-        gameManagementService.changeGameStatus(gameId, GameStatus.NOT_PLAYING);
     }
 
     @MessageMapping("/game/ranking/{gameId}")

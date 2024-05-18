@@ -7,16 +7,13 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import org.json.JSONObject;
 import org.json.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GameFlow {
 
-    public GameWebSocketController gameWebSocketController;
+    public Spaces spaces = new Spaces();
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
@@ -350,7 +347,7 @@ public class GameFlow {
 
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
-        CashData cashData = new CashData(GameWebSocketController.getGameFlow(gameId));
+        CashData cashData = new CashData(this);
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
         HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
@@ -536,7 +533,7 @@ public class GameFlow {
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
-                CashData cashData = new CashData(GameWebSocketController.getGameFlow(gameId));
+                CashData cashData = new CashData(this);
                 int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
                 cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
                 GameWebSocketController.returnMoney(cashData,gameId);
@@ -594,7 +591,7 @@ public class GameFlow {
                 maxCash = player.getCash();
             }
         }
-//        System.out.println("richest  " + richest);
+        System.out.println("richest  " + richest);
         return richest;
     }
 
@@ -610,7 +607,7 @@ public class GameFlow {
         Map<String, Object> retour = new HashMap<>();
         retour.put("currentTurn", currentTurn);
         retour.put("activePlayer", turnPlayerId.toString());
-//        System.out.println("nextPlayer  " + retour);
+        System.out.println("nextPlayer  " + retour);
         return retour;
     }
 
@@ -664,11 +661,13 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
+        printi();
         if (moves == 0) {
-            (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+            (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
-            (Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+            (spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
+        printi();
 
         endOfWalkCheck(player, color, currentSpace, moves);
 
@@ -676,7 +675,7 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
@@ -695,7 +694,7 @@ public class GameFlow {
         if (player.getCanWin()) {
             GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
             // GAME OVER
-            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
@@ -739,7 +738,7 @@ public class GameFlow {
         }
         mappi.put("winners", winners); //NOSONAR
         mappi.put("reason", reason); //NOSONAR
-//        System.out.println("gameOverWinCondi  " + mappi);
+        System.out.println("gameOverWinCondi  " + mappi);
         return mappi;
     }
 
@@ -755,7 +754,7 @@ public class GameFlow {
                 reason.add("JackSparrow");
                 mappi.put("winners", winners);
                 mappi.put("reason", reason);
-//                System.out.println("gameOverMaxTurn  " + mappi);
+                System.out.println("gameOverMaxTurn  " + mappi);
                 return mappi;
             }
         }
@@ -767,7 +766,7 @@ public class GameFlow {
             reason.add("maxCash");
             mappi.put("winners", winners);
             mappi.put("reason", reason);
-//            System.out.println("gameOverMaxTurn  " + mappi);
+            System.out.println("gameOverMaxTurn  " + mappi);
             return mappi;
         }
 
@@ -779,7 +778,7 @@ public class GameFlow {
 
         mappi.put("winners", winners);
         mappi.put("reason", reason);
-//        System.out.println("gameOverMaxTurn  " + mappi);
+        System.out.println("gameOverMaxTurn  " + mappi);
         return mappi;
     }
 
@@ -818,7 +817,7 @@ public class GameFlow {
         } while (newGoal.equals(oldGoal.getSpaceId()));
         findSpaceById(spaces, newGoal).setIsGoal(true); //NOSONAR
         response.put("result", newGoal);
-//        System.out.println("setGoal  " + response);
+        System.out.println("setGoal  " + response);
         return response;
     }
 
@@ -916,11 +915,6 @@ public class GameFlow {
      * in case when the move gets interrupted and needs data from frontend
      * in case when player gets an item
      */
-    private Map<String, String> endGameMsg(){
-        Map<String, String> mappi = Map.of("message", "gameOver");
-//        System.out.println("endMsg  " + mappi);
-        return mappi;
-    }
 
     private Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
         Map<String, Object> response = new HashMap<>();
@@ -930,7 +924,7 @@ public class GameFlow {
         Map<String, Object> retour = new HashMap<>();
         retour.put(player.getPlayerId().toString(), response);
         retour.put("movementType", "walk");
-//        System.out.println("toMovee  " + retour);
+        System.out.println("toMovee  " + retour);
         return retour;
     }
 
@@ -940,7 +934,7 @@ public class GameFlow {
         response.put("currentSpace", currSpace);
         response.put("nextUnlockedSpaces", nextUnlock);
         response.put("nextLockedSpaces", nextLock);
-//        System.out.println("toJuncc  " + response);
+        System.out.println("toJuncc  " + response);
         return response;
     }
 
@@ -952,7 +946,7 @@ public class GameFlow {
         response.put("items", player.getItemNames());
         response.put("cards", player.getCardNames());
         retour.put(player.getPlayerId().toString(), response);
-//        System.out.println("toItemm  " + retour);
+        System.out.println("toItemm  " + retour);
         return retour;
     }
 
@@ -961,7 +955,7 @@ public class GameFlow {
         retour.put("name", player.getWinCondition());
         retour.put("progress", progress);
         retour.put("total", needed);
-//        System.out.println("toWincondi  " + retour);
+        System.out.println("toWincondi  " + retour);
         return retour;
     }
 
@@ -973,7 +967,7 @@ public class GameFlow {
         details.put("newAmountOfMoney", newAmount);
         details.put("changeAmountOfMoney", change);
         response.put(player.getPlayerId().toString(), details);
-//        System.out.println("toCashh  " + response);
+        System.out.println("toCashh  " + response);
         return response;
     }
 
