@@ -58,7 +58,8 @@ public class GameFlow {
     }
 
     public void setGameBoard(Long lobbyId) {
-        this.gameBoard = GameWebSocketController.getGameByLobbyId(lobbyId).getGameBoard();
+        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+    }
 
     public Long getTurnPlayerId() {
         return turnPlayerId;
