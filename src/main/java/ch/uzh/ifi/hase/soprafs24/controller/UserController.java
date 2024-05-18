@@ -92,12 +92,7 @@ public class UserController {
     @PutMapping("/profile/{userid}/edit")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
-        User user = userService.findUserWithId(userid);
-        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoUser(userPutDTO);
-        if (updates == null) {
-            return;
-        }
-        User updatedUser = userService.edit(user, updates);//NOSONAR
+        userService.edit(userPutDTO, userid);//NOSONAR
     }
 
     @GetMapping("/profile/{id}")
@@ -105,7 +100,6 @@ public class UserController {
     private UserGetDTO getUser(@PathVariable Long id){//NOSONAR
 
         User foundUser = this.userService.findUserWithId(id);
-
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
