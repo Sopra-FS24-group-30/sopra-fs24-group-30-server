@@ -350,7 +350,7 @@ public class GameFlow {
 
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
-        CashData cashData = new CashData(GameWebSocketController.getGameFlow(gameId));
+        CashData cashData = new CashData(this);
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
         HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
