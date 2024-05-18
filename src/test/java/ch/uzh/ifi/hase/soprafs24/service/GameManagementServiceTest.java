@@ -304,7 +304,7 @@ public class GameManagementServiceTest {
 
         when(userRepository.findById(Long.valueOf(userId))).thenReturn(Optional.of(user));
         when(userService.findUserWithId(Long.valueOf(userId))).thenReturn(user);
-        when(gameService.createPlayerForGame(user, game.getPlayers().size())).thenReturn(player);
+        when(gameService.createPlayerForGame(user, game.getPlayers().size(), game)).thenReturn(player);
 
         assertTrue(gameManagementService.joinGame(1L, "3"));
     }
@@ -333,7 +333,7 @@ public class GameManagementServiceTest {
 
         when(userRepository.findById(Long.valueOf(userId))).thenReturn(Optional.of(user));
         when(userService.findUserWithId(Long.valueOf(userId))).thenReturn(user);
-        when(gameService.createPlayerForGame(user, game.getPlayers().size())).thenReturn(player);
+        when(gameService.createPlayerForGame(user, game.getPlayers().size(), game)).thenReturn(player);
 
         assertTrue(gameManagementService.joinGame(1L, "3"));
     }
@@ -380,7 +380,7 @@ public class GameManagementServiceTest {
         when(userRepository.findById(Long.valueOf(userId))).thenReturn(Optional.of(user));
         when(userService.findUserWithId(Long.valueOf(userId))).thenReturn(user);
         when(gameService.setUpGame()).thenReturn(game);
-        when(gameService.createPlayerForGame(user, 0)).thenReturn(player);
+        when(gameService.createPlayerForGame(user, 0, game)).thenReturn(player);
 
         Long result = gameManagementService.createGame(userId);
         assertTrue(result!=null);

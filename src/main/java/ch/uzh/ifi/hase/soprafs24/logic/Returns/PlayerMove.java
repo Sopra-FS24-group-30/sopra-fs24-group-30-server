@@ -6,7 +6,7 @@ public class PlayerMove {
 
     private ArrayList<Long> spaces;
     //amount of moves left in beginning
-    private Long  moves = 0L;
+    private int moves = 0;
     private String spaceColour;
 
     public ArrayList<Long> getSpaces() {
@@ -17,11 +17,11 @@ public class PlayerMove {
         this.spaces = spaces;
     }
 
-    public Long getMoves() {
+    public int getMoves() {
         return moves;
     }
 
-    public void setMoves(Long moves) {
+    public void setMoves(int moves) {
         this.moves = moves;
     }
 
