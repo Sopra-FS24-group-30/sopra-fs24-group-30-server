@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Constant.GamblingChoice;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.CashData;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.MoveData;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.UsableData;
@@ -70,31 +71,45 @@ public class Spaces {
         Player currPlayer = players[gameFlow.getTurnPlayerId().intValue()-1];
         int random = randomInt(2);
         boolean win = random < 2;
-        random = randomInt(2);
-        boolean item = random < 2;
-        if(item) {
-            if (win) {
-                ArrayList<String> items = new ArrayList<>();
-                for(int i=0;i<currPlayer.getItemNames().size();i++){
-                    items.add(GameFlow.randoItem());
+        GamblingChoice gamblingChoice = GamblingChoice.getGamblingChoice();
+        switch(gamblingChoice) {
+            case ITEM:
+                if (win) {
+                    ArrayList<String> items = new ArrayList<>();
+                    for(int i=0;i<currPlayer.getItemNames().size();i++){
+                        items.add(GameFlow.randoItem());
+                    }
+                    currPlayer.addItemNames(items);
+                }else {
+                    currPlayer.setItemNames(new ArrayList<>());
                 }
-                currPlayer.addItemNames(items);
-            }else {
-                currPlayer.setItemNames(new ArrayList<>());
-            }
-        }else {
-            //cards
-            if (win) {
-                ArrayList<String> cards = new ArrayList<>();
-                for(int i=0;i<currPlayer.getCardNames().size();i++){
-                    cards.add(GameFlow.randoCard());
+                toUsable(gameFlow);
+                break;
+            case CARD:
+                if (win) {
+                    ArrayList<String> cards = new ArrayList<>();
+                    for(int i=0;i<currPlayer.getCardNames().size();i++){
+                        cards.add(GameFlow.randoCard());
+                    }
+                    currPlayer.addCardNames(cards);
+                }else {
+                    currPlayer.setCardNames(new ArrayList<>());
                 }
-                currPlayer.addCardNames(cards);
-            }else {
-                currPlayer.setCardNames(new ArrayList<>());
-            }
+                toUsable(gameFlow);
+                break;
+            case CASH:
+                int change;
+                if(win){
+                    change = currPlayer.getCash();
+                    currPlayer.setCash(currPlayer.getCash()*2);
+                }else{
+                    change = currPlayer.getCash() * -1;
+                    currPlayer.setCash(0);
+                }
+                toCash(currPlayer, change, gameFlow);
+                break;
         }
-        toUsable(gameFlow);
+
     }
     public void catnami(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
