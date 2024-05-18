@@ -800,6 +800,7 @@ public class GameFlow {
         mappi.put("winners", winners); //NOSONAR
         mappi.put("reason", reason); //NOSONAR
 
+        initializeUpdates(winners);
         return mappi;
     }
 
@@ -815,6 +816,7 @@ public class GameFlow {
                 reason.add("JackSparrow");
                 mappi.put("winners", winners);
                 mappi.put("reason", reason);
+                initializeUpdates(winners);
                 return mappi;
             }
         }
@@ -826,6 +828,7 @@ public class GameFlow {
             reason.add("maxCash");
             mappi.put("winners", winners);
             mappi.put("reason", reason);
+            initializeUpdates(winners);
             return mappi;
         }
 
@@ -837,7 +840,19 @@ public class GameFlow {
 
         mappi.put("winners", winners);
         mappi.put("reason", reason);
+        initializeUpdates(winners);
         return mappi;
+    }
+
+    private void initializeUpdates(Set<String> winners){
+        for(String winner : winners){
+            Player player = getPlayer(Integer.valueOf(winner));
+            player.getAchievementProgress().setWinner(true);
+            player.getAchievementProgress().setCashWhenWinning(player.getCash());
+        }
+        for(Player player : players){
+            GetBean.getAchievementService().updateAchievements(player.getAchievementProgress());
+        }
     }
 
 
