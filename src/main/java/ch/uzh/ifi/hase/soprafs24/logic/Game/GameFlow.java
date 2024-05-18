@@ -56,9 +56,9 @@ public class GameFlow {
     public GameBoard getGameBoard(){
         return gameBoard;
     }
+
     public void setGameBoard(Long lobbyId) {
-        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
-    }
+        this.gameBoard = GameWebSocketController.getGameByLobbyId(lobbyId).getGameBoard();
 
     public Long getTurnPlayerId() {
         return turnPlayerId;
@@ -72,6 +72,7 @@ public class GameFlow {
     }
     public void setCurrentTurn(int currTurn) {
         this.currentTurn = currTurn;
+
     }
 
     public void setMovesLeft(int movesLeft) {

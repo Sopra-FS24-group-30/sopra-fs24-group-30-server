@@ -256,8 +256,30 @@ public class GameWebSocketController {
         response.put("status", status.name());
         System.out.println(response);
 
+        if(response.get("status").equals("READY")){
+            System.out.println("Attempting to send the playerIds");
+            sendPlayerId(gameId);
+        }
+
         String destination = "/topic/game/status/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
+    }
+
+    public void sendPlayerId(Long gameId){
+        String destination = "/queue/game/PlayerId";
+
+        Game game = gameManagementService.findGame(gameId);
+        System.out.println(game);
+        List<Player> playerList = game.getactive_Players();
+        System.out.println(playerList);
+
+        for(Player player: playerList){
+            Map<String, String> response = new HashMap<>();
+            response.put("playerId", String.valueOf(player.getPlayerId()));
+            String userId = String.valueOf(player.getUserId());
+            System.out.println("Sending the playerId of" + userId);
+            messagingTemplate.convertAndSendToUser(userId, destination, response);
+        }
     }
 
     @MessageMapping("/game/{gameId}/players")
@@ -317,19 +339,30 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId, @Payload String userId){
         HashMap<String, Object> response = new HashMap<>();
-        Game game = gameManagementService.findGame(gameId);
-        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId, Long.valueOf(userId));
+        List<Object> players = gameManagementService.getInformationPlayers(gameId);
 
-        for(Map.Entry<String, Object> player: players.entrySet()){
-            response.put(player.getKey(), player.getValue());
-        }
+        response.put("players", players);
 
-        //TODO: get the turn order
+        GameFlow gameFlow = getGameFlow(gameId);
+        List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
+        response.put("TurnOrder", turnOrder);
         String destination = "/queue/game/" + gameId +"/board/start";
 
-        messagingTemplate.convertAndSendToUser(userId, destination, response);
+        messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
+    }
+
+
+    public void firstPlayerTurn(Long gameId){
+        GameFlow gameFlow = getGameFlow(gameId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentTurn", gameFlow.getCurrentTurn());
+        response.put("activePlayer", gameFlow.getTurnPlayerId());
+
+        String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
+        messagingTemplate.convertAndSend(destination, response);
+
     }
 
     @MessageMapping("/board/cards/{gameId}")
