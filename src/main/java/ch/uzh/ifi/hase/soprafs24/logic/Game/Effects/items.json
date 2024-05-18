@@ -9,5 +9,7 @@
   "Fuuuuuuuusion": {"givePlayerCardChoice":  {"player":"current", "card": "choice"}},
   "TreasureChest-IceCream": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "card","selection": "random", "amount": 1}}},
   "MeowImOut":{ "exchangePositions":  {"player": "current", "field": "randomPlayer"}},
+  "SteeringASubmarine": { "reduceMoneyALL" : {} },
+  "MeowYOU": { "changeGoalPosition":  {}},
   "TheBrotherAndCo": {}
 }

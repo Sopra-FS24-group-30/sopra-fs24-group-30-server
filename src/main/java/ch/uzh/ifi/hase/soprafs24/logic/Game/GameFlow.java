@@ -157,14 +157,24 @@ public class GameFlow {
         String card1 = randoCard();
         players[(int) (long) getTurnPlayerId()-1].addCardNames(randomCard);
 
-
     }
+
     public void givePlayerCardChoice(JSONObject args){
         String cardType1 = null;
         String card1 = getChoices().getString("card");
         players[(int) (long) getTurnPlayerId()-1].addCardNames(card1);
 
     }
+    public void reduceMoneyALL(JSONObject args){
+        for(int i = 0; i < 4; i++){
+            players[i].setCash(players[i].getCash()-5);
+        }
+        CashData cashData = new CashData();
+        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
+        GameWebSocketController.returnMoney(cashData,gameId);
+
+    }
+
 
     public void exchangePositions(JSONObject args){
         HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
@@ -833,7 +843,7 @@ public class GameFlow {
         return mappi;
     }
 
-    private void initializeUpdates(Set<String> winners){
+    public void initializeUpdates(Set<String> winners){
         for(String winner : winners){
             Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
@@ -860,13 +870,17 @@ public class GameFlow {
         return null;
     }
 
-    private Long findGoal(List<GameBoardSpace> spaces){
+    public Long findGoal(List<GameBoardSpace> spaces){
         for (GameBoardSpace space : spaces){
             if (Boolean.TRUE.equals(space.getIsGoal())){
                 return space.getSpaceId();
             }
         }
         return null;
+    }
+
+    public void changeGoalPosition(JSONObject args){
+        setBoardGoal(getGameBoard().getSpaces());
     }
 
     public Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){

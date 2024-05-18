@@ -161,6 +161,18 @@ public class GameFlowTest {
     }
 
 
+    @Test
+    public void ReduceMoneyPLayers() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{}");
+        Player[] players = gameFlow.getPlayers();;
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        gameFlow.reduceMoneyALL(args);
+        assertEquals(95, players[(int) (long) gameFlow.getTurnPlayerId()-1].getCash());
+
+    }
+
+
 
 
 

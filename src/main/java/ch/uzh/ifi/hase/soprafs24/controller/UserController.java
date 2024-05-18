@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.*;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
@@ -19,15 +20,35 @@ import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.*;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 import org.json.JSONObject;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+
+class FakeUserCreator {
+
+    public static User createFakeUser() {
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        fakeUser.setToken("fakeToken12345");
+        fakeUser.setUsername("fakeUsername");
+        fakeUser.setPassword("fakePassword");
+        fakeUser.setCreationDate(LocalDate.now());
+        fakeUser.setBirthday(LocalDate.of(1990, 1, 1));
+        fakeUser.setAmountGamesCompleted(10);
+        fakeUser.setAmountWins(5);
+
+        // Ensure that the AchievementStatus is properly initialized
+        AchievementStatus fakeAchievementStatus = new AchievementStatus();
+        fakeAchievementStatus.setBaron3(false); // or any default value
+        fakeUser.setAchievement(fakeAchievementStatus);
+
+        return fakeUser;
+    }
+}
+
 
 
 @RestController
@@ -54,7 +75,6 @@ public class UserController {
             gameFlow.addPlayer(p);
         }
         gameFlow.setTurnPlayerId(1L);
-
 
         return gameFlow;
     }
@@ -311,7 +331,28 @@ public class UserController {
 
     }
 
+    @GetMapping("/games/reduceMoneyALL") // <-- corrected endpoint path
+    public void ReduceMoneyPLayers() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{}");
+        Player[] players = gameFlow.getPlayers();;
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        gameFlow.reduceMoneyALL(args);
+        System.out.println("NEW CURRENT PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()-1].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()+1].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()+2].getCash());
 
+    }
 
+    @GetMapping("/games/changeGoalItem") // <-- corrected endpoint path
+    public void changeGoal() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{}");
+        System.out.println("Previous GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
+        gameFlow.changeGoalPosition(args);
+        System.out.println("NEW GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
+
+    }
 
 }

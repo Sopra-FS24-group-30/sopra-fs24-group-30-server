@@ -75,9 +75,6 @@ public class AchievementService {
             achievementStatus.setEndurance1(true);
         }
 
-
-
-
     }
 
 }
