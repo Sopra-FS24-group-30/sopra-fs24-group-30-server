@@ -1,173 +1,533 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
+
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.CashData;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.MoveData;
+import ch.uzh.ifi.hase.soprafs24.logic.Returns.UsableData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
 public class Spaces {
-    static Map<String, runFunc<?, ?>> runLandOns = new HashMap<>();
+    static Map<String, runFunc<GameFlow>> runLandOns = new HashMap<>();
 
     static{
-        runLandOns.put("1", (Player player, Player[] players) -> goal(player, players));
-        runLandOns.put("2",(Player player, Player[] players) -> blue(player, players));
-        runLandOns.put("3",(Player player, Player[] players) -> item(player, players));
-        runLandOns.put("4",(Player player, Player[] players) -> card(player, players));
-        runLandOns.put("5",(Player player, Player[] players) -> gambling(player, players));
-        runLandOns.put("6", (Player player, Player[] players) -> catnami(player, players));
-        runLandOns.put("7",(Player player, Player[] players) -> black(player, players));
-        runLandOns.put("8",(Player player, Player[] players) -> red(player, players));
-        runLandOns.put("9",(Player player, Player[] players) -> junction(player, players));
-        runLandOns.put("10",(Player player, Player[] players) -> gate(player, players));
-        runLandOns.put("11",(Player player, Player[] players) -> specialItem(player, players));
-        runLandOns.put("12",(Player player, Player[] players) -> teleportToSpace49(player, players));
-        runLandOns.put("13",(Player player, Player[] players) -> teleportToSpace13(player, players));
-        runLandOns.put("14",(Player player, Player[] players) -> teleportToTheirStart(player, players));
-        runLandOns.put("15",(Player player, Player[] players) -> sellAllItems(player, players));
-        runLandOns.put("16",(Player player, Player[] players) -> rollAgainOrGet10Coins(player, players));
-        runLandOns.put("17",(Player player, Player[] players) -> mustBuyItemOrCard(player, players));
-        runLandOns.put("18",(Player player, Player[] players) -> stealOthersMoney(player, players));
-        runLandOns.put("19",(Player player, Player[] players) -> nothing(player, players));
-        runLandOns.put("20",(Player player, Player[] players) -> found20Money(player, players));
-        runLandOns.put("21",(Player player, Player[] players) -> teleportToRandom(player, players));
-        runLandOns.put("22",(Player player, Player[] players) -> getRandomStuff(player, players));
-        runLandOns.put("23",(Player player, Player[] players) -> gift10Money(player, players));
-        runLandOns.put("24",(Player player, Player[] players) -> sellAllCards(player, players));
-        runLandOns.put("25",(Player player, Player[] players) -> getOthersCards(player, players));
-        runLandOns.put("26",(Player player, Player[] players) -> surpriseMF(player, players));
-        runLandOns.put("27",(Player player, Player[] players) -> swapCardsOrItems(player, players));
-        runLandOns.put("28",(Player player, Player[] players) -> start(player, players));
+        runLandOns.put("2", Spaces::blue);
+        runLandOns.put("3", Spaces::item);
+        runLandOns.put("4", Spaces::card);
+        runLandOns.put("5", Spaces::gambling);
+        runLandOns.put("6", Spaces::catnami);
+        runLandOns.put("7", Spaces::black);
+        runLandOns.put("8", Spaces::red);
+        runLandOns.put("12", Spaces::teleportToSpace49);
+        runLandOns.put("13", Spaces::teleportToSpace13);
+        runLandOns.put("14", Spaces::teleportToTheirStart);
+        runLandOns.put("15", Spaces::sellAllItems);
+        runLandOns.put("16", Spaces::getMushroom);
+        runLandOns.put("17", Spaces::mustBuyItemOrCard);
+        runLandOns.put("18", Spaces::stealOthersMoney);
+        runLandOns.put("19", Spaces::nothing);
+        runLandOns.put("20", Spaces::found20Money);
+        runLandOns.put("21", Spaces::teleportToRandom);
+        runLandOns.put("22", Spaces::getRandomStuff);
+        runLandOns.put("23", Spaces::gift10Money);
+        runLandOns.put("24", Spaces::sellAllCards);
+        runLandOns.put("25", Spaces::getOthersCards);
+        runLandOns.put("26", Spaces::surpriseMF);
+        runLandOns.put("27", Spaces::swapCardsOrItems);
     }
 
-    interface runFunc<T, U>{
-        void apply(T arg1, U arg2);
+    interface runFunc<T>{ //NOSONAR
+        void apply(T arg1);
     }
 
-    public static void goal(Player player, Player[] players) {
-        //skip?
+    private static int randomInt(int num){
+        return (int) (Math.random()*num); //NOSONAR
     }
-    public static void blue(Player player, Player[] players) {
-        //player get 4 cash
-    }
-    public static void item(Player player, Player[] players) {
-        //player gets 1 item
-    }
-    public static void card(Player player, Player[] players) {
-        //player gets 1 card
-    }
-    public static void gambling(Player player, Player[] players) {
-        //player loose all cash
-        //player doubles all cash
-        // or cards
-        // or items
-    }
-    public static void catnami(Player player, Player[] players) {
-        //player get 69 cash
-        //player swap wincondi with teammate
-        //player swap wincondi with random enemy
-        //player swap wincondi with unused
 
-        System.out.println("meow");
-        List<WinCondition> allWCs = new ArrayList<>();
-        for (Player p : players){
-            allWCs.add(p.getWinCondition());
+    public static void blue(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        currPlayer.addCash(4);
+        toCash(currPlayer, 4, gameFlow);
+    }
+
+    public static void item(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        String it = GameFlow.randoItem();
+        currPlayer.addCardNames(it);
+        toUsable(gameFlow);
+    }
+    public static void card(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        String it = GameFlow.randoCard();
+        currPlayer.addCardNames(it);
+        toUsable(gameFlow);
+    }
+    public static void gambling(GameFlow gameFlow){
+        //TODO GAMBLING WITH CASH
+        Player[] players = gameFlow.getPlayers();
+        Player currPlayer = players[gameFlow.getTurnPlayerId().intValue()-1];
+        int random = randomInt(2);
+        boolean win = random < 2;
+        random = randomInt(2);
+        boolean item = random < 2;
+        if(item) {
+            if (win) {
+                ArrayList<String> items = new ArrayList<>();
+                for(int i=0;i<currPlayer.getItemNames().size();i++){
+                    items.add(GameFlow.randoItem());
+                }
+                currPlayer.addItemNames(items);
+            }else {
+                currPlayer.setItemNames(new ArrayList<>());
+            }
+        }else {
+            //cards
+            if (win) {
+                ArrayList<String> cards = new ArrayList<>();
+                for(int i=0;i<currPlayer.getCardNames().size();i++){
+                    cards.add(GameFlow.randoCard());
+                }
+                currPlayer.addCardNames(cards);
+            }else {
+                currPlayer.setCardNames(new ArrayList<>());
+            }
         }
-        Collections.shuffle(allWCs);
-        int i=0;
-        for (Player p : players){
-            p.setWinCondition(allWCs.get(i));
-            i++;
+        toUsable(gameFlow);
+    }
+    public static void catnami(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(4);
+        String pWin = currPlayer.getWinCondition();
+        int mateId = currPlayer.getTeammateId().intValue();
+        if (x==0){
+            currPlayer.addCash(+69);
+            toCash(currPlayer, 69, gameFlow);
+        } else if (x==1){
+            currPlayer.setWinCondition(currPlayers[mateId-1].getWinCondition());
+            currPlayers[mateId-1].setWinCondition(pWin);
+            toWinCondi(currPlayer, currPlayers[mateId-1], gameFlow);
+        } else if (x==2){
+            List<Integer> pRand = new ArrayList<>();
+            int randi = (currPlayer.getPlayerId().intValue() + mateId)/2;
+            pRand.add(randi);
+            pRand.add(currPlayers[randi-1].getTeammateId().intValue());
+            int y = randomInt(2);
+            String rWin = currPlayers[pRand.get(y)-1].getWinCondition();
+            currPlayers[pRand.get(y)-1].setWinCondition(pWin);
+            currPlayer.setWinCondition(rWin);
+            toWinCondi(currPlayer, currPlayers[pRand.get(y)-1], gameFlow);
+        } else{
+            int currCashMate = currPlayers[mateId-1].getCash();
+            currPlayers[mateId-1].setCash(0);
+            currPlayers[mateId-1].addLostCash(currCashMate);
+            toCash(currPlayer, -currCashMate, gameFlow);
         }
-
     }
-    public static void black(Player player, Player[] players) {
-        //swap posi of every player
-        //lose 69 cash
-        //evenly distribute all cash
+    public static void black(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(3);
+        ArrayList<Long> allPosis = new ArrayList<>();
+        int allCash = 0;
+        for (Player p : currPlayers){
+            allPosis.add(p.getPosition());
+            allCash += p.getCash();
+        }
+        if (x==0){
+            int cash = Math.min(69, currPlayer.getCash());
+            currPlayer.addCash(-cash);
+            toCash(currPlayer, -cash, gameFlow);
+        } else if (x==1){
+            int partial = allCash / 4;
+            int initial;
+            int delta;
+            CashData cashData = new CashData(gameFlow);
+            for ( Player p : currPlayers){
+                initial = p.getCash();
+                p.setCash(partial);
+                delta = partial-initial;
+                if (delta < 0){
+                    p.addLostCash(-delta);
+                }
+                cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), delta);
+            }
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(cashData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
+        } else{
+            Collections.shuffle(allPosis);
+            MoveData moveData = new MoveData("teleport");//NOSONAR
+            for (Player p: currPlayers){
+                ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList((allPosis.get(p.getPlayerId().intValue()-1))));
+                p.setPosition(allPosis.get(p.getPlayerId().intValue()-1));
+                moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), posiArr, 0, null);
+            }
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(moveData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            GameWebSocketController.returnMoves(moveData, gameFlow.getGameId());
+        }
     }
-    public static void red(Player player, Player[] players) {
-        //player lose 10 cash
-        //everyone lose 10 cash
-        //teleport player to their start
+    public static void red(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(3);
+        if (x==0){
+            int cash = Math.min(10, currPlayer.getCash());
+            currPlayer.addCash(-cash);
+            toCash(currPlayer, -cash, gameFlow);
+        } else if (x==1){
+            CashData cashData = new CashData(gameFlow);
+            for (Player p : currPlayers){
+                int cash = Math.min(10, p.getCash());
+                p.addCash(-cash);
+                p.addLostCash(cash);
+                cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
+            }
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try {
+//                String jsonData = objectMapper.writeValueAsString(cashData);
+//                System.out.println(jsonData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
+        } else {
+            teleportToTheirStart(gameFlow);
+        }
     }
-    public static void junction(Player player, Player[] players) {
-        //skip?
+    public static void teleportToSpace49(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        currPlayer.setPosition(49L);
+        toMoveTp(currPlayer, gameFlow);
     }
-    public static void gate(Player player, Player[] players) {
-        //skip?
+    public static void teleportToSpace13(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        currPlayer.setPosition(13L);
+        toMoveTp(currPlayer, gameFlow);
     }
-    public static void specialItem(Player player, Player[] players) {
-        //skip?
+    public static void teleportToTheirStart(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        int pId = currPlayer.getPlayerId().intValue();
+        Long theirStart = GameFlow.findStart(pId);
+        currPlayer.setPosition(theirStart);
+        toMoveTp(currPlayer, gameFlow);
     }
-    public static void teleportToSpace49(Player player, Player[] players) {
-        //teleport player to 49
+    public static void sellAllItems(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Map<String, ArrayList<String>> allItems = getItemsByColor();
+        int totalChange = 0;
+        for (String item : currPlayer.getItemNames()){
+            if (allItems.get("bronze").contains(item)){ //NOSONAR
+                totalChange += 5;
+            } else if (allItems.get("silver").contains(item)){ //NOSONAR
+                totalChange += 7;
+            } else if (allItems.get("gold").contains(item)){ //NOSONAR
+                totalChange += 10;
+            }
+        }
+        currPlayer.addCash(totalChange);
+        currPlayer.setItemNames(new ArrayList<>());
+        toUsable(gameFlow);
+        toCash(currPlayer, totalChange, gameFlow);
     }
-    public static void teleportToSpace13(Player player, Player[] players) {
-        //teleport player to 13
+    public static void getMushroom(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(2);
+        if (x==0){
+            currPlayer.addItemNames("MagicMushroom");//NOSONAR
+        } else{
+            for (Player p : currPlayers){
+                if (!p.equals(currPlayer)){
+                    p.addItemNames("MagicMushroom");
+                }
+            }
+        }
+        toUsable(gameFlow);
     }
-    public static void teleportToTheirStart(Player player, Player[] players) {
-        //teleport player to their start
+    public static void mustBuyItemOrCard(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        int cash = Math.min(15, currPlayer.getCash());
+        if (cash>=15){
+            String it = GameFlow.randoItem();
+            currPlayer.addItemNames(it);
+        } else {
+            String it = GameFlow.randoCard();
+            currPlayer.addCardNames(it);
+        }
+        currPlayer.addCash(-cash);
+        toUsable(gameFlow);
+        toCash(currPlayer, -cash, gameFlow);
     }
-    public static void sellAllItems(Player player, Player[] players) {
-        //for each item (lose all items)
-        // +5 cash bronze
-        // +7 cash silver
-        // +10 cash gold
+    public static void stealOthersMoney(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int cash = 0;
+        CashData cashData = new CashData(gameFlow);
+        for (Player p : currPlayers){
+            if (!p.equals(currPlayer)){
+                int maxi = Math.min(10, p.getCash());
+                cash += maxi;
+                p.addCash(-maxi);
+                p.addLostCash(maxi);
+                cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -maxi);
+            }
+        }
+        currPlayer.addCash(+cash);
+        cashData.setPlayerAmountAndUpdate(currPlayer.getPlayerId().intValue(), currPlayer.getCash(), cash);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
-    public static void rollAgainOrGet10Coins(Player player, Player[] players) {
-        //roll dice again
-        //player get 10 cash
-    }
-    public static void mustBuyItemOrCard(Player player, Player[] players) {
-        //player lose max 15 cash
-        //if player.cash > 15: player gets 1 item
-        //if player.cash < 15: player gets 1 card
-    }
-    public static void stealOthersMoney(Player player, Player[] players) {
-        //others lose max 10 cash each
-        //player gets that money
-    }
-    public static void nothing(Player player, Player[] players) {
+    public static void nothing(GameFlow gameFlow) {
         //nothing, next player
     }
-    public static void found20Money(Player player, Player[] players) {
-        //player gets 20 cash
-        //teammate gets 20 cash
-        //nothing, next player
+    public static void found20Money(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(3);
+        int mateId = currPlayer.getTeammateId().intValue();
+        if (x==0){
+            currPlayer.addCash(+20);
+            toCash(currPlayer, 20, gameFlow);
+        }else if (x==1) {
+            currPlayers[mateId - 1].addCash(+20);
+            toCash(currPlayers[mateId-1], 20, gameFlow);
+        }
     }
-    public static void teleportToRandom(Player player, Player[] players) {
-        //player teleport to random player
-        //player swaps posi with random player
+    public static void teleportToRandom(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(2);
+        int rando = randomInt(currPlayers.length);
+        if (currPlayers[rando]==currPlayer){
+            rando = (rando + 1 >= currPlayers.length) ? 1 : rando+1;
+        }
+        Long pPosi = currPlayer.getPosition();
+        Long rPosi = currPlayers[rando].getPosition();
+        currPlayer.setPosition(rPosi);
+        if (x==0){
+            currPlayers[rando].setPosition(pPosi);
+            toMoveTp(currPlayer, currPlayers[rando], gameFlow);
+        }else{
+            toMoveTp(currPlayer, gameFlow);
+        }
     }
-    public static void getRandomStuff(Player player, Player[] players) {
-        //player and teammate get Bro
-        //player gets 1 gold item
-        //player gets 2 cards
+    public static void getRandomStuff(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(3);
+        if (x==0){
+            int mateId = currPlayer.getTeammateId().intValue();
+            currPlayer.addItemNames("TheBrotherAndCo"); //NOSONAR
+            currPlayers[mateId-1].addItemNames("TheBrotherAndCo");
+        } else if (x==1){
+            int rando = randomInt(GameFlow.allCards.length);
+            currPlayer.addCardNames(GameFlow.allCards[rando]);
+            int randi = randomInt(GameFlow.allCards.length);
+            currPlayer.addCardNames(GameFlow.allCards[randi]);
+        } else {
+            ArrayList<String> goldItems = getItemsByColor().get("gold");
+            currPlayer.addItemNames(goldItems.get(randomInt(goldItems.size())));
+        }
+        toUsable(gameFlow);
     }
-    public static void gift10Money(Player player, Player[] players) {
-        //player loses max 10 cash
-        //teammate gets that cash
+    public static void gift10Money(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int mateId = currPlayer.getTeammateId().intValue();
+        int cash = Math.min(10, currPlayer.getCash());
+        currPlayer.addCash(-cash);
+        currPlayers[mateId-1].addCash(+cash);
+        toCash(currPlayer, currPlayers[mateId-1], -cash, gameFlow);
     }
-    public static void sellAllCards(Player player, Player[] players) {
-        //for each card (lose all cards)
-        // +5 cash bronze
-        // +7 cash silver
-        // +10 cash gold
+    public static void sellAllCards(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Map<String, ArrayList<String>> allCards = getCardsByColor();
+        int allCash = 0;
+        for (String card : currPlayer.getCardNames()){
+            if (allCards.get("bronze").contains(card)){
+                allCash += 5;
+            } else if (allCards.get("silver").contains(card)){
+                allCash += 7;
+            } else if (allCards.get("gold").contains(card)){
+                allCash += 10;
+            }
+        }
+        currPlayer.addCash(allCash);
+        currPlayer.setCardNames(new ArrayList<>());
+
+        toUsable(gameFlow);
+        toCash(currPlayer, allCash, gameFlow);
     }
-    public static void getOthersCards(Player player, Player[] players) {
-        //others lose 1 card
-        // if no card then -5 cash
-        //player gets those cards, but not money
+    public static void getOthersCards(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        CashData cashData = new CashData(gameFlow);
+        for (Player p : currPlayers){
+            if (p.getCardNames().isEmpty()){
+                int cash = Math.min(5, p.getCash());
+                p.addCash(-cash);
+                cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
+            } else {
+                String cardname = p.getCardNames().get(0);
+                currPlayer.addCardNames(cardname);
+                p.removeCardNames(cardname);
+            }
+        }
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
+        toUsable(gameFlow);
     }
-    public static void surpriseMF(Player player, Player[] players) {
-        //player get 69 cash
-        //player swap wincondi with teammate
-        //player swap wincondi with random enemy
-        //player swap wincondi with unused
+    public static void surpriseMF(GameFlow gameFlow) {
+        catnami(gameFlow);
     }
-    public static void swapCardsOrItems(Player player, Player[] players) {
-        //swap all cards with teammate
-        //swap all items with teammate
-    }
-    public static void start(Player player, Player[] players) {
-        //skip?
+    public static void swapCardsOrItems(GameFlow gameFlow) {
+        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player[] currPlayers = gameFlow.getPlayers();
+        int x = randomInt(2);
+        int mateId = currPlayer.getTeammateId().intValue();
+        if (x==0){
+            ArrayList<String> temp1 = currPlayer.getItemNames();
+            currPlayer.setItemNames(currPlayers[mateId-1].getItemNames());
+            currPlayers[mateId-1].setItemNames(temp1);
+        }else{
+            ArrayList<String> temp2 = currPlayer.getCardNames();
+            currPlayer.setCardNames(currPlayers[mateId-1].getCardNames());
+            currPlayers[mateId-1].setCardNames(temp2);
+        }
+        toUsable(gameFlow);
     }
 
+
+    /**
+     *
+     * ITEM COLOR
+     * CARD COLOR
+     *
+     */
+    private static Map<String, ArrayList<String>> getItemsByColor(){
+        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo")); // "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"
+        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom")); // "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
+        return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
+    }
+    private static Map<String, ArrayList<String>> getCardsByColor(){
+        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("B14", "B26", "B35", "B135", "B246", "B123", "B456", "B07"));
+        ArrayList<String> silver = new ArrayList<>(Arrays.asList("S0", "S1", "S2", "S3", "S4", "S5", "S6", "S7"));
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("G13", "G26", "G45", "G04", "G37", "G1256"));
+        return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
+    }
+
+
+    /**
+     *
+     * PREPARE MESSAGES FOR WEBSOCKETS
+     *
+     */
+    private static void toWinCondi(Player p1, Player p2, GameFlow gameFlow){
+        gameFlow.checkWinCondition(p1);
+        gameFlow.checkWinCondition(p2);
+    }
+
+    private static void toUsable(GameFlow gameFlow){
+        UsableData usableData = UsableData.prepateData(gameFlow);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(usableData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+        GameWebSocketController.returnUsables(usableData, gameFlow.getGameId());
+    }
+
+    private static void toCash(Player player, int change, GameFlow gameFlow){
+        if (change<0){
+            player.addLostCash(-change);
+        }
+        CashData cashData = new CashData(gameFlow);
+        cashData.setPlayerAmountAndUpdate(player.getPlayerId().intValue(), player.getCash(), change);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
+    }
+
+    private static void toCash(Player player1, Player player2, int change, GameFlow gameFlow){
+        if (change<0){
+            player1.addLostCash(-change);
+        }
+        CashData cashData = new CashData(gameFlow);
+        cashData.setPlayerAmountAndUpdate(player1.getPlayerId().intValue(), player1.getCash(), change);
+        cashData.setPlayerAmountAndUpdate(player2.getPlayerId().intValue(), player2.getCash(), -change);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(cashData);
+//            System.out.println(jsonData);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+        GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
+    }
+
+    private static void toMoveTp(Player player, GameFlow gameFlow){
+        MoveData moveData = new MoveData("teleport");
+        ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList(player.getPosition()));
+        moveData.setPlayerSpaceMovesColour(player.getPlayerId().intValue(), posiArr, 0, null);
+        Map<String, Object> oneMoveData = moveData.getPlayerMoveMap(player.getPlayerId().intValue());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(oneMoveData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        GameWebSocketController.returnMoves(oneMoveData, gameFlow.getGameId());
+    }
+
+    private static void toMoveTp(Player player1, Player player2, GameFlow gameFlow){
+        MoveData moveData = new MoveData("teleport");
+        ArrayList<Long> posiArr1 = new ArrayList<>(Arrays.asList(player1.getPosition()));
+        ArrayList<Long> posiArr2 = new ArrayList<>(Arrays.asList(player2.getPosition()));
+        moveData.setPlayerSpaceMovesColour(player1.getPlayerId().intValue(), posiArr1, 0, null);
+        moveData.setPlayerSpaceMovesColour(player2.getPlayerId().intValue(), posiArr2, 0, null);
+        Map<String, Object> twoMoveData = moveData.getPlayerMoveMap(player1.getPlayerId().intValue(), player2.getPlayerId().intValue());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            String jsonData = objectMapper.writeValueAsString(twoMoveData);
+//            System.out.println(jsonData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        GameWebSocketController.returnMoves(twoMoveData, gameFlow.getGameId());
+    }
 }

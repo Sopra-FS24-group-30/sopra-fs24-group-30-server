@@ -1,18 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
-import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.WinCondition;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs24.service.GameBoardService;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +21,7 @@ import java.util.Random;
 @Transactional
 public class GameService {
 
+    private final Random rnd = new Random();
     private final GameRepository gameRepository;
     private final GameBoardService gameBoardService;
 
@@ -44,15 +39,20 @@ public class GameService {
      * @return a unique LobbyId
      */
     public Long getLobbyId(){
-        Random rnd = new Random();
+
         long id = 100000 + rnd.nextInt(900000);
+        int counter = 0;
         while (this.gameRepository.findById(id) != null){
             id = 100000 + rnd.nextInt(900000);
+            if(counter >= 4000){
+                break;
+            }
+            counter ++;
         }
         return id;
     }
 
-    public Player createPlayerForGame(User user, int currentPlayerCount) {
+    public Player createPlayerForGame(User user, int currentPlayerCount, Game game) {
         // This method could be part of setting up a new game or joining an existing one
         if (currentPlayerCount >= 4) {
             throw new IllegalStateException("Cannot add more players to the game. The game is full.");
@@ -61,11 +61,13 @@ public class GameService {
         Player player = new Player();
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
+        player.setUserId(user.getId());
         // Initialize other properties of Player
         player.setStatus(PlayerStatus.NOT_PLAYING);
         player.setPlayerName(user.getUsername());
         player.setCash(15);
-        player.setWinCondition(WinCondition.getRandomWinCondition());
+        player.setWinCondition(WinConditionUltimate.getRandomWinCondition(player.getPlayerId(), game));
+        player.setUltimate(WinConditionUltimate.getRandomUltimate(player.getPlayerId(), game));
         return player;
     }
     public Game setUpGame() {

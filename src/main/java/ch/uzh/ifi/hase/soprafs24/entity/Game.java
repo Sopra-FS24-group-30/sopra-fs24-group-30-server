@@ -1,15 +1,16 @@
 package ch.uzh.ifi.hase.soprafs24.entity;
 
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+
+import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 
@@ -40,8 +41,7 @@ public class Game implements Serializable {
     @Column(name = "player_id")
     private List<String> players;
 
-    @Transient
-    private List<Player> active_players = new ArrayList<>();
+    private transient List<Player> active_players = new ArrayList<>(); //NOSONAR
 
     @Column(nullable = false)
     private GameStatus status;
@@ -52,6 +52,11 @@ public class Game implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "game")
     @JsonManagedReference
     private GameBoard gameBoard;
+
+    @ElementCollection
+    private List<String> listOfAllCondition = WinConditionUltimate.getAllWinConditions();
+    @ElementCollection
+    private List<String> listOfAllUltis = new ArrayList<>(Getem.getUltimates().keySet());
 
     public List<Player> getactive_Players() {
         return active_players;
@@ -118,5 +123,13 @@ public class Game implements Serializable {
 
     public void removePlayer(String Id){
         this.players.remove(Id);
+    }
+
+    public List<String> getListOfAllCondition() {
+        return listOfAllCondition;
+    }
+
+    public List<String> getListOfAllUltis() {
+        return listOfAllUltis;
     }
 }

@@ -2,6 +2,7 @@
   "PickPocket": {"updateMoney": {"type": "relative","amount": {"others":"-50","current":"givenAmount"}}},
   "FreshStart": {"updatePositions": {"player": "others","field": "start"}},
   "Teleport": {"updatePositions": {"player": "current","field": "choice"}},
+  "Rando": {},
   "BigShuffle": {"shuffle": {"type":  "ultimates"}},
   "HoldUp": {"updateTurns": {"newTurnNumber": 15}},
   "Chameleon": {"useRandomUsable": {"type": "item", "amount": 1}}
