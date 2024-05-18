@@ -48,8 +48,9 @@ public class Player {
         return achievementProgress;
     }
 
-    public void setAchievementProgress(AchievementProgress achievementProgress) {
+    public void setAchievementProgress(AchievementProgress achievementProgress, GameTimer gameTimer) {
         this.achievementProgress = achievementProgress;
+        this.gameTimer = gameTimer;
     }
 
     public boolean isUltActive() {

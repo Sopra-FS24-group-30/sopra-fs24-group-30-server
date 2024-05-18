@@ -61,7 +61,7 @@ public class GameService {
         GameTimer gameTimer = new GameTimer();
 
         Player player = new Player();
-        player.setAchievementProgress(new AchievementProgress(user.getId(), gameTimer));
+        player.setAchievementProgress(new AchievementProgress(user.getId(), new GameTimer()), new GameTimer());
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
         // Initialize other properties of Player

@@ -6,7 +6,7 @@
   "TreasureChest": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "item","selection": "random","amount": 1}}},
   "PeaceImOut": {"updatePositions":  {"player": "current", "field": "randomPlayer"}},
   "OwoWhatisThis": {"givePlayerCardRand": {"player": "current", "card1": "random"}},
-  "Fuuuuuuuusion": {"givePlayerCardChoice":  {"player":"current", "card1": "choice", "card2": "choice"}},
+  "Fuuuuuuuusion": {"givePlayerCardChoice":  {"player":"current", "card": "choice"}},
   "TreasureChest-IceCream": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "card","selection": "random", "amount": 1}}},
   "MeowImOut":{ "exchangePositions":  {"player": "current", "field": "randomPlayer"}}
 }

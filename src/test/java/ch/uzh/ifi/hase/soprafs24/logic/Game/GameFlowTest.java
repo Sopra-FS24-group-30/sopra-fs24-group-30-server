@@ -1,4 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 
 
 import org.json.JSONObject;
@@ -20,7 +21,7 @@ public class GameFlowTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i));
+            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -41,7 +42,7 @@ public class GameFlowTest {
             itemNames.add("OnlyFansAbo");
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i));
+            p.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -102,6 +103,65 @@ public class GameFlowTest {
         assertEquals(expectedItemsPlayer3,gameFlow.getPlayer(3).getItemNames());
 
     }
+
+    @Test
+    public void testgiveCard(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"player\": \"current\",\"card1\": \"random\"}");
+        HashMap<Integer,ArrayList<String>> itemChoices = new HashMap<>();
+        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
+        gameFlow.givePlayerCardRand(jsonObject);
+        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
+
+        int expectedItemsPlayer10 = 1;
+        ArrayList<String> itemNames = new ArrayList();;
+
+        ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
+        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
+        assertEquals(expectedItemsPlayer10, gameFlow.getPlayer(1).getCardNames().size());
+        //assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
+    }
+
+    @Test
+    public void testgiveCardChoice(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"player\": \"current\",\"card\": \"choice\"}");
+        HashMap<Integer,ArrayList<String>> itemChoices = new HashMap<>();
+        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
+        JSONObject choices1 = new JSONObject("{\"card\": \"S2\"}");
+        gameFlow.setChoices(choices1);
+        String cardvalue = gameFlow.getChoices().getString("card");
+        gameFlow.givePlayerCardChoice(jsonObject);
+
+        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
+        expectedItemsPlayer10.add("S2");
+        ArrayList<String> itemNames = new ArrayList();;
+
+        ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
+        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
+        assertEquals(expectedItemsPlayer10, gameFlow.getPlayer(1).getCardNames());
+        //assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
+    }
+
+    @Test
+    public void ExchangePlayerPositions() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{\"player\": \"current\",\"field\": \"randomPlayer\"}");
+        Player[] players = gameFlow.getPlayers();
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        long first_position = players[(int) (long) gameFlow.getTurnPlayerId()-1].getPosition();
+        players[(int) (long) gameFlow.getTurnPlayerId()].setPosition(53L);
+        players[(int) (long) gameFlow.getTurnPlayerId()+1].setPosition(53L);
+        players[(int) (long) gameFlow.getTurnPlayerId()+2].setPosition(53L);
+        gameFlow.exchangePositions(args);
+
+        assertEquals(53L, players[(int) (long) gameFlow.getTurnPlayerId()-1].getPosition());
+        //assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
+    }
+
+
+
 
 
 }

@@ -12,7 +12,7 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
-
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -199,7 +199,7 @@ public class GameManagementServiceTest {
 
         for(int i=1; i<5; i++){
             Player player = new Player();
-            player.setAchievementProgress(new AchievementProgress((long) i));
+            player.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
             player.setPlayerId((long) i);
             player.setCash(15);
             playerList.add(player);
