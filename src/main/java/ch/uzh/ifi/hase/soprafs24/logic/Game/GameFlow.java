@@ -614,6 +614,9 @@ public class GameFlow {
     public Map<String, Object> move(int moves, long posi) {
         Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
+        if (currPosi == 3L || currPosi == 44L){
+            player.removeItemNames("TheBrotherAndCo");
+        }
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
 
@@ -669,7 +672,7 @@ public class GameFlow {
         }
         printi();
 
-        endOfWalkCheck(player, color, currentSpace, moves);
+        endOfWalkCheck(player, color, currentSpace);
 
         GameWebSocketController.newPlayer(nextPlayer(), getGameId());
 
@@ -821,7 +824,7 @@ public class GameFlow {
         return response;
     }
 
-    public void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace, int moves){
+    public void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace){
         player.setShipAct(player.getShipTemp());
         if ("Yellow".equals(color)){
             player.addLandYellow();
