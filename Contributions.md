@@ -83,4 +83,5 @@
 ## <font style="color: #ffd700">Week 8 *(18.05 – 24.05)*</font>
 
 | Date | Name | Links to Github Issues | Comments |
+| 18.05.2024 | Marius | [#41](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/41), [#53](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/53), [#57](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/57) | |
 |---|---|---|---|
