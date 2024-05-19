@@ -239,6 +239,29 @@ public class GameFlow {
      * exchange usables between players
      * @param args parameters for the exchange effect
      */
+
+    public void exchangeAll(){
+        String playerId = getChoices().getString("playerId");
+        Player otherplayey = players[Integer.parseInt(playerId)-1];
+        Player currentPlayer = players[(int) (long) getTurnPlayerId()-1];
+        ArrayList<String> otherPlayerItems = otherplayey.getItemNames();
+        for (String item : otherPlayerItems){
+            currentPlayer.addItemNames(item);
+        }
+        ArrayList<String> currentPlayerCards = currentPlayer.getCardNames();
+        for (String card : currentPlayerCards){
+            otherplayey.addCardNames(card);
+        }
+        otherplayey.setItemNames(new ArrayList<>());
+        currentPlayer.setCardNames(new ArrayList<>());
+
+        UsableData usableData = new UsableData();
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        GameWebSocketController.returnUsables(usableData,gameId);
+
+
+    }
     public void exchange(JSONObject args){
         JSONObject giveInfos = args.getJSONObject("give");
         JSONObject getInfos = args.getJSONObject("get");

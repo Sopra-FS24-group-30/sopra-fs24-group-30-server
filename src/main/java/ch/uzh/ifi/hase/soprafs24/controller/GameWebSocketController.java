@@ -247,6 +247,9 @@ public class GameWebSocketController {
             case "changeGoalPosition":
                 gameFlow.changeGoalPosition(effectParas);
                 break;
+            case "exchangeAll":
+                gameFlow.exchangeAll();
+                break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
         }

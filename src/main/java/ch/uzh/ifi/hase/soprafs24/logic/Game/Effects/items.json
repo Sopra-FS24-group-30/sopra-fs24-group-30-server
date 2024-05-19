@@ -11,5 +11,6 @@
   "MeowImOut":{ "exchangePositions":  {"player": "current", "field": "randomPlayer"}},
   "SteeringASubmarine": { "reduceMoneyALL" : {} },
   "MeowYOU": { "changeGoalPosition":  {}},
-  "TheBrotherAndCo": {}
+  "TheBrotherAndCo": {},
+  "BestTradeDeal": { "exchangeALL":  {}}
 }

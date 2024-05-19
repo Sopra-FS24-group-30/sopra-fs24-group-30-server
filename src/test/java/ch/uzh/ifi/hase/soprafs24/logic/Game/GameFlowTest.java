@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 
 @SpringBootTest
 public class GameFlowTest {
@@ -363,6 +365,38 @@ public class GameFlowTest {
         gameFlow.reduceMoneyALL(args);
         assertEquals(95, players[(int) (long) gameFlow.getTurnPlayerId()-1].getCash());
 
+    }
+
+
+    @Test
+    public void exchangeAllfunc() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[0].setTeammateId(2L);
+        players[1].setTeammateId(1L);
+        players[2].setTeammateId(4L);
+        players[3].setTeammateId(3L);
+        players[0].setWinCondition("JackSparrow");
+        players[1].setWinCondition("JackSparrow");
+        players[2].setWinCondition("JackSparrow");
+        players[3].setWinCondition("JackSparrow");
+        players[0].addCardNames("S2");
+        players[0].addCardNames("S5");
+        players[2].addItemNames("OwoWhatisThis");
+        JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
+        gameFlow.setChoices(choices1);
+        gameFlow.exchangeAll();
+        assertEquals(2, players[2].getCardNames().size());
+        assertEquals(3, players[0].getItemNames().size());
+        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OwoWhatisThis");
+        ArrayList<String> expectedCards = new ArrayList<>();
+        expectedCards.add("S2");
+        expectedCards.add("S5");
+        assertEquals(expectedItemsPlayer10, players[0].getItemNames());
+        assertEquals(expectedCards, players[2].getCardNames());
     }
 
 
