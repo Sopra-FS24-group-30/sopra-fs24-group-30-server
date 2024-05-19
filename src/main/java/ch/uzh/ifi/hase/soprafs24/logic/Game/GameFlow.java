@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
 
@@ -53,6 +54,7 @@ public class GameFlow {
     public GameBoard getGameBoard(){
         return gameBoard;
     }
+
     public void setGameBoard(Long lobbyId) {
         this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
     }
@@ -69,6 +71,7 @@ public class GameFlow {
     }
     public void setCurrentTurn(int currTurn) {
         this.currentTurn = currTurn;
+
     }
 
     public void setMovesLeft(int movesLeft) {
@@ -92,7 +95,9 @@ public class GameFlow {
         this.winMsg = winMsg;
     }
 
-    public GameFlow(){}
+    public GameFlow(){
+        //this is needed for tests and creating a GameFlow
+    }
 
     /*
     possible Effects
@@ -149,6 +154,53 @@ public class GameFlow {
                 return players[player-1].getPosition();
             default:
                 return (long) Integer.parseInt(fieldId);
+        }
+    }
+
+    public void updateTurns(JSONObject args){
+        int turn = args.getInt("newTurnNumber");
+        setCurrentTurn(turn);
+        TurnActiveData turnActiveData = TurnActiveData.prepareData(this);
+        GameWebSocketController.returnTurnActive(turnActiveData,gameId);
+    }
+
+    public void useRandomUsable(JSONObject args){
+        String type = args.getString("type");
+        Integer amount = args.getInt("amount"); //NOSONAR
+        switch (type){
+            case "item":
+                for (int i=1;i<=amount;i++){
+                    String itemName = Getem.getNoChoiceItem();
+                    getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
+                    System.out.println("item USed: " + itemName);
+                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                }
+                break;
+            default:
+                throw new RuntimeException("the option " + type + " is not yet implemented");
+
+        }
+
+    }
+
+    public void shuffle(JSONObject args){
+        String type = args.getString("type");
+        switch (type){
+            case "ultimates":
+                ArrayList<String> ultiNames = new ArrayList<>();
+                for(Player player : players){
+                    ultiNames.add(player.getUltimate());
+                }
+                Collections.shuffle(ultiNames);
+                for(int i=0;i<4;i++){
+                    players[i].setUltimate(ultiNames.get(i));
+                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
+                }
+                break;
+            default:
+                throw new RuntimeException("this type of shuffling: " + type + " is not yet implemented");
+
         }
     }
 
@@ -975,7 +1027,7 @@ public class GameFlow {
     }
 
     private void printi(){
-        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash());
+        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash()); //NOSONAR
         System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition() + "  LostCash: " + players[1].getLostCash());
         System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
         System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());

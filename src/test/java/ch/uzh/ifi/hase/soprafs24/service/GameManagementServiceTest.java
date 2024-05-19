@@ -207,22 +207,15 @@ public class GameManagementServiceTest {
         assertEquals(usables, gameManagementService.getUsables(player));
     }
 
-//    @Test
-//    void test_getInformationPlayers(){
-//        Game game = createGameWithPlayers();
-//
-//        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId(), (long) 2);
-//        System.out.println(results);
-//
-//        assertEquals(4, results.size(), "There should be information for four players");
-//
-//        Object[] keys = results.keySet().toArray();
-//
-//        assertEquals("thisPlayer", keys[0]);
-//        assertEquals("Teammate", keys[1]);
-//        assertEquals("Enemy1", keys[2]);
-//        assertEquals("Enemy2", keys[3]);
-//    }
+    @Test
+    void test_getInformationPlayers(){
+        Game game = createGameWithPlayers();
+
+        List<Object> results = gameManagementService.getInformationPlayers(game.getId());
+        System.out.println(results);
+
+        assertEquals(4, results.size(), "There should be information for four players");
+    }
 
     @Test
     void test_changePlayerStatus(){
@@ -363,10 +356,12 @@ public class GameManagementServiceTest {
         assertEquals(player.getTeammateId(), result.getTeammateId());
     }
 
+    /*
     @Test
     public void test_findGame(){
 
     }
+     */
 
     @Test
     public void test_createGame(){
@@ -391,5 +386,17 @@ public class GameManagementServiceTest {
 
         Long result = gameManagementService.createGame(userId);
         assertTrue(result!=null);
+    }
+
+    @Test
+    public void getTurnOrder(){
+        List<String> expected = new ArrayList<>();
+
+        expected.add("3");
+        expected.add("4");
+        expected.add("1");
+        expected.add("2");
+
+        assertEquals(expected, gameManagementService.getTurnOrder((long) 3));
     }
 }
