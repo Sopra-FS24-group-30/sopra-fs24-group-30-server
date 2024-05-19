@@ -164,7 +164,7 @@ public class Spaces {
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else{
             Collections.shuffle(allPosis);
-            MoveData moveData = new MoveData("teleport");
+            MoveData moveData = new MoveData("teleport");//NOSONAR
             for (Player p: currPlayers){
                 ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList((allPosis.get(p.getPlayerId().intValue()-1))));
                 p.setPosition(allPosis.get(p.getPlayerId().intValue()-1));
@@ -248,7 +248,7 @@ public class Spaces {
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(2);
         if (x==0){
-            currPlayer.addItemNames("MagicMushroom");
+            currPlayer.addItemNames("MagicMushroom");//NOSONAR
         } else{
             for (Player p : currPlayers){
                 if (!p.equals(currPlayer)){

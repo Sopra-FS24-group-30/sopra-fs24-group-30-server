@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
+import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.cfg.NotYetImplementedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ public class MoveData {
     private PlayerMove player4 = new PlayerMove();
 
     private String movetype;
+    private static String response = "can only accept values from 1 to 4 you supplied: ";
 
     public MoveData(ArrayList<Long> playerPos1, ArrayList<Long> playerPos2, ArrayList<Long> playerPos3, ArrayList<Long> playerPos4){
         this.player1.setSpaces(playerPos1);
@@ -82,6 +85,8 @@ public class MoveData {
             case 4:
                 playerDataMap.put(Integer.toString(playerId), player4);
                 break;
+            default:
+                throw new IllegalArgumentException(response + playerId);
         }
         return playerDataMap;
     }
@@ -101,6 +106,8 @@ public class MoveData {
             case 4:
                 playerDataMap.put(Integer.toString(playerId1), player4);
                 break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
         }
 
         switch (playerId2) {
@@ -116,6 +123,8 @@ public class MoveData {
             case 4:
                 playerDataMap.put(Integer.toString(playerId2), player4);
                 break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
         }
 
         return playerDataMap;

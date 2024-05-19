@@ -356,10 +356,12 @@ public class GameManagementServiceTest {
         assertEquals(player.getTeammateId(), result.getTeammateId());
     }
 
+    /*
     @Test
     public void test_findGame(){
 
     }
+     */
 
     @Test
     public void test_createGame(){

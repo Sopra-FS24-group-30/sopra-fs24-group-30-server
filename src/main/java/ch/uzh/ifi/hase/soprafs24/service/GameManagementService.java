@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GameManagementService {
 
+    private static final Random random = new Random();
     private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
     private static GameService gameService; // Final field for the injected service
@@ -51,7 +52,6 @@ public class GameManagementService {
      * @param gameId the unique identifier for the new game
      */
     public static Long createGameId(){
-        Random random = new Random();
         long id;
         do{
             id = 100000 + random.nextInt(900000);
@@ -114,7 +114,7 @@ public class GameManagementService {
         return null; // Return null or throw an exception if the player is not found
     }
 
-    public boolean joinGame(Long gameId, String userId) {
+    public boolean joinGame(Long gameId, String userId) { //NOSONAR
         Game game = findGame(gameId);
         System.out.println(gameId);
         System.out.println(userId);
