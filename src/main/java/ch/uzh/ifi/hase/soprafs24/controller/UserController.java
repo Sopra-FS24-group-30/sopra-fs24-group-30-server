@@ -1,7 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.*;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
@@ -9,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.GamePostDTO;
@@ -16,13 +20,35 @@ import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.*;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
+import org.json.JSONObject;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+
+class FakeUserCreator {
+
+    public static User createFakeUser() {
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        fakeUser.setToken("fakeToken12345");
+        fakeUser.setUsername("fakeUsername");
+        fakeUser.setPassword("fakePassword");
+        fakeUser.setCreationDate(LocalDate.now());
+        fakeUser.setBirthday(LocalDate.of(1990, 1, 1));
+        fakeUser.setAmountGamesCompleted(10);
+        fakeUser.setAmountWins(5);
+
+        // Ensure that the AchievementStatus is properly initialized
+        AchievementStatus fakeAchievementStatus = new AchievementStatus();
+        fakeAchievementStatus.setBaron3(false); // or any default value
+        fakeUser.setAchievement(fakeAchievementStatus);
+
+        return fakeUser;
+    }
+}
+
 
 
 @RestController
@@ -32,6 +58,26 @@ public class UserController {
     private final AchievementService achievementService;
     private final GameService gameService;
     private final GameManagementService gameManagementService;
+
+    private GameFlow extensiveGameFlowSetup(){
+        GameFlow gameFlow = new GameFlow();
+        for(int i=1; i<=4; i++){
+
+            ArrayList<String> itemNames = new ArrayList();
+            itemNames.add("OnlyFansAbo");
+            Player p = new Player();
+            p.setUserId((long)i);
+            p.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
+            p.setPlayerId((long) i);
+            p.setCash(100);
+            p.setPosition(30L);
+            p.setItemNames(itemNames);
+            gameFlow.addPlayer(p);
+        }
+        gameFlow.setTurnPlayerId(1L);
+
+        return gameFlow;
+    }
 
     /*
     -----------------------------------------------------------------------------------------------
@@ -66,12 +112,7 @@ public class UserController {
     @PutMapping("/profile/{userid}/edit")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void editProfile(@RequestBody UserPutDTO userPutDTO, @PathVariable Long userid) {
-        User user = userService.findUserWithId(userid);
-        User updates = DTOMapper.INSTANCE.convertUserPutDTOtoUser(userPutDTO);
-        if (updates == null) {
-            return;
-        }
-        User updatedUser = userService.edit(user, updates);//NOSONAR
+        userService.edit(userPutDTO, userid);//NOSONAR
     }
 
     @GetMapping("/profile/{id}")
@@ -79,7 +120,6 @@ public class UserController {
     private UserGetDTO getUser(@PathVariable Long id){//NOSONAR
 
         User foundUser = this.userService.findUserWithId(id);
-
         return DTOMapper.INSTANCE.convertUserToUserGetDTO(foundUser);
     }
 
@@ -235,6 +275,84 @@ public class UserController {
 
     }
 
+    @GetMapping("/games/testgiverandomcard") // <-- corrected endpoint path
+    public void givePlayerCardRand() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{\"player\": \"current\",\"card1\": \"random\"}");
+        String[]  cards_in_game = Getem.getCards().keySet().toArray(new String[0]);
+        SecureRandom random = new SecureRandom();
+        String randomCard = cards_in_game[random.nextInt(cards_in_game.length)];
+        String cardType1 = null;
+        Player[] players = gameFlow.getPlayers();
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        cardType1 = args.getString("card1");
+        players[(int) (long) gameFlow.getTurnPlayerId()-1].addCardNames(randomCard);
+        Integer playerId = (int) (long) gameFlow.getTurnPlayerId();
+            if (cardType1 == "random") {
+                //String card1 = randoCard();
+                players[(int) (long) gameFlow.getTurnPlayerId() - 1].addCardNames(randomCard);
+                System.out.println("Player " + gameFlow.getTurnPlayerId() + " got the card " + randomCard);
+                System.out.println("Which means that his card inventory now has the size of:" + players[(int) (long) gameFlow.getTurnPlayerId() - 1].getCardNames().size());
+            }
+    }
 
+    @GetMapping("/games/testgivechoicecard") // <-- corrected endpoint path
+    public void givePlayerCardCHOICE() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{\"player\": \"current\",\"card\": \"choice\"}");
+        JSONObject choices1 = new JSONObject("{\"card\": \"S2\"}");
+        gameFlow.setChoices(choices1);
+        String cardvalue = gameFlow.getChoices().getString("card");
+        String cardType1 = null;
+        Player[] players = gameFlow.getPlayers();
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        players[(int) (long) gameFlow.getTurnPlayerId()-1].addCardNames(cardvalue);
+        Integer playerId = (int) (long) gameFlow.getTurnPlayerId();
+    }
+
+    @GetMapping("/games/exchangePlayers") // <-- corrected endpoint path
+    public void ExchangePlayerPositions() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{\"player\": \"current\",\"field\": \"randomPlayer\"}");
+        Player[] players = gameFlow.getPlayers();
+        String playerSpecialId = args.getString("player");
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        players[(int) (long) gameFlow.getTurnPlayerId()].setPosition(53L);
+        players[(int) (long) gameFlow.getTurnPlayerId()+1].setPosition(53L);
+        players[(int) (long) gameFlow.getTurnPlayerId()+2].setPosition(53L);
+        gameFlow.exchangePositions(args);
+        System.out.println("NEW CURRENT PLAYER POSITION " + players[(int) (long) gameFlow.getTurnPlayerId()-1].getPosition());
+        System.out.println("NEW PLAYER POSITION " + players[(int) (long) gameFlow.getTurnPlayerId()].getPosition());
+        System.out.println("NEW PLAYER POSITION " + players[(int) (long) gameFlow.getTurnPlayerId()+1].getPosition());
+        System.out.println("NEW PLAYER POSITION " + players[(int) (long) gameFlow.getTurnPlayerId()+2].getPosition());
+
+
+    }
+
+    @GetMapping("/games/reduceMoneyALL") // <-- corrected endpoint path
+    public void ReduceMoneyPLayers() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{}");
+        Player[] players = gameFlow.getPlayers();;
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) gameFlow.getTurnPlayerId());
+        gameFlow.reduceMoneyALL(args);
+        System.out.println("NEW CURRENT PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()-1].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()+1].getCash());
+        System.out.println("NEW PLAYER CASH " + players[(int) (long) gameFlow.getTurnPlayerId()+2].getCash());
+
+    }
+
+    @GetMapping("/games/changeGoalItem") // <-- corrected endpoint path
+    public void changeGoal() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject args = new JSONObject("{}");
+        System.out.println("Previous GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
+        gameFlow.changeGoalPosition(args);
+        System.out.println("NEW GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
+
+    }
 
 }

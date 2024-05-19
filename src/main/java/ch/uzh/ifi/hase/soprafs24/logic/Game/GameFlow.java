@@ -146,67 +146,66 @@ public class GameFlow {
      */
 
     public void givePlayerCardRand(JSONObject args) {
+        String[]  cards_in_game = Getem.getCards().keySet().toArray(new String[0]);
+        SecureRandom random = new SecureRandom();
+        String randomCard = cards_in_game[random.nextInt(cards_in_game.length)];
         String cardType1 = null;
         String playerSpecialId = args.getString("player");
-        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
+        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) getTurnPlayerId());
         cardType1 = args.getString("card1");
-        Integer playerId = Integer.parseInt(playerSpecialId);
-        for(Integer player : playersToUpdate){
-            if (cardType1 == "random"){
-                String card1 = randoCard();
-                players[playerId - 1].addCardNames(card1);
-            }
-        }
+        Integer playerId = (int) (long) getTurnPlayerId();
+        String card1 = randoCard();
+        players[(int) (long) getTurnPlayerId()-1].addCardNames(randomCard);
+
     }
+
     public void givePlayerCardChoice(JSONObject args){
         String cardType1 = null;
-        String cardType2 = null;
-        String playerSpecialId = args.getString("player");
-        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
-        cardType1 = args.getString("card1");
-        if (args.has("card2")) {
-            cardType2 = args.getString("card2");
-        }
-        Integer playerId = Integer.parseInt(playerSpecialId);
-        for(Integer player : playersToUpdate){
-            if (cardType1 == "choice"){
+        String card1 = getChoices().getString("card");
+        players[(int) (long) getTurnPlayerId()-1].addCardNames(card1);
 
-                String card1 = getChoices().getString("card1");
-                players[playerId - 1].addCardNames(card1);
-            }
-            if (cardType2 == "choice"){
-                String card2 = getChoices().getString("card2");
-                players[playerId - 1].addCardNames(card2);
-            }
-        }
     }
+    public void reduceMoneyALL(JSONObject args){
+        for(int i = 0; i < 4; i++){
+            players[i].setCash(players[i].getCash()-5);
+        }
+        CashData cashData = new CashData();
+        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
+        GameWebSocketController.returnMoney(cashData,gameId);
+
+    }
+
 
     public void exchangePositions(JSONObject args){
         HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
         String playerSpecialId = args.getString("player");
         String fieldSpecialId = args.getString("field");
-        ArrayList<Integer> playersToUpdate = new ArrayList<>(specialIds(playerSpecialId));
-
+        int currentPlayerIndex = (int) (long) getTurnPlayerId() - 1;
+        Player currentPlayer = players[currentPlayerIndex];
+        SecureRandom random = new SecureRandom();
+        int randomPLayerIndex;
         // Get current player and random player
-        Integer currentPlayer = playersToUpdate.get(0);
-        Integer randomPlayer = playersToUpdate.get(new SecureRandom().nextInt(playersToUpdate.size()));
+        do {
+            randomPLayerIndex = random.nextInt(players.length);
+        } while (randomPLayerIndex == currentPlayerIndex);
+        Player randomPlayer = players[randomPLayerIndex];
 
         // Store initial positions of the players
-        Long currentPosition = players[currentPlayer-1].getPosition();
-        Long randomPosition = players[randomPlayer-1].getPosition();
+        Long currentPosition = players[(int) (long) getTurnPlayerId()-1].getPosition();
+        Long randomPosition = randomPlayer.getPosition();
 
         // Swap positions of the players
-        players[currentPlayer-1].setPosition(randomPosition);
-        players[randomPlayer-1].setPosition(currentPosition);
+        players[currentPlayerIndex].setPosition(randomPosition);
+        randomPlayer.setPosition(currentPosition);
 
         // Update positions map
-        ArrayList<Long> currentFieldIds = new ArrayList<>();
-        currentFieldIds.add(randomPosition);
-        updatedPositions.put(currentPlayer, currentFieldIds);
+        ArrayList<Long> currentPlayerPositionList = new ArrayList<>();
+        currentPlayerPositionList.add(players[currentPlayerIndex].getPosition());
+        updatedPositions.put(currentPlayerIndex, currentPlayerPositionList);
 
         ArrayList<Long> randomFieldIds = new ArrayList<>();
-        randomFieldIds.add(currentPosition);
-        updatedPositions.put(randomPlayer, randomFieldIds);
+        randomFieldIds.add(players[randomPLayerIndex].getPosition());
+        updatedPositions.put(randomPLayerIndex, randomFieldIds);
 
         MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
 
@@ -800,6 +799,7 @@ public class GameFlow {
         mappi.put("winners", winners); //NOSONAR
         mappi.put("reason", reason); //NOSONAR
 
+        initializeUpdates(winners);
         return mappi;
     }
 
@@ -815,6 +815,7 @@ public class GameFlow {
                 reason.add("JackSparrow");
                 mappi.put("winners", winners);
                 mappi.put("reason", reason);
+                initializeUpdates(winners);
                 return mappi;
             }
         }
@@ -826,6 +827,7 @@ public class GameFlow {
             reason.add("maxCash");
             mappi.put("winners", winners);
             mappi.put("reason", reason);
+            initializeUpdates(winners);
             return mappi;
         }
 
@@ -837,7 +839,19 @@ public class GameFlow {
 
         mappi.put("winners", winners);
         mappi.put("reason", reason);
+        initializeUpdates(winners);
         return mappi;
+    }
+
+    public void initializeUpdates(Set<String> winners){
+        for(String winner : winners){
+            Player player = getPlayer(Integer.valueOf(winner));
+            player.getAchievementProgress().setWinner(true);
+            player.getAchievementProgress().setCashWhenWinning(player.getCash());
+        }
+        for(Player player : players){
+            GetBean.getAchievementService().updateAchievements(player.getAchievementProgress());
+        }
     }
 
 
@@ -856,13 +870,17 @@ public class GameFlow {
         return null;
     }
 
-    private Long findGoal(List<GameBoardSpace> spaces){
+    public Long findGoal(List<GameBoardSpace> spaces){
         for (GameBoardSpace space : spaces){
             if (Boolean.TRUE.equals(space.getIsGoal())){
                 return space.getSpaceId();
             }
         }
         return null;
+    }
+
+    public void changeGoalPosition(JSONObject args){
+        setBoardGoal(getGameBoard().getSpaces());
     }
 
     public Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){

@@ -81,6 +81,10 @@ public class GameWebSocketController {
             return elapsedTime / 1000; // Return elapsed time in seconds
         }
 
+        public void setElapsedTime(long elapsedTime) {
+            this.elapsedTime = elapsedTime; // Return elapsed time in seconds
+        }
+
         // Check if the elapsed time exceeds the maximum time
         public boolean maxTimeReached(long maxTimeInSeconds) {
             return getElapsedTime() >= maxTimeInSeconds;
@@ -232,7 +236,12 @@ public class GameWebSocketController {
             case "exchangePositions":
                 gameFlow.exchangePositions(effectParas);
                 break;
-
+            case "reduceMoneyALL":
+                gameFlow.reduceMoneyALL(effectParas);
+                break;
+            case "changeGoalPosition":
+                gameFlow.changeGoalPosition(effectParas);
+                break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
         }
@@ -275,6 +284,17 @@ public class GameWebSocketController {
         } else{
             response.put("gameReady", false);
         }
+        GameFlow gameFlow = gameFlows.get(gameId);
+        List<Player> players = allGames.get(gameId).getactive_Players();
+        for(Player player : players){
+            GameTimer timer = player.getAchievementProgress().getGameTimer();
+            timer.startTimer();
+            gameFlow.addPlayer(player);
+        }
+        GameTimer timer = new GameTimer();
+        timer.startTimer();
+        gameTimers.put(gameId, timer);
+        gameFlows.put(gameId,gameFlow);
 
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
@@ -345,16 +365,6 @@ public class GameWebSocketController {
         gameFlow.setCurrentTurn(1);
         gameFlow.setTurnPlayerId((long)(Math.random()*4+1));
 
-        List<Player> players = allGames.get(gameId).getactive_Players();
-        for(Player player : players){
-            GameTimer timer = player.getAchievementProgress().getGameTimer();
-            timer.startTimer();
-            gameFlow.addPlayer(player);
-        }
-        GameTimer timer = new GameTimer();
-        timer.startTimer();
-        gameTimers.put(gameId, timer);
-        gameFlows.put(gameId,gameFlow);
     }
 
     @MessageMapping("/board/dice/{gameId}")

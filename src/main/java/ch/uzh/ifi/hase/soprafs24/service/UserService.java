@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -138,25 +139,23 @@ public class UserService {
         return existingUser.isPresent();
     }
 
-    public User edit(User user, User updates){
-        if (user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
+    public void edit(UserPutDTO updates, Long gameId){
+        User oldUser = userRepository.findById(gameId).get();
+        if(updates.getPassword()!=null){
+            oldUser.setPassword(updates.getPassword());
         }
-        if (updates.getUsername()!=null){
-            User exists = findUser(updates.getUsername());
-            if (exists!=null && !exists.getId().equals(user.getId())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
+        if(updates.getBirthday()!=null){
+            oldUser.setBirthday(updates.getBirthday());
+        }
+        if(updates.getUsername() != null){
+            if(userRepository.findByUsername(updates.getUsername()).isEmpty()){
+                oldUser.setUsername(updates.getUsername());
+            }else {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "the user with username " + updates.getUsername() + " does already exist");
             }
-            user.setUsername(updates.getUsername());
         }
-        if (updates.getBirthday()!=null){
-            user.setBirthday(updates.getBirthday());
-        }
-        if (updates.getPassword()!=null){
-            user.setPassword(updates.getPassword());
-        }
-        this.userRepository.saveAndFlush(user);
-        return user;
+        userRepository.save(oldUser);
+        userRepository.flush();
     }
     public List<User> getUsers() {
         return this.userRepository.findAll();
