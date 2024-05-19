@@ -372,6 +372,7 @@ public class GameWebSocketController {
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
+        firstPlayerTurn(gameId);
     }
 
     public void firstPlayerTurn(Long gameId){
