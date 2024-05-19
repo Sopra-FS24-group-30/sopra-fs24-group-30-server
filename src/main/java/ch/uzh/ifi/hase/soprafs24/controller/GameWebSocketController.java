@@ -316,11 +316,29 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/wincondition")
-    public void getWincondition(@DestinationVariable Long gameId, @Payload String userId){
+    public void getWincondition(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
+        System.out.println("Request for wincondition");
+        String userId = userIdMap.get("userId");
+
+        String wincondition = gameManagementService.getWincondition(gameId, userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("Wincondition", wincondition);
+
+        String destination = "/queue/game/" + gameId +"/wincondition";
+
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     @MessageMapping("/game/{gameId}/ultimateAttack")
-    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload String userId){
+    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
+        System.out.println("Request for ultimate");
+        String userId = userIdMap.get("userId");
+        String ultimateAttack = gameManagementService.getUltimateAttack(gameId, userId);
+        Map<String, String> response = new HashMap<>();
+        response.put("UltimateAttack", ultimateAttack);
+
+        String destination = "/queue/game/" + gameId + "/ultimate";
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     @MessageMapping("/board/dice/{gameId}")
@@ -345,6 +363,8 @@ public class GameWebSocketController {
         response.put("players", players);
 
         GameFlow gameFlow = getGameFlow(gameId);
+        System.out.println(gameFlow);
+
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
         response.put("TurnOrder", turnOrder);
@@ -353,7 +373,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
     }
-
 
     public void firstPlayerTurn(Long gameId){
         GameFlow gameFlow = getGameFlow(gameId);

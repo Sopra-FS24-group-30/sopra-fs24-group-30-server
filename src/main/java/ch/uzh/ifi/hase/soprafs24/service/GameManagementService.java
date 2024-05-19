@@ -317,7 +317,6 @@ public class GameManagementService {
     }
 
     public void setGameReady(Long gameId){
-
         Game game = findGame(gameId);
         List<Player> playerList = game.getactive_Players();
         int i = 0;
@@ -330,5 +329,19 @@ public class GameManagementService {
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
         }
+    }
+
+    public String getWincondition(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getWinCondition();
+    }
+
+    public String getUltimateAttack(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getUltimate();
     }
 }
