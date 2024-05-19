@@ -44,7 +44,7 @@ public class GameWebSocketController {
         gameFlow.setTurnPlayerId(1L);
         gameFlow.setGameId(123456L);
         gameFlows.put(123456L,gameFlow);
-        handleItems("{\"itemUsed\": \"OnlyFansAbo\"}",123456L);
+        handleUltimate("{\"ultimateUsed\": \"Chameleon\",\"choices\": {}}",123456L);
         System.out.println("player 1");
         System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
         System.out.println("items" + gameFlow.getPlayer(1).getItemNames());
@@ -141,6 +141,14 @@ public class GameWebSocketController {
         handleEffects(effectName,effectParas, gameId);
     }
 
+    @MessageMapping("/board/test/{gameId}")
+    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(5);
+        DiceData diceData = new DiceData(dice);
+        messagingTemplate.convertAndSend("/topic/board/goal/" + gameId, diceData);
+    }
+
     @MessageMapping("/board/ultimate/{gameId}")
     public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
@@ -169,7 +177,6 @@ public class GameWebSocketController {
                 gameFlow.updateMoney(effectParas);
                 break;
             case "exchange":
-                //TODO: insert choices here
                 gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
                 break;
             case "givePlayerDice":
@@ -177,6 +184,15 @@ public class GameWebSocketController {
                 break;
             case "updatePositions":
                 gameFlow.updatePositions(effectParas);
+                break;
+            case "shuffle":
+                gameFlow.shuffle(effectParas);
+                break;
+            case "updateTurns":
+                gameFlow.updateTurns(effectParas);
+                break;
+            case "useRandomUsable":
+                gameFlow.useRandomUsable(effectParas);
                 break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
@@ -220,15 +236,6 @@ public class GameWebSocketController {
         } else{
             response.put("gameReady", false);
         }
-
-        GameFlow gameFlow = new GameFlow();
-        gameFlow.setGameId(gameId);
-        gameFlow.setGameBoard(gameId);
-        List<Player> players = allGames.get(gameId).getactive_Players();
-        for(Player player : players){
-            gameFlow.addPlayer(player);
-        }
-        gameFlows.put(gameId,gameFlow);
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
@@ -317,10 +324,12 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/wincondition")
     public void getWincondition(@DestinationVariable Long gameId, @Payload String userId){
+        //to be implemented
     }
 
     @MessageMapping("/game/{gameId}/ultimateAttack")
     public void getUltimateAttack(@DestinationVariable Long gameId, @Payload String userId){
+        //to be implemented
     }
 
     @MessageMapping("/board/dice/{gameId}")
@@ -344,7 +353,18 @@ public class GameWebSocketController {
 
         response.put("players", players);
 
-        GameFlow gameFlow = getGameFlow(gameId);
+        GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameId(gameId);
+        gameFlow.setGameBoard(gameId);
+        gameFlow.setCurrentTurn(1);
+        int startingPlayer = (int) (Math.random()*4+1);
+        gameFlow.setTurnPlayerId((long) startingPlayer);
+        List<Player> activePlayers = allGames.get(gameId).getactive_Players();
+        for(Player player : activePlayers){
+            gameFlow.addPlayer(player);
+        }
+        gameFlows.put(gameId,gameFlow);
+
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
         response.put("TurnOrder", turnOrder);
@@ -475,5 +495,15 @@ public class GameWebSocketController {
         Map<String, Object> winMsg = getGameFlow(gameId).getWinMsg();
         String destination = "/topic/ranking/" + gameId;
         messagingTemplate.convertAndSend(destination, winMsg);
+    }
+
+    public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
+        String destination = "/topic/board/ultimate" + gameId;
+        messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
+    }
+
+    public static void returnTurnActive(TurnActiveData turnActiveData, Long gameId){
+        String destination = "/topic/board/newActivePlayer" + gameId;
+        messagingTemplate.convertAndSend(destination,turnActiveData);
     }
 }

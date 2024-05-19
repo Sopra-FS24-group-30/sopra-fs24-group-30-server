@@ -21,6 +21,7 @@ import java.util.Random;
 @Transactional
 public class GameService {
 
+    private final Random rnd = new Random();
     private final GameRepository gameRepository;
     private final GameBoardService gameBoardService;
 
@@ -38,10 +39,15 @@ public class GameService {
      * @return a unique LobbyId
      */
     public Long getLobbyId(){
-        Random rnd = new Random();
+
         long id = 100000 + rnd.nextInt(900000);
+        int counter = 0;
         while (this.gameRepository.findById(id) != null){
             id = 100000 + rnd.nextInt(900000);
+            if(counter >= 4000){
+                break;
+            }
+            counter ++;
         }
         return id;
     }
