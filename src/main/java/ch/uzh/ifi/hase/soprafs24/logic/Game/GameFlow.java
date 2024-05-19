@@ -237,9 +237,8 @@ public class GameFlow {
     /**
      * exchange usables between players
      * @param args parameters for the exchange effect
-     * @param exchanges choices from frontend
      */
-    public void exchange(JSONObject args, HashMap<Integer,ArrayList<String>> exchanges){
+    public void exchange(JSONObject args){
         JSONObject giveInfos = args.getJSONObject("give");
         JSONObject getInfos = args.getJSONObject("get");
 
@@ -256,8 +255,8 @@ public class GameFlow {
         String getSelection = getInfos.getString("selection");
         Integer getAmount = getInfos.getInt("amount");
 
-        giveUsables.addAll(getType(exchanges, givePlayers, giveType, giveSelection, giveAmount));
-        getUsables.addAll(getType(exchanges, getPlayers, getType, getSelection, getAmount));
+        giveUsables.addAll(getType(givePlayers, giveType, giveSelection, giveAmount));
+        getUsables.addAll(getType(getPlayers, getType, getSelection, getAmount));
 
 
         for(int playerId : givePlayers){
@@ -292,24 +291,23 @@ public class GameFlow {
 
     /**
      * get the list with usables based wheter item or card is specified and remove them from the player
-     * @param exchanges choices from frontend
      * @param exchangePlayers players for which usables need to be fetched
      * @param type item or card
      * @param selection all, random, choice
      * @param amount in case of choice or random, how many usables are to be fetched
      * @return gives back the usables
      */
-    private ArrayList<String> getType(HashMap<Integer, ArrayList<String>> exchanges, ArrayList<Integer> exchangePlayers, String type, String selection, Integer amount) {
+    private ArrayList<String> getType(ArrayList<Integer> exchangePlayers, String type, String selection, Integer amount) {
         if(type != null){
             switch (type){ //NOSONAR
                 case "item":
                     for(Integer player : exchangePlayers){
-                        return getSelectedItems(exchanges,selection,player,amount);
+                        return getSelectedItems(selection,player,amount);
                     }
                     break;
                 case "card":
                     for(Integer player : exchangePlayers){
-                        return (getSelectedCards(exchanges,selection,player,amount));
+                        return (getSelectedCards(selection,player,amount));
                     }
             }
         }
@@ -321,13 +319,12 @@ public class GameFlow {
 
     /**
      * remove the items from the player and give the items gained this way back in a list
-     * @param exchanges selections from frontend in case of choice
      * @param selection type of selections
      * @param playerid ID of the concerning player
      * @param amount how many items are given
      * @return all the items which are ready for exchange
      */
-    private ArrayList<String> getSelectedItems(HashMap<Integer,ArrayList<String>> exchanges, String selection, int playerid, Integer amount){
+    private ArrayList<String> getSelectedItems(String selection, int playerid, Integer amount){
         ArrayList<String> returnItems = new ArrayList<>();
         if(selection == null){
             return returnItems;
@@ -347,8 +344,14 @@ public class GameFlow {
                 players[playerid-1].setItemNames(new ArrayList<>());
                 break;
             case "choice":
-                returnItems.addAll(exchanges.get(playerid));
-                players[playerid-1].removeItemNames(exchanges.get(playerid));
+                JSONArray choiceItems = choices.getJSONArray("items");
+                ArrayList<String> itemNames = new ArrayList<>();
+                int len = choiceItems.length();
+                for(int i=0;i<len;i++){
+                    itemNames.add(choiceItems.get(i).toString());
+                }
+                returnItems.addAll(itemNames);
+                players[playerid-1].removeItemNames(itemNames);
                 break;
         }
 
@@ -357,13 +360,12 @@ public class GameFlow {
 
     /**
      * remove the cards from the player and give the cards gained this way back in a list
-     * @param exchanges selections from frontend in case of choice
      * @param selection type of selections
      * @param playerid ID of the concerning player
      * @param amount how many cards are given
      * @return all the items which are ready for exchange
      */
-    private ArrayList<String> getSelectedCards(HashMap<Integer,ArrayList<String>> exchanges, String selection, int playerid, Integer amount){
+    private ArrayList<String> getSelectedCards(String selection, int playerid, Integer amount){
         ArrayList<String> returnCards = new ArrayList<>();
         if(selection == null){
             return returnCards;
@@ -382,8 +384,14 @@ public class GameFlow {
                 players[playerid-1].setCardNames(new ArrayList<>());
                 break;
             case "choice":
-                returnCards.addAll(exchanges.get(playerid));
-                players[playerid-1].removeCardNames(exchanges.get(playerid));
+                JSONArray choiceCards = choices.getJSONArray("cards");
+                ArrayList<String> cardNames = new ArrayList<>();
+                int len = choiceCards.length();
+                for(int i=0;i<len;i++){
+                    cardNames.add(choiceCards.get(i).toString());
+                }
+                returnCards.addAll(cardNames);
+                players[playerid-1].removeCardNames(cardNames);
                 break;
         }
         return returnCards;
@@ -402,8 +410,10 @@ public class GameFlow {
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
         CashData cashData = new CashData();
-        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
-        cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
+        cashData.setupCashDataCurrent(this);
+        for(Long key : playersPayMoney.keySet()){
+            cashData.setPlayerAmountAndUpdate(key.intValue(), playersPayMoney.get(key));
+        }
         GameWebSocketController.returnMoney(cashData,gameId);
     }
 
@@ -480,7 +490,8 @@ public class GameFlow {
                             break;
                         case "relative":
                             int toPayRelative = (int) (players[id-1].getCash() / 100.0 * amount);
-                            calculatedAmount.put(Long.valueOf(id),amount);
+                            getPlayer(id).setCash(getPlayer(id).getCash()+toPayRelative);
+                            calculatedAmount.put(Long.valueOf(id),toPayRelative);
                             break;
                     }
                 }
@@ -506,7 +517,7 @@ public class GameFlow {
             return null;
         }
         else if (description.equals("everything")) {
-            return players[playerId-1].getCash();
+            return players[playerId-1].getCash()*-1;
         }
         else{
             return Integer.valueOf(description);
@@ -585,8 +596,7 @@ public class GameFlow {
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
                 CashData cashData = new CashData();
                 cashData.setupCashDataCurrent(this);
-                int newCash = players[turnPlayerId.intValue()].getCash()+cashAmount;
-                cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),newCash,cashAmount);
+                cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),cashAmount);
                 GameWebSocketController.returnMoney(cashData,gameId);
             }
         }

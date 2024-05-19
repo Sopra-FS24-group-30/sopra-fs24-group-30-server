@@ -25,10 +25,15 @@ public class AchievementService {
         this.achievementRepository = achievementRepository;
     }
 
+    public void saveAChievements(AchievementStatus achievementStatus){
+        this.achievementRepository.save(achievementStatus);
+        this.achievementRepository.flush();
+    }
+
     public void saveInitialAchievements(User user){
         AchievementStatus ach = new AchievementStatus(user.getId());
         this.achievementRepository.save(ach);
-        achievementRepository.flush();
+        this.achievementRepository.flush();
     }
 
     public void updateAchievements(AchievementProgress achievementProgress){

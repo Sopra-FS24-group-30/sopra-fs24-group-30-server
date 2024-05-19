@@ -112,6 +112,11 @@ public class GameWebSocketController {
     @Autowired
     private GameManagementService gameManagementService;
 
+    //
+    public static GameTimer getGameTimerById(Long gameId){
+        return gameTimers.get(gameId);
+    }
+
     //saving the current Game at the beginning
     private static HashMap<Long,Game> allGames = new HashMap<>();
     private static HashMap<Long,GameFlow> gameFlows = new HashMap<>();
@@ -219,7 +224,7 @@ public class GameWebSocketController {
                 break;
             case "exchange":
                 //TODO: insert choices here
-                gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
+                gameFlow.exchange(effectParas);
                 break;
             case "givePlayerDice":
                 gameFlow.givePlayerDice(effectParas);

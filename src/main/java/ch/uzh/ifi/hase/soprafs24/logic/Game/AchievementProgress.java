@@ -1,4 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 
 public class AchievementProgress {
@@ -28,6 +29,10 @@ public class AchievementProgress {
 
     public GameTimer getGameTimer() {
         return this.gameTimer;
+    }
+
+    public void setGameTimer(GameTimer gameTimer){
+        this.gameTimer = gameTimer;
     }
 
     public void setUserId(Long userId) {

@@ -76,6 +76,63 @@ public class GameFlowTest {
     }
 
     @Test
+    public void testPayAbsoluteEverything(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"teammate\":\"everything\",\"current\":\"givenAmount\"}}");
+        gameFlow.updateMoney(jsonObject);
+        assertEquals(200,gameFlow.getPlayer(1).getCash());
+        assertEquals(100,gameFlow.getPlayer(2).getCash());
+        assertEquals(0,gameFlow.getPlayer(3).getCash());
+        assertEquals(100,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
+    public void testPayAbsoluteAllPlayers(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"others\":\"-5\",\"all\":\"5\"}}");
+        gameFlow.updateMoney(jsonObject);
+        assertEquals(105,gameFlow.getPlayer(1).getCash());
+        assertEquals(100,gameFlow.getPlayer(2).getCash());
+        assertEquals(100,gameFlow.getPlayer(3).getCash());
+        assertEquals(100,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
+    public void testPayAbsoluteTeammateEnemy(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"enemy\":\"-5\",\"teammate\":\"5\"}}");
+        gameFlow.updateMoney(jsonObject);
+        assertEquals(100,gameFlow.getPlayer(1).getCash());
+        assertEquals(95,gameFlow.getPlayer(2).getCash());
+        assertEquals(105,gameFlow.getPlayer(3).getCash());
+        assertEquals(95,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
+    public void testPayAbsoluteTeammateIdOverFlow(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.setTurnPlayerId(3L);
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"enemy\":\"-5\",\"teammate\":\"5\"}}");
+        gameFlow.updateMoney(jsonObject);
+        assertEquals(105,gameFlow.getPlayer(1).getCash());
+        assertEquals(95,gameFlow.getPlayer(2).getCash());
+        assertEquals(100,gameFlow.getPlayer(3).getCash());
+        assertEquals(95,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
+    public void testPayAbsoluteEnemyPlayerEvenTeam(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.setTurnPlayerId(2L);
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"enemy\":\"-5\",\"teammate\":\"5\"}}");
+        gameFlow.updateMoney(jsonObject);
+        assertEquals(95,gameFlow.getPlayer(1).getCash());
+        assertEquals(100,gameFlow.getPlayer(2).getCash());
+        assertEquals(95,gameFlow.getPlayer(3).getCash());
+        assertEquals(105,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
     public void testPayPickPocket(){
         GameFlow gameFlow = basicGameFlowSetup();
         JSONObject jsonObject = new JSONObject("{\"type\": \"relative\",\"amount\": {\"others\":\"-50\",\"current\":\"givenAmount\"}}");
@@ -90,8 +147,7 @@ public class GameFlowTest {
     public void testExchangeTreasureChest(){
         GameFlow gameFlow = extensiveGameFlowSetup();
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 1}}");
-        HashMap<Integer,ArrayList<String>> itemChoices = new HashMap<>();
-        gameFlow.exchange(jsonObject,itemChoices);
+        gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
         expectedItemsPlayer1.add("OnlyFansAbo");
         expectedItemsPlayer1.add("OnlyFansAbo");
@@ -103,6 +159,143 @@ public class GameFlowTest {
         assertEquals(expectedItemsPlayer3,gameFlow.getPlayer(3).getItemNames());
 
     }
+
+    @Test
+    public void testExchangeTreasureChestAllItems(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"all\",\"amount\": 1}}");
+        gameFlow.exchange(jsonObject);
+        ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
+        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansAbo");
+        ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
+        expectedItemsPlayer3.add("OnlyFansAbo");
+
+        assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
+        assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
+        assertEquals(expectedItemsPlayer3,gameFlow.getPlayer(3).getItemNames());
+
+    }
+
+    @Test
+    public void testTeleportUltimate(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject paras = new JSONObject("{\"player\": \"current\",\"field\": \"choice\"}");
+        JSONObject choices = new JSONObject("{\"field\": \"40\"}");
+        gameFlow.setChoices(choices);
+        gameFlow.updatePositions(paras);
+
+        assertEquals(40L,gameFlow.getPlayer(1).getPosition());
+    }
+
+    @Test
+    public void testTeleportRandomPlayer(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject paras = new JSONObject("{\"player\": \"current\",\"field\": \"randomPlayer\"}");
+        gameFlow.getPlayer(1).setPosition(10L);
+
+        gameFlow.updatePositions(paras);
+
+        assertEquals(30L,gameFlow.getPlayer(1).getPosition());
+    }
+
+    @Test
+    public void testTeleportUltimateFixedValue(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject paras = new JSONObject("{\"player\": \"current\",\"field\": \"4\"}");
+
+        gameFlow.updatePositions(paras);
+
+        assertEquals(4L,gameFlow.getPlayer(1).getPosition());
+    }
+
+    @Test
+    public void testExchangeTreasureChestChoiceItem(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"items\":  [\"OnlyFansAbo\"]}");
+        gameFlow.setChoices(choices);
+        JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"choice\",\"amount\": 1}}");
+        gameFlow.exchange(jsonObject);
+        ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
+        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansAbo");
+
+        assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
+        assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
+
+    }
+
+    @Test
+    public void testExchangeTreasureChestChoiceCards(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.getPlayer(2).addCardNames("B35");
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"cards\":  [\"B35\"]}");
+        gameFlow.setChoices(choices);
+        JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"card\",\"selection\": \"choice\",\"amount\": 1}}");
+        gameFlow.exchange(jsonObject);
+        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
+        expectedCardsPlayer1.add("B35");
+
+        assertEquals(expectedCardsPlayer1,gameFlow.getPlayer(1).getCardNames());
+        assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getCardNames());
+
+    }
+
+    @Test
+    public void testExchangeTreasureChestallCards(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.getPlayer(2).addCardNames("B35");
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\"}");
+        gameFlow.setChoices(choices);
+        JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"card\",\"selection\": \"all\",\"amount\": 1}}");
+        gameFlow.exchange(jsonObject);
+        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
+        expectedCardsPlayer1.add("B35");
+
+        assertEquals(expectedCardsPlayer1,gameFlow.getPlayer(1).getCardNames());
+        assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getCardNames());
+    }
+
+    @Test
+    public void testExchangeTreasureChestRandomCard(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.getPlayer(2).addCardNames("B35");
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\"}");
+        gameFlow.setChoices(choices);
+        JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"card\",\"selection\": \"random\",\"amount\": 1}}");
+        gameFlow.exchange(jsonObject);
+        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
+        expectedCardsPlayer1.add("B35");
+
+        assertEquals(expectedCardsPlayer1,gameFlow.getPlayer(1).getCardNames());
+        assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getCardNames());
+    }
+
+    @Test
+    public void testPayPositivePickPocket(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"type\": \"relative\",\"amount\": {\"others\":\"givenAmount\",\"current\":\"50\"}}");
+        gameFlow.updateMoney(jsonObject);
+
+        assertEquals(150,gameFlow.getPlayer(1).getCash());
+        assertEquals(100,gameFlow.getPlayer(2).getCash());
+        assertEquals(100,gameFlow.getPlayer(3).getCash());
+        assertEquals(100,gameFlow.getPlayer(4).getCash());
+    }
+
+    @Test
+    public void testPayPositiveAbsolutePickPocket(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"others\":\"50\",\"current\":\"givenAmount\"}}");
+        gameFlow.updateMoney(jsonObject);
+
+        assertEquals(100,gameFlow.getPlayer(1).getCash());
+        assertEquals(150,gameFlow.getPlayer(2).getCash());
+        assertEquals(150,gameFlow.getPlayer(3).getCash());
+        assertEquals(150,gameFlow.getPlayer(4).getCash());
+    }
+
+
 
     @Test
     public void testgiveCard(){
