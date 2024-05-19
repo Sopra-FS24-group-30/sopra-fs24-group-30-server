@@ -322,14 +322,29 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
-    @MessageMapping("/game/{gameId}/wincondition")
-    public void getWincondition(@DestinationVariable Long gameId, @Payload String userId){
-        //to be implemented
+    public void getWincondition(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
+        System.out.println("Request for wincondition");
+        String userId = userIdMap.get("userId");
+
+        String wincondition = gameManagementService.getWincondition(gameId, userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("Wincondition", wincondition);
+
+        String destination = "/queue/game/" + gameId +"/wincondition";
+
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     @MessageMapping("/game/{gameId}/ultimateAttack")
-    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload String userId){
-        //to be implemented
+    public void getUltimateAttack(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
+        System.out.println("Request for ultimate");
+        String userId = userIdMap.get("userId");
+        String ultimateAttack = gameManagementService.getUltimateAttack(gameId, userId);
+        Map<String, String> response = new HashMap<>();
+        response.put("UltimateAttack", ultimateAttack);
+
+        String destination = "/queue/game/" + gameId + "/ultimate";
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     @MessageMapping("/board/dice/{gameId}")
@@ -364,6 +379,7 @@ public class GameWebSocketController {
             gameFlow.addPlayer(player);
         }
         gameFlows.put(gameId,gameFlow);
+        System.out.println(gameFlow);
 
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
@@ -372,8 +388,8 @@ public class GameWebSocketController {
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
+        firstPlayerTurn(gameId);
     }
-
 
     public void firstPlayerTurn(Long gameId){
         GameFlow gameFlow = getGameFlow(gameId);
