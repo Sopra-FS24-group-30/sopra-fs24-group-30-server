@@ -27,8 +27,6 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
 
-
-
     /*
 
     public static void main(String[] args){
@@ -126,7 +124,6 @@ public class GameWebSocketController {
     public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
         //extract Info from message
-        System.out.println(msg);
         JSONObject jsonObject = new JSONObject(msg);
         String itemName = jsonObject.getString("itemUsed");
         String effectName;
@@ -142,6 +139,14 @@ public class GameWebSocketController {
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).removeItemNames(itemName);
 
         handleEffects(effectName,effectParas, gameId);
+    }
+
+    @MessageMapping("/board/test/{gameId}")
+    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(5);
+        DiceData diceData = new DiceData(dice);
+        messagingTemplate.convertAndSend("/topic/board/goal/" + gameId, diceData);
     }
 
     @MessageMapping("/board/ultimate/{gameId}")
