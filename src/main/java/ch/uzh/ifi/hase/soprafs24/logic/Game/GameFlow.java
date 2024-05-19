@@ -27,6 +27,7 @@ public class GameFlow {
     private Long turnPlayerId;
     private int currentTurn;
     private int movesLeft;
+    private boolean hasMoved;
     private JSONObject choices;
 
     public JSONObject getChoices() {
@@ -782,7 +783,7 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-    private Map<String, Object> doGameOverWinCondi(Player player){
+    public Map<String, Object> doGameOverWinCondi(Player player){
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
         List<String> reason = new ArrayList<>();
@@ -806,6 +807,12 @@ public class GameFlow {
                 winners.add(jack.toString());
             }
         }
+        int sizeOfWinners = winners.size();
+        for (Player play: players){
+            play.getAchievementProgress().setWinnerAmount(sizeOfWinners);
+        }
+
+
         mappi.put("winners", winners); //NOSONAR
         mappi.put("reason", reason); //NOSONAR
 
@@ -846,6 +853,11 @@ public class GameFlow {
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
         reason.add(rich.get(randNum).toString());
         reason.add("maxCash");
+
+        int sizeOfWinners = winners.size();
+        for (Player player: players){
+            player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
+        }
 
         mappi.put("winners", winners);
         mappi.put("reason", reason);

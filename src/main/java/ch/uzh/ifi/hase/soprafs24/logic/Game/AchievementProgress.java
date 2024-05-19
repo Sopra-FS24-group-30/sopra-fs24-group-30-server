@@ -10,6 +10,7 @@ public class AchievementProgress {
     private boolean winner;
     private boolean ultimateUsed;
     private GameTimer gameTimer;
+    private int WinnerAmount;
 
     public AchievementProgress(Long userId){
         this.userId = userId;
@@ -69,5 +70,13 @@ public class AchievementProgress {
 
     public void setUltimateUsed(boolean ultimateUsed) {
         this.ultimateUsed = ultimateUsed;
+    }
+
+    public void setWinnerAmount(int amount){
+        this.WinnerAmount = amount;
+    }
+
+    public int getWinnerAmount(){
+        return this.WinnerAmount;
     }
 }

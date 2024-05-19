@@ -40,8 +40,9 @@ class FakeUserCreator {
         fakeUser.setAmountGamesCompleted(10);
         fakeUser.setAmountWins(5);
 
+
         // Ensure that the AchievementStatus is properly initialized
-        AchievementStatus fakeAchievementStatus = new AchievementStatus();
+        AchievementStatus fakeAchievementStatus = new AchievementStatus(fakeUser.getId());
         fakeAchievementStatus.setBaron3(false); // or any default value
         fakeUser.setAchievement(fakeAchievementStatus);
 
@@ -345,13 +346,23 @@ public class UserController {
 
     }
 
-    @GetMapping("/games/changeGoalItem") // <-- corrected endpoint path
+    @GetMapping("/games/noWinnerAchievement") // <-- corrected endpoint path
     public void changeGoal() {
         GameFlow gameFlow = extensiveGameFlowSetup();
-        JSONObject args = new JSONObject("{}");
-        System.out.println("Previous GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
-        gameFlow.changeGoalPosition(args);
-        System.out.println("NEW GOAL " + gameFlow.findGoal(gameFlow.getGameBoard().getSpaces()));
+        Player[] players = gameFlow.getPlayers();
+        players[0].setTeammateId(2L);
+        players[1].setTeammateId(1L);
+        players[2].setTeammateId(4L);
+        players[3].setTeammateId(3L);
+        players[0].setWinCondition("JackSparrow");
+        players[1].setWinCondition("JackSparrow");
+        players[2].setWinCondition("JackSparrow");
+        players[3].setWinCondition("JackSparrow");
+        gameFlow.doGameOverWinCondi(players[0]);
+        gameFlow.doGameOverWinCondi(players[1]);
+        gameFlow.doGameOverWinCondi(players[2]);
+        gameFlow.doGameOverWinCondi(players[3]);
+        System.out.println("NoWinner Status "+ players[0].getUser().getAchievement());
 
     }
 

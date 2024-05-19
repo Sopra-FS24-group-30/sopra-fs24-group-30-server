@@ -94,6 +94,9 @@ public class AchievementService {
         else if (achievementProgress.getGameTimer().getElapsedTime() >= 3600){
             achievementStatus.setEndurance1(true);
         }
+        if (achievementProgress.getWinnerAmount() == 0){
+            achievementStatus.setNoWinner(true);
+        }
 
         this.achievementRepository.save(achievementStatus);
         this.achievementRepository.flush();
