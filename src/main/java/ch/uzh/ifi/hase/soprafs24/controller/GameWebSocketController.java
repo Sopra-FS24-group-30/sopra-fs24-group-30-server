@@ -347,13 +347,11 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId, @Payload String userId){
+        System.out.println("board message got received");
         HashMap<String, Object> response = new HashMap<>();
         List<Object> players = gameManagementService.getInformationPlayers(gameId);
 
         response.put("players", players);
-
-
-        String destination = "/queue/game/" + gameId +"/board/start";
 
         GameFlow gameFlow = new GameFlow();
         gameFlow.setGameId(gameId);
@@ -370,6 +368,7 @@ public class GameWebSocketController {
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
         response.put("TurnOrder", turnOrder);
+        String destination = "/topic/game/"+gameId+"/board/start";
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
