@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -185,5 +188,67 @@ public class AchievementServiceTest {
         assertEquals(0,saved.getTotalGamesWon());
     }
 
+
+    @Test
+    public void testCorrectUpdateWinLoseStreak(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        User user2 = simplestUser();
+        user2.setId(2L);
+        achievementService.saveInitialAchievements(user2);
+        AchievementStatus winstreak = new AchievementStatus(1L);
+        winstreak.setWinStreak(1);
+        winstreak.setTotalGamesWon(1);
+        AchievementStatus loseStreak = new AchievementStatus(2L);
+        loseStreak.setLoseStreak(1);
+        achievementService.saveAChievements(winstreak);
+        achievementService.saveAChievements(loseStreak);
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).getAchievementProgress().setWinner(true);
+
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+        achievementService.updateAchievements(gameFlow.getPlayer(2).getAchievementProgress());
+
+        AchievementStatus savedWinStreak = achievementRepository.findByUserId(1L);
+        AchievementStatus savedLoseStreak = achievementRepository.findByUserId(2L);
+        assertEquals(2,savedWinStreak.getWinStreak());
+        assertEquals(2,savedWinStreak.getTotalGamesWon());
+        assertEquals(2,savedLoseStreak.getLoseStreak());
+        assertEquals(0,savedLoseStreak.getTotalGamesWon());
+    }
+
+    @Test
+    void integrationTestInitialize(){
+        for(int i=1;i<=4;i++){
+            User user = new User();
+            user.setId((long)i);
+            achievementService.saveInitialAchievements(user);
+        }
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setCash(300);
+        gameFlow.getPlayer(2).setCash(0);
+        gameFlow.getPlayer(3).getAchievementProgress().setUltimateUsed(false);
+
+        HashSet<String> winners = new HashSet<>();
+        winners.add("2");
+        winners.add("3");
+        gameFlow.initializeUpdates(winners);
+
+        AchievementStatus savedBaron = achievementRepository.findByUserId(1L);
+        AchievementStatus savedNoMoney = achievementRepository.findByUserId(2L);
+        AchievementStatus savedNoUltimate = achievementRepository.findByUserId(3L);
+        AchievementStatus savedNoBaron = achievementRepository.findByUserId(4L);
+
+
+        assertTrue(savedBaron.isBaron3());
+        assertTrue(savedBaron.isBaron2());
+        assertFalse(savedNoBaron.isBaron1());
+        assertTrue(savedNoMoney.isNoMoney());
+        assertTrue(savedNoUltimate.isNoUltimate());
+        assertEquals(1,savedNoMoney.getTotalGamesWon());
+
+    }
 
 }
