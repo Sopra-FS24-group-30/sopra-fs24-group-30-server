@@ -336,11 +336,13 @@ public class GameFlow {
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
         switch(selection){ //NOSONAR
             case "random":
-                for(int i = 0; i<amount;i++){
-                    int select = (int) (Math.random()*playerItems.size()); //NOSONAR
-                    String itemName = playerItems.get(select);
-                    returnItems.add(itemName);
-                    players[playerid-1].removeItemNames(itemName);
+                if(!playerItems.isEmpty()){
+                    for(int i = 0; i<amount;i++){
+                        int select = (int) (Math.random()*playerItems.size()); //NOSONAR
+                        String itemName = playerItems.get(select);
+                        returnItems.add(itemName);
+                        players[playerid-1].removeItemNames(itemName);
+                    }
                 }
                 break;
             case "all":
@@ -407,7 +409,7 @@ public class GameFlow {
         cashData.setPlayersChangeAmount(playersPayMoney.get(1L),playersPayMoney.get(2L),playersPayMoney.get(3L),playersPayMoney.get(4L));
         HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
         for (Long key : hashi.keySet()){
-            getPlayer(key.intValue()-1).addLostCash(-hashi.get(key));
+            getPlayer(key.intValue()).addLostCash(-hashi.get(key));
         }
         GameWebSocketController.returnMoney(cashData,gameId);
     }
