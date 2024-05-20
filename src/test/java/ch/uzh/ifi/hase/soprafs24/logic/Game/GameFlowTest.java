@@ -4,12 +4,19 @@ import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class GameFlowTest {
@@ -239,6 +246,61 @@ public class GameFlowTest {
         assertEquals(expectedCardsPlayer1,gameFlow.getPlayer(1).getCardNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getCardNames());
 
+    }
+
+
+    @Test
+    public void testMagicMushroom(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        GameFlow spyGame = Mockito.spy(gameFlow);
+        JSONObject paras = new JSONObject("{\"dice\": \"2\",\"bonusCount\":2,\"money\": 10}");
+
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(5);
+        dice.add(4);
+        doReturn(dice).when(spyGame).throwDice(2);
+        doReturn(Collections.emptyMap()).when(spyGame).move(9,30L);
+
+        spyGame.givePlayerDice(paras);
+        assertEquals(100,spyGame.getPlayer(1).getCash());
+        verify(spyGame).move(9,30L);
+    }
+
+    @Test
+    public void testSuperMagicMushroomWithBonus(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        GameFlow spyGame = Mockito.spy(gameFlow);
+        JSONObject paras = new JSONObject("{\"dice\": \"3\",\"bonusCount\":3,\"money\": 30}");
+
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(4);
+        dice.add(4);
+        dice.add(4);
+        doReturn(dice).when(spyGame).throwDice(3);
+        doReturn(Collections.emptyMap()).when(spyGame).move(12,30L);
+
+        spyGame.givePlayerDice(paras);
+        assertEquals(130,spyGame.getPlayer(1).getCash());
+        verify(spyGame).move(12,30L);
+    }
+
+    @Test
+    public void testUltraMagicMushroomWithBonus(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        GameFlow spyGame = Mockito.spy(gameFlow);
+        JSONObject paras = new JSONObject("{\"dice\": \"4\",\"bonusCount\":4,\"money\": 69}");
+
+        ArrayList<Integer> dice = new ArrayList<>();
+        dice.add(4);
+        dice.add(4);
+        dice.add(4);
+        dice.add(4);
+        doReturn(dice).when(spyGame).throwDice(4);
+        doReturn(Collections.emptyMap()).when(spyGame).move(16,30L);
+
+        spyGame.givePlayerDice(paras);
+        assertEquals(169,spyGame.getPlayer(1).getCash());
+        verify(spyGame).move(16,30L);
     }
 
     @Test
