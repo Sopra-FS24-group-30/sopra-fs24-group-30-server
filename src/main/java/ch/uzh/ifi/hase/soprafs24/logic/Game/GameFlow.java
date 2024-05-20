@@ -9,15 +9,15 @@ import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//@Controller
 public class GameFlow {
-
-    public GameWebSocketController gameWebSocketController;
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
@@ -58,8 +58,8 @@ public class GameFlow {
         return gameBoard;
     }
 
-    public void setGameBoard(Long lobbyId) {
-        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+    public void setGameBoard() {
+        this.gameBoard = new GameBoard();
     }
 
     public Long getTurnPlayerId() {
@@ -730,7 +730,7 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
@@ -749,7 +749,7 @@ public class GameFlow {
         if (player.getCanWin()) {
             GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
             // GAME OVER
-            gameWebSocketController.endGame(endGameMsg(), getGameId());
+            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
@@ -970,12 +970,6 @@ public class GameFlow {
      * in case when the move gets interrupted and needs data from frontend
      * in case when player gets an item
      */
-    private Map<String, String> endGameMsg(){
-        Map<String, String> mappi = Map.of("message", "gameOver");
-//        System.out.println("endMsg  " + mappi);
-        return mappi;
-    }
-
     private Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
         Map<String, Object> response = new HashMap<>();
         response.put("spaces", walkedSpaces);
