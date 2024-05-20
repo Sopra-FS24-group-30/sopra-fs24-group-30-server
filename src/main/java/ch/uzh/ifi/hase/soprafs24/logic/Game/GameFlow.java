@@ -27,6 +27,7 @@ public class GameFlow {
     private Long turnPlayerId;
     private int currentTurn;
     private int movesLeft;
+    private boolean hasMoved;
     private JSONObject choices;
 
     public JSONObject getChoices() {
@@ -238,6 +239,29 @@ public class GameFlow {
      * exchange usables between players
      * @param args parameters for the exchange effect
      */
+
+    public void exchangeAll(){
+        String playerId = getChoices().getString("playerId");
+        Player otherplayey = players[Integer.parseInt(playerId)-1];
+        Player currentPlayer = players[(int) (long) getTurnPlayerId()-1];
+        ArrayList<String> otherPlayerItems = otherplayey.getItemNames();
+        for (String item : otherPlayerItems){
+            currentPlayer.addItemNames(item);
+        }
+        ArrayList<String> currentPlayerCards = currentPlayer.getCardNames();
+        for (String card : currentPlayerCards){
+            otherplayey.addCardNames(card);
+        }
+        otherplayey.setItemNames(new ArrayList<>());
+        currentPlayer.setCardNames(new ArrayList<>());
+
+        UsableData usableData = new UsableData();
+        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
+        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        GameWebSocketController.returnUsables(usableData,gameId);
+
+
+    }
     public void exchange(JSONObject args){
         JSONObject giveInfos = args.getJSONObject("give");
         JSONObject getInfos = args.getJSONObject("get");
@@ -332,7 +356,8 @@ public class GameFlow {
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
         switch(selection){ //NOSONAR
             case "random":
-                for(int i = 0; i<amount;i++){
+                int limit = Math.min(amount,playerItems.size());
+                for(int i = 0; i<limit;i++){
                     int select = (int) (Math.random()*playerItems.size()); //NOSONAR
                     String itemName = playerItems.get(select);
                     returnItems.add(itemName);
@@ -782,7 +807,7 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-    private Map<String, Object> doGameOverWinCondi(Player player){
+    public Map<String, Object> doGameOverWinCondi(Player player){
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
         List<String> reason = new ArrayList<>();
@@ -806,6 +831,12 @@ public class GameFlow {
                 winners.add(jack.toString());
             }
         }
+        int sizeOfWinners = winners.size();
+        for (Player play: players){
+            play.getAchievementProgress().setWinnerAmount(sizeOfWinners);
+        }
+
+
         mappi.put("winners", winners); //NOSONAR
         mappi.put("reason", reason); //NOSONAR
 
@@ -846,6 +877,11 @@ public class GameFlow {
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
         reason.add(rich.get(randNum).toString());
         reason.add("maxCash");
+
+        int sizeOfWinners = winners.size();
+        for (Player player: players){
+            player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
+        }
 
         mappi.put("winners", winners);
         mappi.put("reason", reason);

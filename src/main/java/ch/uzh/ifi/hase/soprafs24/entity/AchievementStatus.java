@@ -35,6 +35,8 @@ public class AchievementStatus {
     private boolean doingYourBest = false;
     @Column
     private int loseStreak = 0;
+    @Column
+    private boolean noWinner = false;
 
     public AchievementStatus(long id){
         this.userId = id;
@@ -176,5 +178,12 @@ public class AchievementStatus {
 
     public void incLoseStreak(){
         this.loseStreak += 1;
+    }
+
+    public boolean isNoWinner() {
+        return noWinner;
+    }
+    public void setNoWinner(boolean noWinner) {
+        this.noWinner = noWinner;
     }
 }
