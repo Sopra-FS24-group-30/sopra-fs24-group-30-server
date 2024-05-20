@@ -258,9 +258,9 @@ public class GameManagementService {
         return usables;
     }
 
-    public List<Object> getInformationPlayers(Long gameId){
+    public Map<String, Object> getInformationPlayers(Long gameId){
         Game game = findGame(gameId);
-        List<Object> players = new ArrayList();
+        Map<String, Object> players = new HashMap();
 
         for (Player player: game.getactive_Players()){
             System.out.println(player.getPlayerName());
@@ -271,7 +271,7 @@ public class GameManagementService {
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            players.add(dictionary);
+            players.put(Long.toString(player.getPlayerId()), dictionary);
         }
 
         System.out.println(players);
