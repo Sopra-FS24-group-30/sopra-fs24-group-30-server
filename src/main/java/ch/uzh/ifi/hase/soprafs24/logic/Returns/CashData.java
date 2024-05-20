@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
-import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
-import java.util.Map;
+
+/**
+ * this class is only to be used if you update all the players
+ */
+
 
 /**
  * this class is only to be used if you update all the players
@@ -22,6 +25,20 @@ public class CashData {
     @JsonProperty("4")
     private PlayerCash player4 = new PlayerCash();
 
+    public CashData(){
+        //needed to not break old code
+    }
+
+    public CashData(GameFlow gameFlow){
+        player1setNewAmountOfMoney(gameFlow.getPlayer(1).getCash());
+        player2setNewAmountOfMoney(gameFlow.getPlayer(2).getCash());
+        player3setNewAmountOfMoney(gameFlow.getPlayer(3).getCash());
+        player4setNewAmountOfMoney(gameFlow.getPlayer(4).getCash());
+        player1setChangeAmountOfMoney(0);
+        player2setChangeAmountOfMoney(0);
+        player3setChangeAmountOfMoney(0);
+        player4setChangeAmountOfMoney(0);
+    }
 
     public void setPlayersNewCash(int cash1, int cash2, int cash3, int cash4){
         player1.setNewAmountOfMoney(cash1);
@@ -50,7 +67,7 @@ public class CashData {
         return cashData;
     }
 
-    public void setPlayerAmountAndUpdate(int playerId, int cashChange){
+    public void setPlayerAmount(int playerId, int cashChange){
         switch (playerId){
             case 1:
                 player1.setChangeAmountOfMoney(cashChange);
@@ -62,6 +79,27 @@ public class CashData {
                 player3.setChangeAmountOfMoney(cashChange);
                 break;
             case 4:
+                player4.setChangeAmountOfMoney(cashChange);
+                break;
+        }
+    }
+
+    public void setPlayerAmountAndUpdate(int playerId, int newCash, int cashChange){
+        switch (playerId){
+            case 1:
+                player1.setNewAmountOfMoney(newCash);
+                player1.setChangeAmountOfMoney(cashChange);
+                break;
+            case 2:
+                player2.setNewAmountOfMoney(newCash);
+                player2.setChangeAmountOfMoney(cashChange);
+                break;
+            case 3:
+                player3.setNewAmountOfMoney(newCash);
+                player3.setChangeAmountOfMoney(cashChange);
+                break;
+            case 4:
+                player4.setNewAmountOfMoney(newCash);
                 player4.setChangeAmountOfMoney(cashChange);
                 break;
         }

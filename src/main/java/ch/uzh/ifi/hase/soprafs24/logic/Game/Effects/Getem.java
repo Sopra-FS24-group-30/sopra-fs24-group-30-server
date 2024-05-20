@@ -7,18 +7,21 @@ import java.util.Map;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.AbstractMap;
 public class Getem {
 
 
+    private final static String RESPONSE = "the json object could not be created";
+
     public static HashMap<String, JSONObject> getItems(){
         String jsonData;
         try{
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
         }catch (IOException e){
-            throw new RuntimeException("the json object could not be created");
+            throw new RuntimeException(RESPONSE);
         }
         JSONObject jsonObject = new JSONObject(jsonData);
 
@@ -34,6 +37,29 @@ public class Getem {
         return ret;
     }
 
+    public static String getNoChoiceItem(){
+        String jsonData;
+        try{
+            jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
+        }catch (IOException e){
+            throw new RuntimeException(RESPONSE);
+        }
+
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        ArrayList<String> itemNames = new ArrayList<>();
+        Iterator<String> keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            JSONObject effectComplete = jsonObject.getJSONObject(key);
+            if(!effectComplete.toString().contains("choice")){
+                itemNames.add(key);
+            }
+        }
+        Collections.shuffle(itemNames);
+        return itemNames.get(0);
+    }
+
     public static HashMap<String, JSONObject> getUltimates(){
         HashMap<String, JSONObject> ultimates = new HashMap<>();
 
@@ -41,7 +67,7 @@ public class Getem {
         try{
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json");
         }catch (IOException e){
-            throw new RuntimeException("the json object could not be created");
+            throw new RuntimeException(RESPONSE);
         }
         JSONObject jsonObject = new JSONObject(jsonData);
 
@@ -62,7 +88,7 @@ public class Getem {
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
 
         } catch (IOException e) {
-            throw new RuntimeException("the json object could not be created");
+            throw new RuntimeException(RESPONSE);
         }
         JSONObject jsonObject = new JSONObject(jsonData);
         Iterator<String> keys = jsonObject.keys();
@@ -100,10 +126,9 @@ public class Getem {
 
 
     private static String getJson(String path) throws IOException {
-        BufferedReader reader = null;
-        try{
+        try(BufferedReader reader = new BufferedReader(new FileReader(path));){
             //TODO: make try with here
-            reader = new BufferedReader(new FileReader(path));
+
             StringBuilder stringBuilder = new StringBuilder();
             String line = null;
             String ls = System.lineSeparator();
@@ -113,15 +138,10 @@ public class Getem {
             }
             // delete the last new line separator
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            reader.close();
 
             return stringBuilder.toString();
         }catch(IOException e){
             throw new IOException("error while parsing file");
-        }finally {
-            if(reader != null){
-                reader.close();
-            }
         }
 
     }

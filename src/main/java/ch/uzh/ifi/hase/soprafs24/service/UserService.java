@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
@@ -46,6 +47,12 @@ public class UserService {
         if (!password.equals(actualUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the password is incorrect");
         }
+        if(actualUser.getStatus().equals(UserStatus.ONLINE)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the user is already online");
+        }else{
+            actualUser.setStatus(UserStatus.ONLINE);
+        }
+
         return actualUser.getToken();
     }
 
@@ -75,6 +82,7 @@ public class UserService {
         }
         newUser.setCreationDate(LocalDate.now());
         newUser.setToken(UUID.randomUUID().toString());
+        newUser.setStatus(UserStatus.ONLINE);
         newUser.setAmountGamesCompleted(0);
         newUser.setAmountWins(0);
         this.userRepository.save(newUser);
@@ -122,17 +130,6 @@ public class UserService {
     *create a game and add the players to it, so they can join the game and no one else
      * @return if successful returns true
      */
-    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){ //NOSONAR
-
-        try{
-            //TODO create the game with the lobbyID and the players NOSONAR
-        } catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
-        }
-        return true;
-
-        //
-    }
 
     private boolean checkUsernameExists(String username){
         Optional<User> existingUser = this.userRepository.findByUsername(username);
@@ -160,12 +157,4 @@ public class UserService {
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
-
-    /**
-     * start the game and let sockets take over
-     */
-    public void startGame(){
-        //TODO trigger the start of game => websockets take over
-    }
-
 }

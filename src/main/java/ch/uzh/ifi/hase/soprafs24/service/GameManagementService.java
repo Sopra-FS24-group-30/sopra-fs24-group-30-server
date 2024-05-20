@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import ch.uzh.ifi.hase.soprafs24.constant.GameStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import ch.uzh.ifi.hase.soprafs24.controller.*;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GameManagementService {
 
+    private static final Random random = new Random();
     private static ConcurrentHashMap<Long, Game> allGames = new ConcurrentHashMap<>();
 
     private static GameService gameService; // Final field for the injected service
@@ -50,7 +52,6 @@ public class GameManagementService {
      * @param gameId the unique identifier for the new game
      */
     public static Long createGameId(){
-        Random random = new Random();
         long id;
         do{
             id = 100000 + random.nextInt(900000);
@@ -113,7 +114,7 @@ public class GameManagementService {
         return null; // Return null or throw an exception if the player is not found
     }
 
-    public boolean joinGame(Long gameId, String userId) {
+    public boolean joinGame(Long gameId, String userId) { //NOSONAR
         Game game = findGame(gameId);
         System.out.println(gameId);
         System.out.println(userId);
@@ -245,6 +246,10 @@ public class GameManagementService {
         playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
         playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
         playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
+        playerList.get(0).setPosition(GameFlow.findStart(playerList.get(0).getPlayerId().intValue()));
+        playerList.get(1).setPosition(GameFlow.findStart(playerList.get(1).getPlayerId().intValue()));
+        playerList.get(2).setPosition(GameFlow.findStart(playerList.get(2).getPlayerId().intValue()));
+        playerList.get(3).setPosition(GameFlow.findStart(playerList.get(3).getPlayerId().intValue()));
     }
 
     public List<String> getUsables(Player player){
@@ -259,17 +264,39 @@ public class GameManagementService {
 
     public Map<String, Object> getInformationPlayers(Long gameId){
         Game game = findGame(gameId);
-        Map<String, Object> players = new HashMap<>();
+        Map<String, Object> players = new HashMap();
 
         for (Player player: game.getactive_Players()){
+            System.out.println(player.getPlayerName());
             Map<String, Object> dictionary = new HashMap<>();
-
+            dictionary.put("userId", player.getUserId());
+            dictionary.put("username", player.getPlayerName());
+            dictionary.put("teammateId", player.getTeammateId());
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            players.put(String.valueOf(player.getPlayerId()), dictionary);
+            players.put(Long.toString(player.getPlayerId()), dictionary);
         }
+
+        System.out.println(players);
         return players;
+    }
+
+    public List<String> getTurnOrder(Long startPlayer){
+        List<String> turnOrder = new ArrayList<>();
+        turnOrder.add(Long.toString(startPlayer));
+
+        int j = startPlayer.intValue();
+        for(int i = 1; i<4; i++){
+            if(j==4){
+                j = 1;
+            } else{
+                j = j+1;
+            }
+            turnOrder.add(String.valueOf(j));
+        }
+
+        return turnOrder;
     }
 
     private static Player findPlayerInGame(Game game, String playerName){
@@ -294,7 +321,6 @@ public class GameManagementService {
     }
 
     public void setGameReady(Long gameId){
-
         Game game = findGame(gameId);
         List<Player> playerList = game.getactive_Players();
         int i = 0;
@@ -307,5 +333,19 @@ public class GameManagementService {
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
         }
+    }
+
+    public String getWincondition(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getWinCondition();
+    }
+
+    public String getUltimateAttack(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getUltimate();
     }
 }

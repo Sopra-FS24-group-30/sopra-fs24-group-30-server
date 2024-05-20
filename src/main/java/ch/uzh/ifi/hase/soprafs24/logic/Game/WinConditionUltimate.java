@@ -4,14 +4,6 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * At the start of a game the player gets one of the WinConditions randomly.
- * WinConditions and what they do:
- * - JackSparrow: You win if the other Team wins, and you lose if your Partner wins. If the game ends after 20 Turns, everyone except for your Partner loses.
- * - Marooned: As long as you have exactly 0 Moneys, 0 Items and 0 Cards the Win Condition is fulfilled.
- * - Golden: Land on seven golden spaces.
- * - drunk: Land on a tsunami Space thrice.
- */
 public class WinConditionUltimate { //NOSONAR
 
     public static List<String> getAllWinConditions(){
@@ -23,6 +15,8 @@ public class WinConditionUltimate { //NOSONAR
         allWinConditions.add("ThirdTime");
         allWinConditions.add("Company");
         allWinConditions.add("Ship");
+        allWinConditions.add("Explorer");
+        allWinConditions.add("Unlucky");
         return allWinConditions;
     }
 
@@ -35,7 +29,9 @@ public class WinConditionUltimate { //NOSONAR
             case "Drunk" -> player.getLandCat() >= 3;
             case "ThirdTime" ->  player.getPassGoal() >= 2;
             case "Company" -> player.getCash() >= 60;
-            case "Ship" -> false; //NOSONAR
+            case "Ship" -> player.getShipAct()>=1;
+            case "Explorer" -> player.getLandedAll().size() >= 61;
+            case "Unlucky" -> player.getLostCash() >= 40;
             default -> false;
         };
     }

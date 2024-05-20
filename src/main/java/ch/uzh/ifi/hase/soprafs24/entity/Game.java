@@ -41,8 +41,7 @@ public class Game implements Serializable {
     @Column(name = "player_id")
     private List<String> players;
 
-    @Transient
-    private List<Player> active_players = new ArrayList<>();
+    private transient List<Player> active_players = new ArrayList<>(); //NOSONAR
 
     @Column(nullable = false)
     private GameStatus status;

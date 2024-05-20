@@ -42,13 +42,13 @@ public class GameService {
      */
     public Long getLobbyId(){
         long id = 100000 + this.random.nextInt(900000);
-        int i = 0;
+        int counter = 0;
         while (this.gameRepository.findById(id) != null){
             id = 100000 + this.random.nextInt(900000);
-            if (i > 10000){
+            if (counter > 10000){
                 break;
             }
-            i++;
+            counter++;
         }
         return id;
     }
@@ -64,6 +64,7 @@ public class GameService {
         player.setAchievementProgress(new AchievementProgress(user.getId(), new GameTimer()), new GameTimer());
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
+        player.setUserId(user.getId());
         // Initialize other properties of Player
         player.setStatus(PlayerStatus.NOT_PLAYING);
         player.setPlayerName(user.getUsername());

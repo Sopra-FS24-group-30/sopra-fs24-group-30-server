@@ -84,6 +84,7 @@ public class GameBoardController {
      * or like implemented as actual test
      */
 
+    /*
     public void pPlayer(Player player, Long teammateId, long pId, int cash, long posi, String wincondi){
         player.setPlayerId(pId);
         player.setTeammateId(teammateId);
@@ -177,4 +178,5 @@ public class GameBoardController {
         return Getem.getItems();
     }
 
+    */
 }

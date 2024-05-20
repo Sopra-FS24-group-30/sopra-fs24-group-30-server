@@ -7,17 +7,23 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+//@Controller
 public class GameFlow {
 
-    //Kommentar für test
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
 
@@ -26,8 +32,10 @@ public class GameFlow {
     private GameBoard gameBoard;
     private Long turnPlayerId;
     private int currentTurn;
+    private int turnCounter;
     private int movesLeft;
     private boolean hasMoved;
+    private Map<String, Object> winMsg;
     private JSONObject choices;
 
     public JSONObject getChoices() {
@@ -44,6 +52,7 @@ public class GameFlow {
     public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
+
     public Player[] getPlayers() {
         return players;
     }
@@ -51,12 +60,12 @@ public class GameFlow {
         return players[playerId - 1];
     }
 
-
     public GameBoard getGameBoard(){
         return gameBoard;
     }
-    public void setGameBoard(Long lobbyId) {
-        this.gameBoard = GameWebSocketController.getCurrGame(lobbyId).getGameBoard();
+
+    public void setGameBoard() {
+        this.gameBoard = new GameBoard();
     }
 
     public Long getTurnPlayerId() {
@@ -71,6 +80,7 @@ public class GameFlow {
     }
     public void setCurrentTurn(int currTurn) {
         this.currentTurn = currTurn;
+
     }
 
     public void setMovesLeft(int movesLeft) {
@@ -80,7 +90,23 @@ public class GameFlow {
         return movesLeft;
     }
 
-    public GameFlow(){}
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+    public void setTurnCounter(int turnCounter) {
+        this.turnCounter = turnCounter;
+    }
+
+    public Map<String, Object> getWinMsg() {
+        return winMsg;
+    }
+    public void setWinMsg(Map<String, Object> winMsg) {
+        this.winMsg = winMsg;
+    }
+
+    public GameFlow(){
+        //this is needed for tests and creating a GameFlow
+    }
 
     /*
     possible Effects
@@ -137,6 +163,53 @@ public class GameFlow {
                 return players[player-1].getPosition();
             default:
                 return (long) Integer.parseInt(fieldId);
+        }
+    }
+
+    public void updateTurns(JSONObject args){
+        int turn = args.getInt("newTurnNumber");
+        setCurrentTurn(turn);
+        TurnActiveData turnActiveData = TurnActiveData.prepareData(this);
+        GameWebSocketController.returnTurnActive(turnActiveData,gameId);
+    }
+
+    public void useRandomUsable(JSONObject args){
+        String type = args.getString("type");
+        Integer amount = args.getInt("amount"); //NOSONAR
+        switch (type){
+            case "item":
+                for (int i=1;i<=amount;i++){
+                    String itemName = Getem.getNoChoiceItem();
+                    getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
+                    System.out.println("item USed: " + itemName);
+                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                }
+                break;
+            default:
+                throw new RuntimeException("the option " + type + " is not yet implemented");
+
+        }
+
+    }
+
+    public void shuffle(JSONObject args){
+        String type = args.getString("type");
+        switch (type){
+            case "ultimates":
+                ArrayList<String> ultiNames = new ArrayList<>();
+                for(Player player : players){
+                    ultiNames.add(player.getUltimate());
+                }
+                Collections.shuffle(ultiNames);
+                for(int i=0;i<4;i++){
+                    players[i].setUltimate(ultiNames.get(i));
+                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
+                }
+                break;
+            default:
+                throw new RuntimeException("this type of shuffling: " + type + " is not yet implemented");
+
         }
     }
 
@@ -237,7 +310,6 @@ public class GameFlow {
 
     /**
      * exchange usables between players
-     * @param args parameters for the exchange effect
      */
 
     public void exchangeAll(){
@@ -434,10 +506,14 @@ public class GameFlow {
 
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
-        CashData cashData = new CashData();
-        cashData.setupCashDataCurrent(this);
+        CashData cashData = new CashData(this);
+        cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
         for(Long key : playersPayMoney.keySet()){
-            cashData.setPlayerAmountAndUpdate(key.intValue(), playersPayMoney.get(key));
+            cashData.setPlayerAmount(key.intValue(),playersPayMoney.get(key));
+        }
+        HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
+        for (Long key : hashi.keySet()){
+            getPlayer(key.intValue()).addLostCash(-hashi.get(key));
         }
         GameWebSocketController.returnMoney(cashData,gameId);
     }
@@ -619,9 +695,8 @@ public class GameFlow {
         for(int diceValue=1;diceValue<=6;diceValue++){
             if(Collections.frequency(diceThrows,diceValue) == bonusCount){
                 players[turnPlayerId.intValue()-1].addCash(cashAmount);
-                CashData cashData = new CashData();
-                cashData.setupCashDataCurrent(this);
-                cashData.setPlayerAmountAndUpdate(turnPlayerId.intValue(),cashAmount);
+                CashData cashData = new CashData(this);
+                cashData.setPlayerAmount(turnPlayerId.intValue(),cashAmount);
                 GameWebSocketController.returnMoney(cashData,gameId);
             }
         }
@@ -681,11 +756,13 @@ public class GameFlow {
     }
 
     private Map<String, Object> nextPlayer() {
-        long maxi = 4L;
         turnPlayerId++;
-        if (turnPlayerId > maxi) {
-            currentTurn++;
+        turnCounter++;
+        if (turnPlayerId > 4L){
             turnPlayerId = 1L;
+        }
+        if (turnCounter%4 == 0) {
+            currentTurn++;
         }
         Map<String, Object> retour = new HashMap<>();
         retour.put("currentTurn", currentTurn);
@@ -694,17 +771,12 @@ public class GameFlow {
     }
 
     public Map<String, Object> move(int moves, long posi) {
-        //currentTurn = 20;
         Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
 
-        List<String> beginCheckWin = new ArrayList<>(Arrays.asList("Marroned", "Company", "Ship"));
-
-        if (beginCheckWin.contains(player.getWinCondition())){ //NOSONAR
-            maroonedCompanyShip(player, moves);
-        }
+        maroonedCompanyShipUnlucky(player, moves);
 
         List<Long> listi = new ArrayList<>();
 
@@ -719,6 +791,8 @@ public class GameFlow {
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
+        player.addLandedAll(currPosi);
+
         while (movies > 0) {
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
@@ -729,6 +803,7 @@ public class GameFlow {
 
             currPosi = nextPosi;
             player.setPosition(currPosi);
+            player.addLandedAll(currPosi);
 
             // check if game is over, or player gets cash, in usual case
             if ("BlueGoal".equals(color) && nextSpace.getIsGoal()) { //NOSONAR
@@ -743,22 +818,13 @@ public class GameFlow {
             movies--;
         }
 
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-        System.out.println("endee  " + toMove(player, listi, moves, color));
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition());
-        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition());
-        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition());
-        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition());
         if (moves == 0) {
             (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
         } else{
-            ( Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+            (Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
         }
-        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition());
-        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition());
-        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition());
-        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition());
 
         endOfWalkCheck(player, color, currentSpace, moves);
 
@@ -766,8 +832,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            GameWebSocketController.endy(doGameOverMaxTurns(findMostCash(players)), getGameId());
-            System.out.println(doGameOverMaxTurns(findMostCash(players)));
+            GameWebSocketController.endGame(getGameId());
+            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
         return Collections.emptyMap();
@@ -783,22 +849,18 @@ public class GameFlow {
     private Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
         setMovesLeft(movies);
         if (player.getCanWin()) {
-            GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-            System.out.println("canwin  " + toMove(player, listi, moves, color));
+            GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
             // GAME OVER
-            GameWebSocketController.endy(doGameOverWinCondi(player), getGameId());
-            System.out.println(doGameOverWinCondi(player));
+            GameWebSocketController.endGame(getGameId());
+            setWinMsg(doGameOverWinCondi(player));
             return Collections.emptyMap();
         }
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.changeCash(toMoney(player, +15), getGameId());
-        System.out.println("canotwin  " + toMove(player, listi, moves, color));
 
-        if (player.getWinCondition().equals("ThirdTime")) {
-            player.addPassGoal();
-            GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getPlayerId());
-            System.out.println(toWinCondi(player, player.getPassGoal(), 2));
-        }
+        player.addPassGoal();
+
+        checkWinCondition(player);
 
         GameWebSocketController.changeGoal(allSpaces, getGameId());
         if (movies <= 0){
@@ -942,51 +1004,45 @@ public class GameFlow {
         return response;
     }
 
-    private void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace, int moves){
+    public void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace, int moves){
+        player.setShipAct(player.getShipTemp());
         if ("Yellow".equals(color)){
             player.addLandYellow();
-            if (player.getWinCondition().equals("Golden")){
-                GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId(), getGameId());
-                System.out.println(toWinCondi(player, player.getLandYellow(), 7));
-            }
         }
         else if ("Catnami".equals(color) || "26".equals(currentSpace.getOnSpace())){
             player.addLandCat();
-            if (player.getWinCondition().equals("Drunk")){
-                GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId(), getGameId());
-                System.out.println(toWinCondi(player, player.getLandCat(), 3));
-            }
         }
-        if (player.getWinCondition().equals("Marooned") || player.getWinCondition().equals("Company")){
-            maroonedCompanyShip(player, moves);
-        }
-        //TODO when win condition gets shuffled, how to send to frontend the new updated progress
+        checkWinCondition(player);
     }
 
-    private void maroonedCompanyShip(Player player, int moves){
-        switch (player.getWinCondition()){ //NOSONAR
+    public void maroonedCompanyShipUnlucky(Player player, int moves){
+        int move15 = (moves >= 15) ? 1 : 0;
+        if (move15==1){
+            player.setShipTemp(1);
+        }
+        checkWinCondition(player);
+    }
+
+    public void checkWinCondition(Player player){
+        switch (player.getWinCondition()) { //NOSONAR
+            case "JackSparrow" -> GameWebSocketController.winCondiProgress(toWinCondi(player, 0, 1), player.getPlayerId(), getGameId());
             case "Marooned" -> {
                 int mCash = (player.getCash() == 0) ? 1 : 0;
                 int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
                 int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
                 GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getPlayerId(), getGameId());
-                System.out.println(toWinCondi(player, mCash + mCard + mItem, 3));
             }
+            case "Golden" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId(), getGameId());
+            case "Drunk" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId(), getGameId());
+            case "ThirdTime" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getPlayerId());
             case "Company" -> {
                 int cash60 = (player.getCash()>=60) ? 1 : 0;
                 GameWebSocketController.winCondiProgress(toWinCondi(player, cash60, 1), player.getPlayerId(), getGameId());
-                System.out.println(toWinCondi(player, cash60, 1));
             }
-            case "Ship" -> {
-                if (!player.getCanWinner()){
-                    int move15 = (moves >= 15) ? 1 : 0;
-                    if (move15==1){
-                        player.setCanWinner(true);
-                    }
-                    GameWebSocketController.winCondiProgress(toWinCondi(player, move15, 1), player.getPlayerId(), getGameId());
-                    System.out.println(toWinCondi(player, move15, 1));
-                }
-            }
+            case "Ship" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getShipAct(), 1), player.getPlayerId(), getGameId());
+
+            case "Explorer" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLandedAll().size(), 61), player.getPlayerId(), getGameId());
+            case "Unlucky" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLostCash(), 40), player.getPlayerId(), getGameId());
         }
     }
 
@@ -1005,10 +1061,8 @@ public class GameFlow {
         List<String> unlock = nextSpace.getNext();
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-        GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
-        System.out.println("junctioon  " + toMove(player, listi, moves, color));
-        System.out.println(toJunction(player, currPosi, unlock, lock));
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
         return Collections.emptyMap();
     }
 
@@ -1020,23 +1074,19 @@ public class GameFlow {
             if (item.equals("TheBrotherAndCo")) {
                 unlock.add(nextSpace.getNext().get(0));
                 lock.add(nextSpace.getNext().get(1));
-                GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-                GameWebSocketController.juncJunc(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
-                System.out.println("gateBro  " + toMove(player, listi, moves, color));
-                System.out.println(toJunction(player, currPosi, unlock, lock));
+                GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
                 return Collections.emptyMap();
             }
         }
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
-        System.out.println("gateNoBro  " + toMove(player, listi, moves, color));
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         return move(getMovesLeft(), player.getPosition());
     }
 
     private Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
         setMovesLeft(movies);
-        GameWebSocketController.juncMove(toMove(player, listi, moves, color), getGameId());
+        GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.specItem(toItem(player), getGameId());
-        System.out.println("specitem  " + toMove(player, listi, moves, color));
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1104,6 +1154,13 @@ public class GameFlow {
         details.put("changeAmountOfMoney", change);
         response.put(player.getPlayerId().toString(), details);
         return response;
+    }
+
+    private void printi(){
+        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash()); //NOSONAR
+        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition() + "  LostCash: " + players[1].getLostCash());
+        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
+        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
     }
 
     private void run(){} //NOSONAR

@@ -79,7 +79,7 @@ test {
     useJUnitPlatform()
     testLogging.showStandardStreams = true
     maxParallelForks = 1
-    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }
 bootRun {
     jvmArgs = [

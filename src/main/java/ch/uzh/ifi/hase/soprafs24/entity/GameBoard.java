@@ -28,6 +28,10 @@ public class GameBoard implements Serializable {
     @JoinColumn(name = "gameBoard_id")
     private List<GameBoardSpace> spaces;
 
+    public GameBoard(){
+        setSpaces(GameBoardLoader.createGameBoardSpacesFromFile());
+    }
+
     public Game getGame() {
         return game;
     }
