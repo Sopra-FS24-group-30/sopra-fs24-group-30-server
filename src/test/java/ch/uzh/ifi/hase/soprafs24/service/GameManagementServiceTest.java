@@ -211,7 +211,7 @@ public class GameManagementServiceTest {
     void test_getInformationPlayers(){
         Game game = createGameWithPlayers();
 
-        List<Object> results = gameManagementService.getInformationPlayers(game.getId());
+        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId());
         System.out.println(results);
 
         assertEquals(4, results.size(), "There should be information for four players");
