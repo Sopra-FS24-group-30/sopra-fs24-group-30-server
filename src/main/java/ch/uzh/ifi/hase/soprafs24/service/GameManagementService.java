@@ -332,6 +332,8 @@ public class GameManagementService {
         System.out.println(i);
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
+        }else if(i==3){
+            changeGameStatus(gameId, GameStatus.ALMOST_READY);
         }
     }
 
