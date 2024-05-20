@@ -246,6 +246,10 @@ public class GameManagementService {
         playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
         playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
         playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
+        playerList.get(0).setPosition(GameFlow.findStart(playerList.get(0).getPlayerId().intValue()));
+        playerList.get(2).setPosition(GameFlow.findStart(playerList.get(1).getPlayerId().intValue()));
+        playerList.get(3).setPosition(GameFlow.findStart(playerList.get(2).getPlayerId().intValue()));
+        playerList.get(4).setPosition(GameFlow.findStart(playerList.get(3).getPlayerId().intValue()));
     }
 
     public List<String> getUsables(Player player){
