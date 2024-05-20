@@ -399,6 +399,58 @@ public class GameFlowTest {
         assertEquals(expectedCards, players[2].getCardNames());
     }
 
+    @Test
+    public void allyouritems() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[0].setTeammateId(2L);
+        players[1].setTeammateId(1L);
+        players[2].setTeammateId(4L);
+        players[3].setTeammateId(3L);
+        players[0].setWinCondition("JackSparrow");
+        players[1].setWinCondition("JackSparrow");
+        players[2].setWinCondition("JackSparrow");
+        players[3].setWinCondition("JackSparrow");
+        players[0].addCardNames("S2");
+        players[0].addCardNames("S5");
+        players[2].addItemNames("MeowYOU");
+        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("UltraMagicMushroom");
+        JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
+        JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
+        gameFlow.setChoices(choices1);
+        gameFlow.exchange(param);
+        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("MeowYOU");
+        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("UltraMagicMushroom");
+        ArrayList<String> expectedCards = new ArrayList<>();
+        assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
+        assertEquals(0, players[2].getItemNames().size());
+    }
+
+    @Test
+    public void allyouritemsLESS4() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("UltraMagicMushroom");
+        JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
+        JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
+        gameFlow.setChoices(choices1);
+        gameFlow.exchange(param);
+        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("UltraMagicMushroom");
+        ArrayList<String> expectedCards = new ArrayList<>();
+        assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
+        assertEquals(0, players[2].getItemNames().size());
+    }
+
 
 
 

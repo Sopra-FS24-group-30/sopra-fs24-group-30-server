@@ -12,5 +12,6 @@
   "SteeringASubmarine": { "reduceMoneyALL" : {} },
   "MeowYOU": { "changeGoalPosition":  {}},
   "TheBrotherAndCo": {},
-  "BestTradeDeal": { "exchangeALL":  {}}
+  "BestTradeDeal": { "exchangeALL":  {}},
+  "ItemsAreBelongToMe": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "item","selection": "random","amount": 4}}}
 }

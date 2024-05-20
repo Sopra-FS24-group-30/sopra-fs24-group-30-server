@@ -356,7 +356,8 @@ public class GameFlow {
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
         switch(selection){ //NOSONAR
             case "random":
-                for(int i = 0; i<amount;i++){
+                int limit = Math.min(amount,playerItems.size());
+                for(int i = 0; i<limit;i++){
                     int select = (int) (Math.random()*playerItems.size()); //NOSONAR
                     String itemName = playerItems.get(select);
                     returnItems.add(itemName);
