@@ -479,32 +479,33 @@ public class GameWebSocketController {
     }
 
     public static void returnMoney(CashData cashData, Long gameId) {
-        String destination = "/topic/board/money" + gameId; //NOSONAR
+        String destination = "/topic/board/money/" + gameId; //NOSONAR
         messagingTemplate.convertAndSend(destination,cashData);
     }
 
     public static void returnMoves(MoveData moveData, Long gameId) {
-        String destination = "/topic/board/move" + gameId;
+        String destination = "/topic/board/move/" + gameId;
         messagingTemplate.convertAndSend(destination, moveData);
     }
 
     public static void returnMoves(Map<String, Object> moveData, Long gameId) {
-        String destination = "/topic/board/move" + gameId;
+        String destination = "/topic/board/move/" + gameId;
         messagingTemplate.convertAndSend(destination, moveData);
     }
 
     public static void returnUsables(UsableData usableData, Long gameId) {
-        String destination = "/topic/board/usables" + gameId;
+        System.out.println("returning to usables");
+        String destination = "/topic/board/usables/" + gameId;
         messagingTemplate.convertAndSend(destination, usableData);
     }
 
     public static void returnDice(DiceData diceData, Long gameId){
-        String destination = "/topic/board/dice" + gameId;
+        String destination = "/topic/board/dice/" + gameId;
         messagingTemplate.convertAndSend(destination, diceData);
     }
 
     public void endGame(Map<String, String> endGameMsg, Long gameId){
-        String destination = "/topic/board/gameEnd" + gameId;
+        String destination = "/topic/board/gameEnd/" + gameId;
         messagingTemplate.convertAndSend(destination, endGameMsg);
         gameManagementService.changeGameStatus(gameId, GameStatus.NOT_PLAYING);
     }
@@ -517,12 +518,12 @@ public class GameWebSocketController {
     }
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
-        String destination = "/topic/board/ultimate" + gameId;
+        String destination = "/topic/board/ultimate/" + gameId;
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 
     public static void returnTurnActive(TurnActiveData turnActiveData, Long gameId){
-        String destination = "/topic/board/newActivePlayer" + gameId;
+        String destination = "/topic/board/newActivePlayer/" + gameId;
         messagingTemplate.convertAndSend(destination,turnActiveData);
     }
 }
