@@ -322,6 +322,7 @@ public class GameWebSocketController {
         gameManagementService.setTeams(game, player1, player2);
     }
 
+    @MessageMapping("/game/{gameId}/wincondition")
     public void getWincondition(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
         System.out.println("Request for wincondition");
         String userId = userIdMap.get("userId");
@@ -347,8 +348,9 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
-    @MessageMapping("/board/dice/{gameId}")
+    @MessageMapping("/game/{gameId}/board/dice")
     public static void diceWalk(@DestinationVariable Long gameId){
+        System.out.println("Received message and now getting dice: ");
         rollOneDice(gameId);
         move(gameId);
     }
@@ -364,7 +366,7 @@ public class GameWebSocketController {
     public void startGame(@DestinationVariable Long gameId, @Payload String userId){
         System.out.println("board message got received");
         HashMap<String, Object> response = new HashMap<>();
-        List<Object> players = gameManagementService.getInformationPlayers(gameId);
+        Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
 
         response.put("players", players);
 
@@ -375,6 +377,7 @@ public class GameWebSocketController {
         int startingPlayer = (int) (Math.random()*4+1);
         gameFlow.setTurnPlayerId((long) startingPlayer);
         List<Player> activePlayers = allGames.get(gameId).getactive_Players();
+
         for(Player player : activePlayers){
             gameFlow.addPlayer(player);
         }
