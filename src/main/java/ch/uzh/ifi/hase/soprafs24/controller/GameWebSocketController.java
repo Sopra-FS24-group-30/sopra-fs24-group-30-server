@@ -21,6 +21,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 import java.util.ArrayList;
 
@@ -392,6 +393,7 @@ public class GameWebSocketController {
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
+        setupFront(gameId);
         firstPlayerTurn(gameId);
     }
 
@@ -404,6 +406,26 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
         messagingTemplate.convertAndSend(destination, response);
 
+    }
+
+    public void setupFront(Long gameId){
+        GameFlow gameFlow = getGameFlow(gameId);
+
+        CashData cashdata = new CashData(gameFlow);
+        String destinationCash = "/topic/game/" + gameId + "/board/money";
+        messagingTemplate.convertAndSend(destinationCash, cashdata);
+
+        ArrayList<Long> move1 = new ArrayList<>(List.of(gameFlow.getPlayer(1).getPosition()));
+        ArrayList<Long> move2 = new ArrayList<>(List.of(gameFlow.getPlayer(2).getPosition()));
+        ArrayList<Long> move3 = new ArrayList<>(List.of(gameFlow.getPlayer(3).getPosition()));
+        ArrayList<Long> move4 = new ArrayList<>(List.of(gameFlow.getPlayer(4).getPosition()));
+        MoveData moveData = new MoveData(move1, move2, move3, move4);
+        String destinationMove = "/topic/game/" + gameId + "/board/move";
+        messagingTemplate.convertAndSend(destinationMove, moveData);
+
+        Map<String, Long> goalData = gameFlow.setBoardGoal(gameFlow.getGameBoard().getSpaces());
+        String destinationGoal = "/topic/game/" + gameId + "/board/goal";
+        messagingTemplate.convertAndSend(destinationGoal, goalData);
     }
 
     @MessageMapping("/game/{gameId}/board/cards")
