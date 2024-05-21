@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;

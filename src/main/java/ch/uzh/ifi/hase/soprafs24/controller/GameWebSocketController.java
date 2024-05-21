@@ -25,6 +25,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 import java.util.ArrayList;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 @Controller
 public class GameWebSocketController {
 
@@ -56,6 +59,50 @@ public class GameWebSocketController {
     }
 
      */
+    public static class GameTimer {
+        private Timer timer;
+        private long startTime;
+        private long elapsedTime;
+
+        public GameTimer() {
+            timer = new Timer();
+            startTime = System.currentTimeMillis();
+            elapsedTime = 0;
+        }
+
+        public void startTimer() {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    elapsedTime = System.currentTimeMillis() - startTime;
+                }
+            }, 0, 1000); // Update every second
+        }
+
+        public long getElapsedTime() {
+            return elapsedTime / 1000; // Return elapsed time in seconds
+        }
+
+        public void setElapsedTime(long elapsedTime) {
+            this.elapsedTime = elapsedTime; // Return elapsed time in seconds
+        }
+
+        // Check if the elapsed time exceeds the maximum time
+        public boolean maxTimeReached(long maxTimeInSeconds) {
+            return getElapsedTime() >= maxTimeInSeconds;
+        }
+
+        public void stopTimer() {
+            timer.cancel();
+        }
+    }
+
+    // Create a GameTimer instance for each game
+    private static Map<Long, GameTimer> gameTimers = new HashMap<>();
+
+    public static Map<Long, GameTimer> getGameTimers() {
+        return gameTimers;
+    }
 
     private static SimpMessagingTemplate messagingTemplate;
 
@@ -66,6 +113,11 @@ public class GameWebSocketController {
 
     @Autowired
     private GameManagementService gameManagementService;
+
+    //
+    public static GameTimer getGameTimerById(Long gameId){
+        return gameTimers.get(gameId);
+    }
 
     //saving the current Game at the beginning
     private static HashMap<Long,Game> allGames = new HashMap<>();
@@ -179,7 +231,8 @@ public class GameWebSocketController {
                 gameFlow.updateMoney(effectParas);
                 break;
             case "exchange":
-                gameFlow.exchange(effectParas,new HashMap<Integer,ArrayList<String>>());
+                //TODO: insert choices here
+                gameFlow.exchange(effectParas);
                 break;
             case "givePlayerDice":
                 gameFlow.givePlayerDice(effectParas);
@@ -195,6 +248,24 @@ public class GameWebSocketController {
                 break;
             case "useRandomUsable":
                 gameFlow.useRandomUsable(effectParas);
+                break;
+            case "givePlayerCardRand":
+                gameFlow.givePlayerCardRand(effectParas);
+                break;
+            case "givePlayerCardChoice":
+                gameFlow.givePlayerCardChoice(effectParas);
+                break;
+            case "exchangePositions":
+                gameFlow.exchangePositions(effectParas);
+                break;
+            case "reduceMoneyALL":
+                gameFlow.reduceMoneyALL(effectParas);
+                break;
+            case "changeGoalPosition":
+                gameFlow.changeGoalPosition(effectParas);
+                break;
+            case "exchangeAll":
+                gameFlow.exchangeAll();
                 break;
             default:
                 throw new RuntimeException("the defined effect does not exist");
@@ -238,6 +309,18 @@ public class GameWebSocketController {
         } else{
             response.put("gameReady", false);
         }
+        GameFlow gameFlow = new GameFlow();
+        List<Player> players = allGames.get(gameId).getactive_Players();
+        for(Player player : players){
+            GameTimer timer = player.getAchievementProgress().getGameTimer();
+            timer.startTimer();
+            gameFlow.addPlayer(player);
+        }
+        GameTimer timer = new GameTimer();
+        timer.startTimer();
+        gameTimers.put(gameId, timer);
+        gameFlows.put(gameId,gameFlow);
+
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
     }
@@ -372,19 +455,13 @@ public class GameWebSocketController {
 
         response.put("players", players);
 
-        GameFlow gameFlow = new GameFlow();
+        GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
         gameFlow.setCurrentTurn(1);
         int startingPlayer = (int) (Math.random() * 4 + 1);
         gameFlow.setTurnPlayerId((long) startingPlayer);
-        List<Player> activePlayers = allGames.get(gameId).getactive_Players();
-
-        for(Player player : activePlayers){
-            gameFlow.addPlayer(player);
-        }
         gameFlows.put(gameId, gameFlow);
-        System.out.println(gameFlow);
 
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 

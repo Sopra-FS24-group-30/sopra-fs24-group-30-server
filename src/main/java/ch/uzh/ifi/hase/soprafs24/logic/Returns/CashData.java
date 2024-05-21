@@ -2,10 +2,13 @@ package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+
+/**
+ * this class is only to be used if you update all the players
+ */
+
 
 /**
  * this class is only to be used if you update all the players
@@ -22,6 +25,9 @@ public class CashData {
     @JsonProperty("4")
     private PlayerCash player4 = new PlayerCash();
 
+    public CashData(){
+        //needed to not break old code
+    }
 
     public CashData(GameFlow gameFlow){
         player1setNewAmountOfMoney(gameFlow.getPlayer(1).getCash());
@@ -48,8 +54,38 @@ public class CashData {
         player4.setChangeAmountOfMoney(cash4);
     }
 
+    public CashData setupCashDataCurrent(GameFlow gameFlow){
+        CashData cashData = new CashData();
+        cashData.player2setNewAmountOfMoney(gameFlow.getPlayer(2).getCash());
+        cashData.player3setNewAmountOfMoney(gameFlow.getPlayer(3).getCash());
+        cashData.player1setNewAmountOfMoney(gameFlow.getPlayer(1).getCash());
+        cashData.player4setNewAmountOfMoney(gameFlow.getPlayer(4).getCash());
+        cashData.player1setChangeAmountOfMoney(0);
+        cashData.player2setChangeAmountOfMoney(0);
+        cashData.player4setChangeAmountOfMoney(0);
+        cashData.player3setChangeAmountOfMoney(0);
+        return cashData;
+    }
+
+    public void setPlayerAmount(int playerId, int cashChange){
+        switch (playerId){
+            case 1:
+                player1.setChangeAmountOfMoney(cashChange);
+                break;
+            case 2:
+                player2.setChangeAmountOfMoney(cashChange);
+                break;
+            case 3:
+                player3.setChangeAmountOfMoney(cashChange);
+                break;
+            case 4:
+                player4.setChangeAmountOfMoney(cashChange);
+                break;
+        }
+    }
+
     public void setPlayerAmountAndUpdate(int playerId, int newCash, int cashChange){
-        switch (playerId){ //NOSONAR
+        switch (playerId){
             case 1:
                 player1.setNewAmountOfMoney(newCash);
                 player1.setChangeAmountOfMoney(cashChange);
