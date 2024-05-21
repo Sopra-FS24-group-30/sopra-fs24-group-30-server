@@ -433,13 +433,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
-    @MessageMapping("/game/{gameId}/board/dice")
-    public static void diceWalk(@DestinationVariable Long gameId){
-        System.out.println("Received message and now getting dice: ");
-        rollOneDice(gameId);
-        move(gameId);
-    }
-
     @MessageMapping("/game/{gameId}/playerAtLP")
     public void playersAtLoadingPage(@DestinationVariable Long gameId, @Payload Map<String, String> player){
         String playerName = player.get("username");
@@ -522,10 +515,16 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, count));
     }
 
+    @MessageMapping("/game/{gameId}/board/dice")
+    public static void diceWalk(@DestinationVariable Long gameId){
+        System.out.println("Received message and now getting dice: ");
+        rollOneDice(gameId);
+        move(gameId);
+    }
 
     @MessageMapping("/game/{gameId}/board/junction")
-    public void contJunction(@DestinationVariable Long gameId, @Payload Map<String, Long> payload){
-        long selectedSpace = payload.get("selectedSpace");
+    public void contJunction(@DestinationVariable Long gameId, @Payload Map<String,String> payload){
+        long selectedSpace =  Long.parseLong(payload.get("choice"));
         String destination = "/topic/game/" + gameId + "/board/move";
         GameFlow gameFlow = gameFlows.get(gameId);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
@@ -550,9 +549,9 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, massage);
     }
 
-    public static void returnJunction(Map<String, Object> chooseJunctionMsg, Long gameId, Long playerId){
-        String destination = "/topic/game/" + gameId + "/board/junction";// + "/" + playerId;
-        messagingTemplate.convertAndSend(destination, chooseJunctionMsg);
+    public static void returnJunction(Map<String, Object> chooseJunctionMsg, Long gameId, Long userId){
+        String destination = "/queue/game/" + gameId + "/board/junction";
+        messagingTemplate.convertAndSendToUser(userId.toString(), destination, chooseJunctionMsg);
     }
 
     public static void changeGoal(List<GameBoardSpace> spaces, Long gameId){
@@ -571,9 +570,9 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, getItemMsg);
     }
 
-    public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long playerId, Long gameId){
-        String destination = "/topic/game/" + gameId + "/board/winCondition"; //+ "/" + playerId;
-        messagingTemplate.convertAndSend(destination, winCondiUpdate);
+    public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long userId, Long gameId){
+        String destination = "/queue/game/" + gameId + "/board/winCondition";
+        messagingTemplate.convertAndSendToUser(userId.toString(), destination, winCondiUpdate);
     }
 
     public static void changeCash(Map<String, Object> cashmsg, Long gameId){
@@ -611,11 +610,11 @@ public class GameWebSocketController {
 
 //        GameManagementService.changeGameStatus(allGames.get(gameId), GameStatus.NOT_PLAYING);
         Map<String, String> endGameMsg = new HashMap<>(Map.of("status", GameStatus.NOT_PLAYING.toString()));
-        String destination = "/topic/game/" + gameId + "/board/endGame";
+        String destination = "/topic/game/" + gameId + "/board/gameEnd";
         messagingTemplate.convertAndSend(destination, endGameMsg);
     }
 
-    @MessageMapping("/game/ranking/{gameId}")
+    @MessageMapping("/game/{gameId}/ranking")
     public void gameRank(@DestinationVariable Long gameId){
         Map<String, Object> winMsg = getGameFlow(gameId).getWinMsg();
         String destination = "/topic/game/" + gameId + "/ranking";

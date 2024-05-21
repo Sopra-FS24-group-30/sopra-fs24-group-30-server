@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@Controller
 public class GameFlow {
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
@@ -1025,24 +1024,24 @@ public class GameFlow {
 
     public void checkWinCondition(Player player){
         switch (player.getWinCondition()) { //NOSONAR
-            case "JackSparrow" -> GameWebSocketController.winCondiProgress(toWinCondi(player, 0, 1), player.getPlayerId(), getGameId());
+            case "JackSparrow" -> GameWebSocketController.winCondiProgress(toWinCondi(player, 0, 1), player.getUserId(), getGameId());
             case "Marooned" -> {
                 int mCash = (player.getCash() == 0) ? 1 : 0;
                 int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
                 int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
-                GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getPlayerId(), getGameId());
+                GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getUserId(), getGameId());
             }
-            case "Golden" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId(), getGameId());
-            case "Drunk" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId(), getGameId());
-            case "ThirdTime" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getPlayerId());
+            case "Golden" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getUserId(), getGameId());
+            case "Drunk" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getUserId(), getGameId());
+            case "ThirdTime" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getUserId());
             case "Company" -> {
                 int cash60 = (player.getCash()>=60) ? 1 : 0;
-                GameWebSocketController.winCondiProgress(toWinCondi(player, cash60, 1), player.getPlayerId(), getGameId());
+                GameWebSocketController.winCondiProgress(toWinCondi(player, cash60, 1), player.getUserId(), getGameId());
             }
-            case "Ship" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getShipAct(), 1), player.getPlayerId(), getGameId());
+            case "Ship" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getShipAct(), 1), player.getUserId(), getGameId());
 
-            case "Explorer" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLandedAll().size(), 61), player.getPlayerId(), getGameId());
-            case "Unlucky" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLostCash(), 40), player.getPlayerId(), getGameId());
+            case "Explorer" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLandedAll().size(), 61), player.getUserId(), getGameId());
+            case "Unlucky" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLostCash(), 40), player.getUserId(), getGameId());
         }
     }
 
@@ -1063,7 +1062,7 @@ public class GameFlow {
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         System.out.println("reached case junction");
-        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), getGameId(), player.getUserId());
         return Collections.emptyMap();
     }
 
@@ -1076,7 +1075,7 @@ public class GameFlow {
                 unlock.add(nextSpace.getNext().get(0));
                 lock.add(nextSpace.getNext().get(1));
                 GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), getGameId(), player.getUserId());
                 return Collections.emptyMap();
             }
         }
@@ -1163,43 +1162,4 @@ public class GameFlow {
         System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
         System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
     }
-
-    private void run(){} //NOSONAR
-    private void setup(){} //NOSONAR
-    private void teardown(){} //NOSONAR
-    private void flow(){} //NOSONAR
-
-
-    /*
-    TODO SETUP NOSONAR
-    Player kreieren
-    Teams assigne
-    Spieler reihefolg
-    ultimate wählen
-    win condition wählen
-    Board laden/screen lade
-
-    TODO TURNS NOSONAR
-    items/ultimates
-    update to player positions
-    updates to player status
-    würfeln/cards
-    Updates to player positions
-    updates to player status
-    give turn to next player
-
-    TODO ENDGAME NOSONAR
-    update userprofiles
-    remove players
-    destroy gameboard
-    display winners
-
-    TODO ALWAYS NOSONAR
-    display cash
-    voice chat
-    display items
-    display cards
-    display other players
-    display win/ultimate (only for self)
-     */
 }
