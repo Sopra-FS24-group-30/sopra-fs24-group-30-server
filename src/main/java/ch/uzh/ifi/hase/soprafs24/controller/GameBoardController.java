@@ -115,13 +115,14 @@ public class GameBoardController {
         p4.setLandCat(2);
         p4.addCardNames("B14");
         p4.addCardNames("B26");
+        p4.setCanWinner(true);
         gameFlow.addPlayer(p1);
         gameFlow.addPlayer(p2);
         gameFlow.addPlayer(p3);
         gameFlow.addPlayer(p4);
         gameFlow.setTurnPlayerId(1L);
         gameFlow.getGameBoard().getSpaces().get(0).setIsGoal(true);
-        return gameFlow.move(6, 27L);
+        return gameFlow.move(6, 18L);
     }
 
 
@@ -157,13 +158,25 @@ public class GameBoardController {
 
         int moves = movesArray.getInt(0);
         //System.out.println(Getem.getCards().get("B14"));
-        return gameFlow.updateCardPositions(Getem.getCards().get("G13"), 3);
+        return gameFlow.updateCardPositions(Getem.getRandomCard(), 3);
 
     }
 
     @GetMapping("/cards")
     public static HashMap<String, JSONObject> getCards() {
+        System.out.println(Getem.getCards());
         return Getem.getCards();
     }
+
+    @GetMapping("/RandomCard")
+    public static JSONObject getRandomCard() {
+        System.out.println(Getem.getRandomCard());
+        return Getem.getRandomCard();
+    }
+    @GetMapping("/items")
+    public static HashMap<String, JSONObject> getItems() {
+        return Getem.getItems();
+    }
+
     */
 }

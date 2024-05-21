@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +18,7 @@ import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -211,7 +215,7 @@ public class GameManagementServiceTest {
     void test_getInformationPlayers(){
         Game game = createGameWithPlayers();
 
-        List<Object> results = gameManagementService.getInformationPlayers(game.getId());
+        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId());
         System.out.println(results);
 
         assertEquals(4, results.size(), "There should be information for four players");
@@ -374,6 +378,8 @@ public class GameManagementServiceTest {
 
         Player player = new Player();
         player.setUserId((long)2);
+        player.setAchievementProgress(new AchievementProgress(2L), new GameWebSocketController.GameTimer());
+        player.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
         player.setPlayerName("user");
         player.setPlayerId((long)2);
         player.setStatus(PlayerStatus.NOT_PLAYING);

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Constant.GamblingChoice;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -19,7 +20,7 @@ public class SpacesTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            //p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);

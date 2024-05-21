@@ -252,6 +252,10 @@ public class GameManagementService {
         playerList.get(1).setTeammateId(playerList.get(3).getPlayerId());
         playerList.get(2).setTeammateId(playerList.get(0).getPlayerId());
         playerList.get(3).setTeammateId(playerList.get(1).getPlayerId());
+        playerList.get(0).setPosition(GameFlow.findStart(playerList.get(0).getPlayerId().intValue()));
+        playerList.get(1).setPosition(GameFlow.findStart(playerList.get(1).getPlayerId().intValue()));
+        playerList.get(2).setPosition(GameFlow.findStart(playerList.get(2).getPlayerId().intValue()));
+        playerList.get(3).setPosition(GameFlow.findStart(playerList.get(3).getPlayerId().intValue()));
     }
 
     public List<String> getUsables(Player player){
@@ -264,9 +268,9 @@ public class GameManagementService {
         return usables;
     }
 
-    public List<Object> getInformationPlayers(Long gameId){
+    public Map<String, Object> getInformationPlayers(Long gameId){
         Game game = findGame(gameId);
-        List<Object> players = new ArrayList();
+        Map<String, Object> players = new HashMap();
 
         for (Player player: game.getactive_Players()){
             System.out.println(player.getPlayerName());
@@ -277,7 +281,7 @@ public class GameManagementService {
             dictionary.put("cash", player.getCash());
             dictionary.put("usables", getUsables(player));
 
-            players.add(dictionary);
+            players.put(Long.toString(player.getPlayerId()), dictionary);
         }
 
         System.out.println(players);
@@ -323,7 +327,6 @@ public class GameManagementService {
     }
 
     public void setGameReady(Long gameId){
-
         Game game = findGame(gameId);
         List<Player> playerList = game.getactive_Players();
         int i = 0;
@@ -336,5 +339,19 @@ public class GameManagementService {
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
         }
+    }
+
+    public String getWincondition(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getWinCondition();
+    }
+
+    public String getUltimateAttack(Long gameId, String userId){
+        Game game = findGame(gameId);
+        Player player = findPlayerById(game, Long.valueOf(userId));
+
+        return player.getUltimate();
     }
 }
