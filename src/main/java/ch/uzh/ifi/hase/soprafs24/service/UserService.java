@@ -2,9 +2,11 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,12 @@ public class UserService {
         if (!password.equals(actualUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the password is incorrect");
         }
+        if(actualUser.getStatus().equals(UserStatus.ONLINE)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the user is already online");
+        }else{
+            actualUser.setStatus(UserStatus.ONLINE);
+        }
+
         return actualUser.getToken();
     }
 
@@ -74,6 +82,7 @@ public class UserService {
         }
         newUser.setCreationDate(LocalDate.now());
         newUser.setToken(UUID.randomUUID().toString());
+        newUser.setStatus(UserStatus.ONLINE);
         newUser.setAmountGamesCompleted(0);
         newUser.setAmountWins(0);
         this.userRepository.save(newUser);
@@ -121,52 +130,31 @@ public class UserService {
     *create a game and add the players to it, so they can join the game and no one else
      * @return if successful returns true
      */
-    public boolean createGame(String lobbyId, ArrayList<Long> playerIds){ //NOSONAR
-
-        try{
-            //TODO create the game with the lobbyID and the players NOSONAR
-        } catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"the server could not start the game correctly");
-        }
-        return true;
-
-        //
-    }
 
     private boolean checkUsernameExists(String username){
         Optional<User> existingUser = this.userRepository.findByUsername(username);
         return existingUser.isPresent();
     }
 
-    public User edit(User user, User updates){
-        if (user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User could not be found");
+    public void edit(UserPutDTO updates, Long gameId){
+        User oldUser = userRepository.findById(gameId).get();
+        if(updates.getPassword()!=null){
+            oldUser.setPassword(updates.getPassword());
         }
-        if (updates.getUsername()!=null){
-            User exists = findUser(updates.getUsername());
-            if (exists!=null && !exists.getId().equals(user.getId())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name is already taken");
+        if(updates.getBirthday()!=null){
+            oldUser.setBirthday(updates.getBirthday());
+        }
+        if(updates.getUsername() != null){
+            if(userRepository.findByUsername(updates.getUsername()).isEmpty()){
+                oldUser.setUsername(updates.getUsername());
+            }else {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "the user with username " + updates.getUsername() + " does already exist");
             }
-            user.setUsername(updates.getUsername());
         }
-        if (updates.getBirthday()!=null){
-            user.setBirthday(updates.getBirthday());
-        }
-        if (updates.getPassword()!=null){
-            user.setPassword(updates.getPassword());
-        }
-        this.userRepository.saveAndFlush(user);
-        return user;
+        userRepository.save(oldUser);
+        userRepository.flush();
     }
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
-
-    /**
-     * start the game and let sockets take over
-     */
-    public void startGame(){
-        //TODO trigger the start of game => websockets take over
-    }
-
 }

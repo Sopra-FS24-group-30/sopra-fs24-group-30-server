@@ -2,9 +2,13 @@ package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 
 import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 
 public class Player {
 
@@ -17,8 +21,8 @@ public class Player {
     private transient User user;
     private PlayerStatus status;
 
-    private Ultimate ultimate;
-    private WinCondition winCondition;
+    private String ultimate;
+    private String winCondition;
 
     private Long userId;
     private Long teammateId;
@@ -26,7 +30,34 @@ public class Player {
 
     private int landYellow;
     private int landCat;
+    private int passGoal;
+    private int shipTemp;
+    private int shipAct;
+    private int lostCash;
+    private HashSet<Long> landedAll = new HashSet<>();
+
     private boolean ultActive;
+    private AchievementProgress achievementProgress;
+
+    private GameTimer gameTimer;
+
+
+    public Player(){
+
+    }
+    public Player(Long userId){
+        this.userId = userId;
+        achievementProgress = new AchievementProgress(userId, this.gameTimer);
+    }
+
+    public AchievementProgress getAchievementProgress() {
+        return achievementProgress;
+    }
+
+    public void setAchievementProgress(AchievementProgress achievementProgress, GameTimer gameTimer) {
+        this.achievementProgress = achievementProgress;
+        this.gameTimer = gameTimer;
+    }
 
     public boolean isUltActive() {
         return ultActive;
@@ -34,10 +65,21 @@ public class Player {
 
     public void setUltActive(boolean ultActive) {
         this.ultActive = ultActive;
+        if(!this.ultActive){
+            achievementProgress.setUltimateUsed(true);
+        }
     }
 
     public User getUser() {
         return user;
+    }
+
+    public GameTimer getGameTimer() {
+        return this.gameTimer;
+    }
+
+    public void setGameTimer(GameTimer gameTimer) {
+        this.gameTimer = gameTimer;
     }
 
     public void setUser(User user) {
@@ -70,10 +112,14 @@ public class Player {
 
     public void setCash(int cash) {
         this.cash = cash;
+        if(this.cash > achievementProgress.getMaxAmountCash()){
+            achievementProgress.setMaxAmountCash(this.cash);
+        }
     }
 
     public void addCash(int amount){
-        this.cash = this.cash + amount;
+        setCash(this.cash + amount);
+
     }
 
     public ArrayList<String> getItemNames() {
@@ -134,12 +180,20 @@ public class Player {
         this.position = position;
     }
 
-    public Ultimate getUltimate() {
+    public String getUltimate() {
         return ultimate;
     }
 
-    public void setUltimate(Ultimate ultimate) {
+    public void setUltimate(String ultimate) {
         this.ultimate = ultimate;
+    }
+
+    public String getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(String winCondition) {
+        this.winCondition = winCondition;
     }
 
     public Long getUserId() {
@@ -174,6 +228,10 @@ public class Player {
         this.landYellow = landYellow;
     }
 
+    public void addLandYellow() {
+        this.landYellow = this.landYellow + 1;
+    }
+
     public int getLandCat() {
         return landCat;
     }
@@ -182,15 +240,64 @@ public class Player {
         this.landCat = landCat;
     }
 
-    public WinCondition getWinCondition() {
-        return winCondition;
+    public void addLandCat() {
+        this.landCat = this.landCat + 1;
     }
 
-    public void setWinCondition(WinCondition winCondition) {
-        this.winCondition = winCondition;
+    public int getPassGoal() {
+        return passGoal;
+    }
+
+    public void setPassGoal(int passGoal) {
+        this.passGoal = passGoal;
+    }
+
+    public void addPassGoal() {
+        this.passGoal = this.passGoal + 1;
     }
 
     public boolean getCanWin() {
-        return winCondition.checkWinConditionMet(this);
+        return WinConditionUltimate.checkWinConditionMet(this);
+    }
+
+    public int getShipTemp() {
+        return shipTemp;
+    }
+
+    public void setShipTemp(int shipTemp) {
+        this.shipTemp = shipTemp;
+    }
+
+    public int getShipAct() {
+        return shipAct;
+    }
+
+    public void setShipAct(int shipAct) {
+        this.shipAct = shipAct;
+    }
+
+    public HashSet<Long> getLandedAll() {
+        return landedAll;
+    }
+
+    public void setLandedAll(HashSet<Long> landedAll) {
+        this.landedAll = landedAll;
+    }
+    public void addLandedAll(Long spaceId){
+        this.landedAll.add(spaceId);
+    }
+    public void addLandedAll(HashSet<Long> spaceIds){
+        this.landedAll.addAll(spaceIds);
+    }
+
+    public int getLostCash() {
+        return lostCash;
+    }
+
+    public void setLostCash(int lostCash) {
+        this.lostCash = lostCash;
+    }
+    public void addLostCash(int amount){
+        this.lostCash = this.lostCash + amount;
     }
 }
