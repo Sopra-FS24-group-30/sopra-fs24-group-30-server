@@ -3,8 +3,10 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +23,7 @@ import java.util.Random;
 @Transactional
 public class GameService {
 
+    private final Random random = new Random();
     private final GameRepository gameRepository;
     private final GameBoardService gameBoardService;
 
@@ -38,10 +41,14 @@ public class GameService {
      * @return a unique LobbyId
      */
     public Long getLobbyId(){
-        Random rnd = new Random();
-        long id = 100000 + rnd.nextInt(900000);
+        long id = 100000 + this.random.nextInt(900000);
+        int counter = 0;
         while (this.gameRepository.findById(id) != null){
-            id = 100000 + rnd.nextInt(900000);
+            id = 100000 + this.random.nextInt(900000);
+            if (counter > 10000){
+                break;
+            }
+            counter++;
         }
         return id;
     }
@@ -51,10 +58,13 @@ public class GameService {
         if (currentPlayerCount >= 4) {
             throw new IllegalStateException("Cannot add more players to the game. The game is full.");
         }
+        GameTimer gameTimer = new GameTimer();
 
         Player player = new Player();
+        player.setAchievementProgress(new AchievementProgress(user.getId(), new GameTimer()), new GameTimer());
         player.setPlayerId((long) (currentPlayerCount + 1)); // Associate the User with the Player
         player.setUser(user); // Associate the User with the Player
+        player.setUserId(user.getId());
         // Initialize other properties of Player
         player.setStatus(PlayerStatus.NOT_PLAYING);
         player.setPlayerName(user.getUsername());

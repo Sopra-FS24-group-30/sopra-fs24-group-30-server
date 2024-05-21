@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +18,7 @@ import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
 
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -211,17 +215,10 @@ public class GameManagementServiceTest {
     void test_getInformationPlayers(){
         Game game = createGameWithPlayers();
 
-        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId(), (long) 2);
+        Map<String, Object> results = gameManagementService.getInformationPlayers(game.getId());
         System.out.println(results);
 
         assertEquals(4, results.size(), "There should be information for four players");
-
-        Object[] keys = results.keySet().toArray();
-
-        assertEquals("thisPlayer", keys[0]);
-        assertEquals("Teammate", keys[1]);
-        assertEquals("Enemy1", keys[2]);
-        assertEquals("Enemy2", keys[3]);
     }
 
     @Test
@@ -363,10 +360,12 @@ public class GameManagementServiceTest {
         assertEquals(player.getTeammateId(), result.getTeammateId());
     }
 
+    /*
     @Test
     public void test_findGame(){
 
     }
+     */
 
     @Test
     public void test_createGame(){
@@ -379,6 +378,8 @@ public class GameManagementServiceTest {
 
         Player player = new Player();
         player.setUserId((long)2);
+        player.setAchievementProgress(new AchievementProgress(2L), new GameWebSocketController.GameTimer());
+        player.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
         player.setPlayerName("user");
         player.setPlayerId((long)2);
         player.setStatus(PlayerStatus.NOT_PLAYING);
@@ -391,5 +392,17 @@ public class GameManagementServiceTest {
 
         Long result = gameManagementService.createGame(userId);
         assertTrue(result!=null);
+    }
+
+    @Test
+    public void getTurnOrder(){
+        List<String> expected = new ArrayList<>();
+
+        expected.add("3");
+        expected.add("4");
+        expected.add("1");
+        expected.add("2");
+
+        assertEquals(expected, gameManagementService.getTurnOrder((long) 3));
     }
 }

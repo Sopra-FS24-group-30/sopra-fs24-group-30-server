@@ -68,7 +68,9 @@ sonar {
 }
 
 jacocoTestReport {
+    dependsOn test
     reports {
+        html.enabled true
         xml.enabled true
     }
 }
@@ -77,6 +79,7 @@ test {
     useJUnitPlatform()
     testLogging.showStandardStreams = true
     maxParallelForks = 1
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }
 bootRun {
     jvmArgs = [
