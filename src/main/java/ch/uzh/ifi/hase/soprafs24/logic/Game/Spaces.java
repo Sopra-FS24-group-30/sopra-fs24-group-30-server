@@ -447,7 +447,7 @@ public class Spaces {
     private Map<String, ArrayList<String>> getItemsByColor(){
         ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo")); // "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"
         ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom")); // "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"
-        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansAbo")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
         return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
     }
     private Map<String, ArrayList<String>> getCardsByColor(){
