@@ -855,7 +855,7 @@ public class GameFlow {
             return Collections.emptyMap();
         }
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-        GameWebSocketController.changeCash(toMoney(player, +15), getGameId());
+        GameWebSocketController.returnMoney(toMoney(player, +15), getGameId());
 
         player.addPassGoal();
 

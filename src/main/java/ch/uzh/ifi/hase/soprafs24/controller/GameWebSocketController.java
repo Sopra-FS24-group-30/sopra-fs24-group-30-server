@@ -475,7 +475,6 @@ public class GameWebSocketController {
 
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
         messagingTemplate.convertAndSend(destination, response);
-
     }
 
     public void setupFront(Long gameId){
@@ -485,13 +484,15 @@ public class GameWebSocketController {
         String destinationCash = "/topic/game/" + gameId + "/board/money";
         messagingTemplate.convertAndSend(destinationCash, cashdata);
 
-        ArrayList<Long> move1 = new ArrayList<>(List.of(gameFlow.getPlayer(1).getPosition()));
-        ArrayList<Long> move2 = new ArrayList<>(List.of(gameFlow.getPlayer(2).getPosition()));
-        ArrayList<Long> move3 = new ArrayList<>(List.of(gameFlow.getPlayer(3).getPosition()));
-        ArrayList<Long> move4 = new ArrayList<>(List.of(gameFlow.getPlayer(4).getPosition()));
-        MoveData moveData = new MoveData(move1, move2, move3, move4);
         String destinationMove = "/topic/game/" + gameId + "/board/move";
-        messagingTemplate.convertAndSend(destinationMove, moveData);
+        for (Player p : gameFlow.getPlayers()){
+            ArrayList<Long> moveit = new ArrayList<>();
+            moveit.add(p.getPosition());
+            MoveData moveData = new MoveData("teleport");
+            moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), moveit, 0, null);
+            Map<String, Object> aha = moveData.getPlayerMoveMap(p.getPlayerId().intValue());
+            messagingTemplate.convertAndSend(destinationMove, aha);
+        }
 
         Map<String, Long> goalData = gameFlow.setBoardGoal(gameFlow.getGameBoard().getSpaces());
         String destinationGoal = "/topic/game/" + gameId + "/board/goal";
@@ -575,7 +576,7 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userId.toString(), destination, winCondiUpdate);
     }
 
-    public static void changeCash(Map<String, Object> cashmsg, Long gameId){
+    public static void returnMoney(Map<String, Object> cashmsg, Long gameId){
         String destination = "/topic/game/" + gameId + "/board/money";
         messagingTemplate.convertAndSend(destination, cashmsg);
     }
