@@ -984,7 +984,7 @@ public class GameFlow {
                 return space.getSpaceId();
             }
         }
-        return null;
+        return 10L;
     }
 
     public void changeGoalPosition(JSONObject args){
@@ -1062,6 +1062,7 @@ public class GameFlow {
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        System.out.println("reached case junction");
         GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
         return Collections.emptyMap();
     }
