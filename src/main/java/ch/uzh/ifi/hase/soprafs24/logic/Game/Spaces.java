@@ -43,7 +43,7 @@ public class Spaces {
         void apply(T arg1);
     }
 
-    private int randomInt(int num){
+    public int randomInt(int num){
         return (int) (Math.random()*num); //NOSONAR
     }
 
@@ -56,7 +56,7 @@ public class Spaces {
     public void item(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoItem();
-        currPlayer.addCardNames(it);
+        currPlayer.addItemNames(it);
         toUsable(gameFlow);
     }
     public void card(GameFlow gameFlow) {
@@ -66,7 +66,6 @@ public class Spaces {
         toUsable(gameFlow);
     }
     public void gambling(GameFlow gameFlow){
-        //TODO GAMBLING WITH CASH
         Player[] players = gameFlow.getPlayers();
         Player currPlayer = players[gameFlow.getTurnPlayerId().intValue()-1];
         int random = randomInt(2);
@@ -112,7 +111,7 @@ public class Spaces {
 
     }
     public void catnami(GameFlow gameFlow) {
-        Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
+        Player currPlayer = gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue());
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(4);
         String pWin = currPlayer.getWinCondition();

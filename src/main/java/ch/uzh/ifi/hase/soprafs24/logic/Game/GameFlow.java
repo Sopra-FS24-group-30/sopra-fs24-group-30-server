@@ -462,7 +462,7 @@ public class GameFlow {
                 }else if(amount < 0){
                     switch (type){//NOSONAR
                         case "absolute":
-                            int toPayAbsolute = checkCash(players[id-1].getPlayerId().intValue(),amount);
+                            int toPayAbsolute = getMaxPay(players[id-1].getPlayerId().intValue(),amount);
                             totalPot += toPayAbsolute;
                             players[id-1].setCash(players[id-1].getCash()+toPayAbsolute);
                             calculatedAmount.put(Long.valueOf(id),amount);
@@ -614,9 +614,8 @@ public class GameFlow {
      * @param cashAmount cash amount if has to pay negative amount
      * @return amount the player can pay
      */
-    private int checkCash(int playerId, int cashAmount){
-        int playerCash = players[playerId-1].getCash();
-        return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
+    private int getMaxPay(int playerId, int cashAmount){
+        return (Math.max(cashAmount,getPlayer(playerId).getCash()*-1));
     }
 
     public void addPlayer(Player player){
