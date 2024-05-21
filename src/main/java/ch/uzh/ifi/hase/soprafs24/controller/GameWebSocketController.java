@@ -79,7 +79,7 @@ public class GameWebSocketController {
         }
 
         public long getElapsedTime() {
-            return elapsedTime / 1000; // Return elapsed time in seconds
+            return elapsedTime; // Return elapsed time in seconds
         }
 
         public void setElapsedTime(long elapsedTime) {
@@ -88,7 +88,7 @@ public class GameWebSocketController {
 
         // Check if the elapsed time exceeds the maximum time
         public boolean maxTimeReached(long maxTimeInSeconds) {
-            return getElapsedTime() >= maxTimeInSeconds;
+            return (getElapsedTime()/1000) >= maxTimeInSeconds;
         }
 
         public void stopTimer() {
