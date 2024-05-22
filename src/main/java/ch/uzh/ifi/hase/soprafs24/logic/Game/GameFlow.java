@@ -26,8 +26,30 @@ public class GameFlow {
     private int turnCounter;
     private int movesLeft;
     private boolean hasMoved;
+    private boolean itemultused;
+    private boolean cardDiceUsed;
     private Map<String, Object> winMsg;
     private JSONObject choices;
+
+    public Player getActivePlayer(){
+        return this.players[this.turnPlayerId.intValue()-1];
+    }
+
+    public boolean isItemultused() {
+        return itemultused;
+    }
+
+    public void setItemultused(boolean itemultused) {
+        this.itemultused = itemultused;
+    }
+
+    public boolean isCardDiceUsed() {
+        return cardDiceUsed;
+    }
+
+    public void setCardDiceUsed(boolean cardDiceUsed) {
+        this.cardDiceUsed = cardDiceUsed;
+    }
 
     public JSONObject getChoices() {
         return choices;
@@ -99,20 +121,6 @@ public class GameFlow {
         //this is needed for tests and creating a GameFlow
     }
 
-    /*
-    possible Effects
-    Items can have the following effects:
-        give a player more turns
-        update a players money
-        let a player move differently (abiegekarte)
-        get cards from other players
-        give a player a special status in case he lands on a field or overtakes other people
-        teleport players
-        exchange cards/items from players (can steal with nothing given back)
-        exchange something for usables (if getting give nothing back)
-        mute a player
-        force a player to do an action
-     */
 
 
     /**
@@ -132,7 +140,6 @@ public class GameFlow {
     }
 
 
-    //TODO: let handle choice
 
     /**
      * resolve the special fieldId to an actual ID
@@ -173,7 +180,7 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                    GameWebSocketController.handleItems(new JSONObject("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}"),gameId);
                 }
                 break;
             default:
@@ -194,7 +201,8 @@ public class GameFlow {
                 Collections.shuffle(ultiNames);
                 for(int i=0;i<4;i++){
                     players[i].setUltimate(ultiNames.get(i));
-                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    UltimateData ultimateData = new UltimateData();
+                    ultimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
                     GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
                 }
                 break;
@@ -490,7 +498,6 @@ public class GameFlow {
      * @param args parameters for the updatemoney effect
      * @return key: playerId, value: the new amount of money the player has
      */
-    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
     public void updateMoney(JSONObject args){
         String type = args.getString("type");
         Hashtable<Long,Integer> playersPayMoney;
@@ -697,6 +704,7 @@ public class GameFlow {
         for(Integer dice : diceThrows){
             totalAmount += dice;
         }
+        this.setCardDiceUsed(true);
         move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
     }
 

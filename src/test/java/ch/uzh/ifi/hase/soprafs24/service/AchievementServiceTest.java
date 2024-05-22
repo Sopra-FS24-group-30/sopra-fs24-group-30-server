@@ -266,4 +266,22 @@ public class AchievementServiceTest {
         assertTrue(saved.isEndurance3());
     }
 
+    @Test
+    void testEnduranceTwoCorrectUpdate(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        AchievementStatus gamerAchievementStatus = new AchievementStatus(1L);
+        gamerAchievementStatus.setTotalGamesWon(0);
+        achievementService.saveAChievements(gamerAchievementStatus);
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        long a = 7200;
+        gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().setElapsedTime(a);
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertTrue(saved.isEndurance1());
+        assertTrue(saved.isEndurance2());
+        assertEquals(0,saved.getTotalGamesWon());
+    }
+
 }

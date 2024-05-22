@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Returns;
 
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
+
 public class UltimateData {
 
     String ultimateName;
@@ -21,10 +23,13 @@ public class UltimateData {
         isActive = active;
     }
 
-    public static UltimateData prepareData(String ultimateName, Boolean isActive){
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.setUltimateName(ultimateName);
-        ultimateData.setActive(isActive);
-        return ultimateData;
+    public void prepareData(String ultimateName, Boolean isActive){
+        this.ultimateName = ultimateName;
+        this.isActive = isActive;
+    }
+
+    public void prepareDataForCurrentPlayer(GameFlow gameFlow){
+        ultimateName = gameFlow.getActivePlayer().getUltimate();
+        isActive = gameFlow.getActivePlayer().isUltActive();
     }
 }
