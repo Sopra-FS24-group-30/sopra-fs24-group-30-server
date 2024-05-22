@@ -70,9 +70,10 @@
 
 ## <font style="color: #ff9f10">Week 7 *(11.05 – 17.05)*</font>
 
-| Date | Name | Links to Github Issues | Comments |
-|---|---|---|---|
+| Date       | Name | Links to Github Issues | Comments |
+|------------|---|---|---|
 | 12.05.2024 | Marius | [#115](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/115) | |
+| 18.05.2024 | Céline | [#217](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/217), [#214](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/214), (frontend) [30](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/30) | |
 | 13.05.2024 | Ambros | [#146](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/146), [#124](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/124), [#143](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/143), [#48](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/48), [#42](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/42) (backend) | |
 | 13.05.2024 | Tam Gian | [#110](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/110), [#209](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/209) | |
 | 15.05.2024 | Tam Gian | [#112](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/112) | |
@@ -87,9 +88,8 @@
 |---|---|---|---|
 | 18.05.2024 | Marius | [#41](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/41), [#53](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/53), [#57](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/57) | |
 | 18.05.2024 | Ambros | [#79](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/79), [#74](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/74) | |
-| 19.05.2024 | Céline | [#217](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/217), [#214](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/214), (frontend) [30](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/30) | |
 | 19.05.2024 | Ambros | [#194](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/194), [#195](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/195), [#196](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/196), [#197](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/197), [#189](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/189), [#188](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/188), [#80](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/issues/80) | |
 | 21.05.2024 | Ambros | | tests for Achievements and Spaces |
 | 22.05.2024 | Marius | [#61](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/61) | |
 | 22.05.2024 | Carlos | [#38](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/61), [#191](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/191), [#192](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/192), [#193](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/193), [#199](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/199), [#127](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/127), [#186](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/186), [#133](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/133), [#130](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/130) | |
-
+| 22.05.2024 | Céline | [#129](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/129), [#62](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/62), [#10] (https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/issues/10)                                                                                                                                                                                                                                                                                               
