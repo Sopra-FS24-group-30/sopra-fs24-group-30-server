@@ -30,13 +30,15 @@ import java.util.TimerTask;
 public class GameWebSocketController {
 
 
-    /*
 
+    /*
     public static void main(String[] args){
         GameFlow gameFlow = new GameFlow();
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setPlayerId((long) i);
+            p.setUserId((long) i);
+            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
             p.setCash(100);
             p.setPosition(30L);
             ArrayList<String> itemNames = new ArrayList<>();
@@ -55,8 +57,8 @@ public class GameWebSocketController {
         System.out.println("cash: " + gameFlow.getPlayer(2).getCash());
         System.out.println("items" + gameFlow.getPlayer(2).getItemNames());
     }
+    */
 
-     */
     public static class GameTimer {
         private Timer timer;
         private long startTime;
