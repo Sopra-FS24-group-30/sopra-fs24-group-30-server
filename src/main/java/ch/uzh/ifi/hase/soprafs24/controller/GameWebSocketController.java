@@ -223,7 +223,7 @@ public class GameWebSocketController {
     public static void sendError(String error, Long gameId, Long userId){
         String userIdString = userId.toString();
         String destination = "/topic/board/error/" + gameId;
-        messagingTemplate.convertAndSend(destination,error);
+        messagingTemplate.convertAndSendToUser(userIdString,destination,error);
     }
 
     @MessageMapping("/game/{gameId}/board/test")
