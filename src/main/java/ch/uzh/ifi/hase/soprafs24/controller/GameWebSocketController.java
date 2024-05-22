@@ -7,7 +7,6 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,7 +20,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 import java.util.ArrayList;
 
@@ -177,6 +175,14 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/item")
     public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
+        if(gameFlow.isItemultused()){
+            sendError("you already used an item or Ultimate this turn",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
+        if(gameFlow.isCardDiceUsed()){
+            sendError("can't use item after a card or dice was used",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
         //extract Info from message
         JSONObject jsonObject = new JSONObject(msg);
         String itemName = jsonObject.getString("itemUsed");
@@ -191,16 +197,27 @@ public class GameWebSocketController {
         effectParas = effectComplete.getJSONObject(effectName);
         //remove the item from the players hand
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).removeItemNames(itemName);
+        UsableData usableData = UsableData.prepateData(gameFlow);
+        returnUsables(usableData,gameId);
 
+        gameFlow.setItemultused(true);
         handleEffects(effectName,effectParas, gameId);
     }
 
     @MessageMapping("/game/{gameId}/board/ultimate")
     public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
-
         GameFlow gameFlow = gameFlows.get(gameId);
-        if(gameFlow.isItemUltuSED()){
-
+        if(gameFlow.isItemultused()){
+            sendError("you already used an item or Ultimate this turn",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
+        if(gameFlow.isCardDiceUsed()){
+            sendError("can't use item after a card or dice was used",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
+        if(!gameFlow.getActivePlayer().isUltActive()){
+            sendError("you already used your ultimate, recharge with Dino Chicky Nuggie",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
         }
         //extract Info from message
         JSONObject jsonObject = new JSONObject(msg);
@@ -216,7 +233,10 @@ public class GameWebSocketController {
         effectParas = effectComplete.getJSONObject(effectName);
         //set the ultimate to disabled
         gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).setUltActive(false);
-
+        UltimateData ultimateData = new UltimateData();
+        ultimateData.prepareDataForCurrentPlayer(gameFlow);
+        returnUltToPlayer(ultimateData,gameId,gameFlow.getActivePlayer().getUserId());
+        gameFlow.setItemultused(true);
         handleEffects(effectName,effectParas,gameId);
     }
 
@@ -277,7 +297,7 @@ public class GameWebSocketController {
                 gameFlow.exchangeAll();
                 break;
             default:
-                throw new RuntimeException("the defined effect does not exist");
+                throw new RuntimeException("the defined effect: " + effect + " does not exist");
         }
     }
 
@@ -510,7 +530,12 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/board/cards")
     public void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
         String selectedCard = payload.get("usableUsed");
+        if(gameFlow.isCardDiceUsed()){
+            sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
         int count = -123;
 
         if (payload.get("choice")!= null){
@@ -521,14 +546,26 @@ public class GameWebSocketController {
         }
         JSONObject card = Getem.getCards().get(selectedCard);
         String destination = "/topic/game/" + gameId + "/board/move";
-        GameFlow gameFlow = gameFlows.get(gameId);
+        //remove card from players hand and send new data to frontend
+        gameFlow.getActivePlayer().removeCardNames(selectedCard);
+        UsableData usableData = new UsableData();
+        usableData.prepateData(gameFlow);
+        returnUsables(usableData,gameId);
+
+        gameFlow.setCardDiceUsed(true);
         messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, count));
     }
 
     @MessageMapping("/game/{gameId}/board/dice")
     public static void diceWalk(@DestinationVariable Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
+        if(gameFlow.isCardDiceUsed()){
+            sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
+            return;
+        }
         System.out.println("Received message and now getting dice: ");
         rollOneDice(gameId);
+        gameFlow.setCardDiceUsed(true);
         move(gameId);
     }
 
@@ -632,7 +669,7 @@ public class GameWebSocketController {
     }
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
-        String destination = "/topic/game/" + gameId + "/board/ultimate";
+        String destination = "/queue/game/" + gameId + "/board/ultimate";
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 

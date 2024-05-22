@@ -40,18 +40,4 @@ public class UsableData {
         usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
         return usableData;
     }
-
-    public static UsableData prepateDataItems(GameFlow gameFlow){
-        UsableData usableData = new UsableData();
-        Player[] players = gameFlow.getPlayers();
-        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
-        return usableData;
-    }
-
-    public static UsableData prepateDataCards(GameFlow gameFlow){
-        UsableData usableData = new UsableData();
-        Player[] players = gameFlow.getPlayers();
-        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
-        return usableData;
-    }
 }

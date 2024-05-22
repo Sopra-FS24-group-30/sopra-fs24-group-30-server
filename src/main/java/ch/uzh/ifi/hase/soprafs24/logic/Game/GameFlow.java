@@ -24,17 +24,21 @@ public class GameFlow {
     private int turnCounter;
     private int movesLeft;
     private boolean hasMoved;
-    private boolean itemUltuSED;
+    private boolean itemultused;
     private boolean cardDiceUsed;
     private Map<String, Object> winMsg;
     private JSONObject choices;
 
-    public boolean isItemUltuSED() {
-        return itemUltuSED;
+    public Player getActivePlayer(){
+        return this.players[this.turnPlayerId.intValue()-1];
     }
 
-    public void setItemUltuSED(boolean itemUltuSED) {
-        this.itemUltuSED = itemUltuSED;
+    public boolean isItemultused() {
+        return itemultused;
+    }
+
+    public void setItemultused(boolean itemultused) {
+        this.itemultused = itemultused;
     }
 
     public boolean isCardDiceUsed() {
@@ -114,6 +118,19 @@ public class GameFlow {
     public GameFlow(){
         //this is needed for tests and creating a GameFlow
     }
+
+    /*
+    TODO:
+     -[x] add variables to keep track of what was done
+     -[x] set in Gamewebsocketcontroller when used
+     -[x] check if already used and send error
+        -[x] items and ults only once
+        -[x] ult only if not yet used
+        -[x] cards and dice only once => care magic mushrooms count as dicethrow
+     -[] when turn is finished release before letting next player do things
+     -[x] when card/item is removed send info to frontend
+     -[x] when utlimate is used inform frontend about usageStatus
+     */
 
     /*
     possible Effects
@@ -210,7 +227,8 @@ public class GameFlow {
                 Collections.shuffle(ultiNames);
                 for(int i=0;i<4;i++){
                     players[i].setUltimate(ultiNames.get(i));
-                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    UltimateData ultimateData = new UltimateData();
+                    ultimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
                     GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
                 }
                 break;
@@ -506,7 +524,6 @@ public class GameFlow {
      * @param args parameters for the updatemoney effect
      * @return key: playerId, value: the new amount of money the player has
      */
-    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
     public void updateMoney(JSONObject args){
         String type = args.getString("type");
         Hashtable<Long,Integer> playersPayMoney;
@@ -713,6 +730,7 @@ public class GameFlow {
         for(Integer dice : diceThrows){
             totalAmount += dice;
         }
+        this.setCardDiceUsed(true);
         move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
     }
 
