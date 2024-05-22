@@ -320,13 +320,12 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/join")
-    @SendTo("/topic/gameJoined")
-    public  Map<String, Object> joinGame(String msg) {
+    public  void joinGame(String msg) {
         System.out.println(msg);
         Map<String, String> message = gameManagementService.manualParse(msg);
 
         Long gameId = Long.valueOf(message.get("gameId"));
-        String userId = message.get("playerId");
+        String userId = message.get("userId");
         boolean joined = gameManagementService.joinGame(gameId, userId);
 
         Map <String, Object> response = new HashMap<>();
@@ -337,7 +336,9 @@ public class GameWebSocketController {
             response.put("joined", false);
         }
         System.out.println("Joining");
-        return response;
+
+        String destination = "/queue/gameJoined";
+        messagingTemplate.convertAndSendToUser(userId, destination, response);
     }
 
     @MessageMapping("/game/{gameId}/lobby")
