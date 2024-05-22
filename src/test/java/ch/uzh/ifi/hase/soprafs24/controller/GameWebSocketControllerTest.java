@@ -44,7 +44,7 @@ public class GameWebSocketControllerTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setUltimate("PickPocket");
             p.setUltActive(true);

@@ -1,25 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -33,7 +20,7 @@ public class GameFlowTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -54,7 +41,7 @@ public class GameFlowTest {
             itemNames.add("OnlyFansAbo");
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);

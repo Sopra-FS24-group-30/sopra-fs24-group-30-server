@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.SimpleTimeZone;
 
 @Service
 @Transactional
@@ -82,16 +83,16 @@ public class AchievementService {
             }
         }
 
-        if (achievementProgress.getGameTimer().getElapsedTime() >= 10800){
+        if (achievementProgress.getElapsedSeconds() >= 10800){
             achievementStatus.setEndurance1(true);
             achievementStatus.setEndurance2(true);
             achievementStatus.setEndurance3(true);
         }
-        else if (achievementProgress.getGameTimer().getElapsedTime() >= 7200){
+        else if (achievementProgress.getElapsedSeconds() >= 7200){
             achievementStatus.setEndurance2(true);
             achievementStatus.setEndurance1(true);
         }
-        else if (achievementProgress.getGameTimer().getElapsedTime() >= 3600){
+        else if (achievementProgress.getElapsedSeconds() >= 3600){
             achievementStatus.setEndurance1(true);
         }
         if (achievementProgress.getWinnerAmount() == 0){
