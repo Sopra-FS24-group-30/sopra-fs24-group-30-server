@@ -242,14 +242,14 @@ public class GameWebSocketController {
 
     public static void sendError(String error, Long gameId, Long userId){
         String userIdString = userId.toString();
-        String destination = "/topic/board/error/" + gameId;
+        String destination = "/queue/board/" + gameId + "/error";
         messagingTemplate.convertAndSendToUser(userIdString,destination,error);
     }
 
     @MessageMapping("/game/{gameId}/board/test")
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
-        sendError("hello",gameFlow.getGameId(),gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).getUserId());
+        sendError("hello",gameFlow.getGameId(),gameFlow.getActivePlayer().getUserId());
     }
 
 
@@ -609,6 +609,9 @@ public class GameWebSocketController {
 
     public static void newPlayer(Map<String, Object> nextTurnMsg, Long gameId){
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
+        GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.setCardDiceUsed(false);
+        gameFlow.setItemultused(false);
         messagingTemplate.convertAndSend(destination, nextTurnMsg);
     }
 
