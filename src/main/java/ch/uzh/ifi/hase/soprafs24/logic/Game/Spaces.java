@@ -55,7 +55,7 @@ public class Spaces {
     public static void item(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoItem();
-        currPlayer.addCardNames(it);
+        currPlayer.addItemNames(it);
         toUsable(gameFlow);
     }
     public static void card(GameFlow gameFlow) {

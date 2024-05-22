@@ -750,7 +750,7 @@ public class GameFlow {
         return allCards[(int) (Math.random()*allCards.length)]; //NOSONAR
     }
 
-    private List<Long> findMostCash(Player[] players){
+    public List<Long> findMostCash(Player[] players){
         List<Long> richest = new ArrayList<>();
         int maxCash = players[0].getCash();
         for (Player player : players){
@@ -765,7 +765,7 @@ public class GameFlow {
         return richest;
     }
 
-    private Map<String, Object> nextPlayer() {
+    public Map<String, Object> nextPlayer() {
         turnPlayerId++;
         turnCounter++;
         if (turnPlayerId > 4L){
@@ -922,7 +922,7 @@ public class GameFlow {
         return mappi;
     }
 
-    private Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
+    public Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
         Set<String> winnersUsername = new HashSet<>();
@@ -964,7 +964,9 @@ public class GameFlow {
         winners.add(rich.get(randNum).toString());
         winnersUsername.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
-        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
+        System.out.println("rich are");
+        System.out.println(rich.toString());
+        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()-1].getUser().getUsername());
         reason.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         reason.add("maxCash");
 
@@ -985,7 +987,7 @@ public class GameFlow {
         LocalDateTime endTime = LocalDateTime.now();
         long timeDifferenceSeconds = this.startTime.until(endTime, ChronoUnit.SECONDS);
         for(String winner : winners){
-            Player player = getPlayer(Integer.valueOf(winner));
+                Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
