@@ -252,6 +252,21 @@ public class AchievementServiceTest {
     }
 
     @Test
+    public void testCorrectUpdateAchievementsEndurance(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().setElapsedTime(180009090909090L);
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        System.out.println("THIS IS THE TIMER:  " + gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().getElapsedTime());
+        assertTrue(saved.isEndurance1());
+        assertTrue(saved.isEndurance2());
+        assertTrue(saved.isEndurance3());
+    }
+
+    @Test
     void testEnduranceTwoCorrectUpdate(){
         User user = simplestUser();
         achievementService.saveInitialAchievements(user);

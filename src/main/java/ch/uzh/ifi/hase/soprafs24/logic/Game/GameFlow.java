@@ -1,5 +1,4 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
-
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
@@ -8,8 +7,11 @@ import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import org.json.JSONObject;
 import org.json.*;
+
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class GameFlow {
 
@@ -178,7 +180,7 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                    GameWebSocketController.handleItems(new JSONObject("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}"),gameId);
                 }
                 break;
             default:
@@ -869,6 +871,7 @@ public class GameFlow {
     public Map<String, Object> doGameOverWinCondi(Player player){
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
+        Set<String> winnersUsername = new HashSet<>();
         List<String> reason = new ArrayList<>();
 
         Long jack = 50L;
@@ -883,11 +886,14 @@ public class GameFlow {
         reason.add(player.getPlayerId().toString());
         reason.add(player.getWinCondition());
         winners.add(player.getPlayerId().toString());
+        winnersUsername.add(player.getUser().getUsername());
 
         if (!player.getTeammateId().equals(jack)){
             winners.add(player.getTeammateId().toString());
+            winnersUsername.add(getPlayer(player.getTeammateId().intValue()).getUser().getUsername());
             if (jack!=50L){
                 winners.add(jack.toString());
+                winnersUsername.add(getPlayer(jack.intValue()).getUser().getUsername());
             }
         }
         int sizeOfWinners = winners.size();
@@ -896,8 +902,10 @@ public class GameFlow {
         }
 
 
-        mappi.put("winners", winners); //NOSONAR
-        mappi.put("reason", reason); //NOSONAR
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+        mappi.put("winners", resWinner);
+        mappi.put("reason", resReason);
 
         initializeUpdates(winners);
         return mappi;
@@ -906,15 +914,21 @@ public class GameFlow {
     private Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
+        Set<String> winnersUsername = new HashSet<>();
         List<String> reason = new ArrayList<>();
 
         for (Player player : players) {
             if (player.getWinCondition().equals("JackSparrow")) {
+                Player currPlayer = players[player.getPlayerId().intValue() - 1];
+                Player currPlayerMate = players[currPlayer.getTeammateId().intValue()];
                 winners.add(players[player.getPlayerId().intValue() - 1].getTeammateId().toString());
-                reason.add(player.getPlayerId().toString());
+                winnersUsername.add(currPlayerMate.getUser().getUsername());
+                reason.add(currPlayer.getUser().getUsername());
                 reason.add("JackSparrow");
-                mappi.put("winners", winners);
-                mappi.put("reason", reason);
+                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+                String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+                mappi.put("winners", resWinner);
+                mappi.put("reason", resReason);
                 initializeUpdates(winners);
                 return mappi;
             }
@@ -922,19 +936,25 @@ public class GameFlow {
 
         if (rich.size() == 1) {
             winners.add(rich.get(0).toString());
+            winnersUsername.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             winners.add(players[rich.get(0).intValue() - 1].getTeammateId().toString());
-            reason.add(rich.get(0).toString());
+            winnersUsername.add(players[players[rich.get(0).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
+            reason.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             reason.add("maxCash");
-            mappi.put("winners", winners);
-            mappi.put("reason", reason);
+            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+            String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+            mappi.put("winners", resWinner);
+            mappi.put("reason", resReason);
             initializeUpdates(winners);
             return mappi;
         }
 
         int randNum = (int) (Math.random() * rich.size()); //NOSONAR
         winners.add(rich.get(randNum).toString());
+        winnersUsername.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
-        reason.add(rich.get(randNum).toString());
+        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
+        reason.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         reason.add("maxCash");
 
         int sizeOfWinners = winners.size();
@@ -942,8 +962,10 @@ public class GameFlow {
             player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
         }
 
-        mappi.put("winners", winners);
-        mappi.put("reason", reason);
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+        mappi.put("winners", resWinner);
+        mappi.put("reason", resReason);
         initializeUpdates(winners);
         return mappi;
     }

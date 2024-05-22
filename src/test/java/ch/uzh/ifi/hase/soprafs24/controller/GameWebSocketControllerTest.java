@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,9 @@ public class GameWebSocketControllerTest {
         return gameFlow;
     }
 
+    private JSONObject onlyFansAbo = new JSONObject("{\"itemUsed\":\"OnlyFansAbo\",\"choices\":{}}");
+    private JSONObject pickPocket = new JSONObject("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}");
+    private JSONObject freshStart = new JSONObject("{\"ultimateUsed\":\"FreshStart\",\"choices\":{}}");
     @Test
     void testUsingItemUpdatesItemUsed(){
         GameFlow gameFlow = basicGameFlowSetup();
@@ -64,7 +68,7 @@ public class GameWebSocketControllerTest {
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
 
-        GameWebSocketController.handleItems("{\"itemUsed\":\"OnlyFansAbo\",\"choices\":{}}",1L);
+        GameWebSocketController.handleItems(onlyFansAbo,1L);
 
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
     }
@@ -73,7 +77,7 @@ public class GameWebSocketControllerTest {
     void testUsingUltimateUpdatesUltUsed(){
         GameFlow gameFlow = basicGameFlowSetup();
         GameWebSocketController.addGameFlow(1L,gameFlow);
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}",1L);
+        GameWebSocketController.handleUltimate(pickPocket,1L);
 
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
     }
@@ -83,7 +87,7 @@ public class GameWebSocketControllerTest {
         GameFlow gameFlow = basicGameFlowSetup();
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}",1L);
+        GameWebSocketController.handleUltimate(freshStart,1L);
 
         assertFalse(GameWebSocketController.getGameFlow(1L).getPlayer(1).isUltActive());
     }
@@ -95,8 +99,8 @@ public class GameWebSocketControllerTest {
         gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"FreshStart\",\"choices\":{}}",1L);
-        GameWebSocketController.handleItems("{\"itemUsed\":\"OnlyFansAbo\",\"choices\":{}}",1L);
+        GameWebSocketController.handleUltimate(freshStart,1L);
+        GameWebSocketController.handleItems(onlyFansAbo,1L);
 
         assertFalse(GameWebSocketController.getGameFlow(1L).getPlayer(1).isUltActive());
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
@@ -110,8 +114,8 @@ public class GameWebSocketControllerTest {
         GameFlow gameFlow = basicGameFlowSetup();
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}",1L);
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}",1L);
+        GameWebSocketController.handleUltimate(pickPocket,1L);
+        GameWebSocketController.handleUltimate(pickPocket,1L);
 
         assertFalse(GameWebSocketController.getGameFlow(1L).getPlayer(1).isUltActive());
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
@@ -126,7 +130,7 @@ public class GameWebSocketControllerTest {
         GameWebSocketController.addGameFlow(1L, gameFlow);
 
 
-        GameWebSocketController.handleUltimate("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}", 1L);
+        GameWebSocketController.handleUltimate(pickPocket, 1L);
 
         assertFalse(GameWebSocketController.getGameFlow(1L).getPlayer(1).isUltActive());
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
