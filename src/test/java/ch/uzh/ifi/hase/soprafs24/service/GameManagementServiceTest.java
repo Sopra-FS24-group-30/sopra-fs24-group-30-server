@@ -18,7 +18,6 @@ import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
 
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -378,8 +377,7 @@ public class GameManagementServiceTest {
 
         Player player = new Player();
         player.setUserId((long)2);
-        player.setAchievementProgress(new AchievementProgress(2L), new GameWebSocketController.GameTimer());
-        player.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
+        player.setAchievementProgress(new AchievementProgress(2L));
         player.setPlayerName("user");
         player.setPlayerId((long)2);
         player.setStatus(PlayerStatus.NOT_PLAYING);

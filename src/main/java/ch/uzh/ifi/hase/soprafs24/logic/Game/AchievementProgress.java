@@ -1,6 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 public class AchievementProgress {
 
@@ -9,31 +13,15 @@ public class AchievementProgress {
     private int cashWhenWinning;
     private boolean winner;
     private boolean ultimateUsed;
-    private GameTimer gameTimer;
     private int WinnerAmount;
+    private long elapsedSeconds;
 
     public AchievementProgress(Long userId){
         this.userId = userId;
     }
 
-    public AchievementProgress(Long userId, GameTimer gameTimer){
-
-        this.userId = userId;
-        this.gameTimer = gameTimer;
-        //this.gameTimer = GameWebSocketController.getGameTimers().get(gameId);
-
-    }
-
     public Long getUserId() {
         return userId;
-    }
-
-    public GameTimer getGameTimer() {
-        return this.gameTimer;
-    }
-
-    public void setGameTimer(GameTimer gameTimer){
-        this.gameTimer = gameTimer;
     }
 
     public void setUserId(Long userId) {
@@ -78,5 +66,13 @@ public class AchievementProgress {
 
     public int getWinnerAmount(){
         return this.WinnerAmount;
+    }
+
+    public long getElapsedSeconds() {
+        return elapsedSeconds;
+    }
+
+    public void setElapsedSeconds(long elapsedSeconds) {
+        this.elapsedSeconds = elapsedSeconds;
     }
 }

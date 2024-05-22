@@ -8,7 +8,6 @@ import java.util.HashSet;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 
 public class Player {
 
@@ -39,7 +38,6 @@ public class Player {
     private boolean ultActive;
     private AchievementProgress achievementProgress;
 
-    private GameTimer gameTimer;
 
 
     public Player(){
@@ -47,16 +45,14 @@ public class Player {
     }
     public Player(Long userId){
         this.userId = userId;
-        achievementProgress = new AchievementProgress(userId, this.gameTimer);
     }
 
     public AchievementProgress getAchievementProgress() {
         return achievementProgress;
     }
 
-    public void setAchievementProgress(AchievementProgress achievementProgress, GameTimer gameTimer) {
+    public void setAchievementProgress(AchievementProgress achievementProgress) {
         this.achievementProgress = achievementProgress;
-        this.gameTimer = gameTimer;
     }
 
     public boolean isUltActive() {
@@ -72,14 +68,6 @@ public class Player {
 
     public User getUser() {
         return user;
-    }
-
-    public GameTimer getGameTimer() {
-        return this.gameTimer;
-    }
-
-    public void setGameTimer(GameTimer gameTimer) {
-        this.gameTimer = gameTimer;
     }
 
     public void setUser(User user) {
