@@ -20,6 +20,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.ArrayList;
 
@@ -38,7 +39,7 @@ public class GameWebSocketController {
             Player p = new Player();
             p.setPlayerId((long) i);
             p.setUserId((long) i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setCash(100);
             p.setPosition(30L);
             ArrayList<String> itemNames = new ArrayList<>();
@@ -59,64 +60,7 @@ public class GameWebSocketController {
     }
     */
 
-    public static class GameTimer {
-        private Timer timer;
-        private long startTime;
-        private long elapsedTime;
-        private boolean isRunning;
 
-        public GameTimer() {
-            timer = new Timer();
-            startTime = System.currentTimeMillis();
-            elapsedTime = 0;
-            isRunning = false;
-        }
-
-        public void startTimer() {
-            if (!isRunning) {
-                isRunning = true;
-                timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        elapsedTime = System.currentTimeMillis() - startTime;
-                    }
-                }, 0, 1000); // Update every second
-            }
-        }
-
-
-        public long getElapsedTime() {
-            return elapsedTime; // Return elapsed time in seconds
-        }
-
-        public void setElapsedTime(long elapsedTime) {
-            this.elapsedTime = elapsedTime; // Return elapsed time in seconds
-        }
-
-        // Check if the elapsed time exceeds the maximum time
-        public boolean maxTimeReached(long maxTimeInSeconds) {
-            return (getElapsedTime()/1000) >= maxTimeInSeconds;
-        }
-
-        public void stopTimer() {
-            if (isRunning) {
-                timer.cancel();
-                isRunning = false;
-                timer = new Timer(); // Reset the timer so it can be started again
-            }
-        }
-
-        public boolean isTimerRunning() {
-            return isRunning;
-        }
-    }
-
-    // Create a GameTimer instance for each game
-    private static Map<Long, GameTimer> gameTimers = new HashMap<>();
-
-    public static Map<Long, GameTimer> getGameTimers() {
-        return gameTimers;
-    }
 
     private static SimpMessagingTemplate messagingTemplate;
 
@@ -127,11 +71,6 @@ public class GameWebSocketController {
 
     @Autowired
     private GameManagementService gameManagementService;
-
-    //
-    public static GameTimer getGameTimerById(Long gameId){
-        return gameTimers.get(gameId);
-    }
 
     //saving the current Game at the beginning
     private static HashMap<Long,Game> allGames = new HashMap<>();
@@ -357,17 +296,6 @@ public class GameWebSocketController {
         } else{
             response.put("gameReady", false);
         }
-        GameFlow gameFlow = new GameFlow();
-        List<Player> players = allGames.get(gameId).getactive_Players();
-        for(Player player : players){
-            GameTimer timer = player.getAchievementProgress().getGameTimer();
-            timer.startTimer();
-            gameFlow.addPlayer(player);
-        }
-        GameTimer timer = new GameTimer();
-        timer.startTimer();
-        gameTimers.put(gameId, timer);
-        gameFlows.put(gameId,gameFlow);
 
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
@@ -496,7 +424,14 @@ public class GameWebSocketController {
 
         response.put("players", players);
 
-        GameFlow gameFlow = gameFlows.get(gameId);
+        GameFlow gameFlow = new GameFlow();
+        gameFlow.setStartTime(LocalDateTime.now());
+        List<Player> activePlayers = allGames.get(gameId).getactive_Players();
+        for(Player player : activePlayers){
+            gameFlow.addPlayer(player);
+        }
+        gameFlows.put(gameId,gameFlow);
+
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
         gameFlow.setCurrentTurn(1);

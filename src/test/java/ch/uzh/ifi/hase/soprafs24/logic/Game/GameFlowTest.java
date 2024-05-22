@@ -1,15 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayOutputStream;
@@ -17,18 +12,11 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.*;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -54,7 +42,7 @@ public class GameFlowTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -76,7 +64,7 @@ public class GameFlowTest {
             itemNames.add("OnlyFansAbo");
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -621,6 +609,7 @@ public class GameFlowTest {
     @Test
     public void movePLayer() {
         GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
         assertNotNull(gameFlow, "GameFlow should be properly initialized");
         Player player = gameFlow.getPlayer(1);
         assertNotNull(player, "Player should not be null");
@@ -685,6 +674,7 @@ public class GameFlowTest {
     @Test
     public void TestCardPosition() {
         GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
         Player[] players = gameFlow.getPlayers();
         players[0].setPosition(27L);
         JSONObject card = Getem.getCards().get("S1");
@@ -696,6 +686,7 @@ public class GameFlowTest {
     @Test
     public void TestCardPosition2() {
         GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
         Player[] players = gameFlow.getPlayers();
         players[0].setPosition(27L);
         JSONObject card = Getem.getCards().get("G13");

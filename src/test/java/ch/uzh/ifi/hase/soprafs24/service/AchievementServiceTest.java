@@ -10,10 +10,14 @@ import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class AchievementServiceTest {
@@ -48,14 +53,14 @@ public class AchievementServiceTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
-            p.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setWinCondition("JackSparrow");
             p.setCash(15);
             p.setPosition(30L);
             gameFlow.addPlayer(p);
         }
+        gameFlow.setStartTime(LocalDateTime.now());
         gameFlow.setTurnPlayerId(1L);
 
 
@@ -234,10 +239,13 @@ public class AchievementServiceTest {
         gameFlow.getPlayer(1).setCash(300);
         gameFlow.getPlayer(2).setCash(0);
         gameFlow.getPlayer(3).getAchievementProgress().setUltimateUsed(false);
-
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime fiveHoursBefore = localDateTime.minusHours(5);
+        gameFlow.setStartTime(fiveHoursBefore);
         HashSet<String> winners = new HashSet<>();
         winners.add("2");
         winners.add("3");
+
         gameFlow.initializeUpdates(winners);
 
         AchievementStatus savedBaron = achievementRepository.findByUserId(1L);
@@ -248,6 +256,7 @@ public class AchievementServiceTest {
 
         assertTrue(savedBaron.isBaron3());
         assertTrue(savedBaron.isBaron2());
+        assertTrue(savedBaron.isEndurance3());
         assertFalse(savedNoBaron.isBaron1());
         assertTrue(savedNoMoney.isNoMoney());
         assertTrue(savedNoUltimate.isNoUltimate());
@@ -259,12 +268,11 @@ public class AchievementServiceTest {
     public void testCorrectUpdateAchievementsEndurance(){
         User user = simplestUser();
         achievementService.saveInitialAchievements(user);
-
         GameFlow gameFlow = basicGameFlowSetup();
-        gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().setElapsedTime(180009090909090L);
+        gameFlow.getPlayer(1).getAchievementProgress().setElapsedSeconds(10800L);
+
         achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
         AchievementStatus saved = achievementRepository.findByUserId(1L);
-        System.out.println("THIS IS THE TIMER:  " + gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().getElapsedTime());
         assertTrue(saved.isEndurance1());
         assertTrue(saved.isEndurance2());
         assertTrue(saved.isEndurance3());
@@ -279,12 +287,14 @@ public class AchievementServiceTest {
         achievementService.saveAChievements(gamerAchievementStatus);
 
         GameFlow gameFlow = basicGameFlowSetup();
-        long a = 7200;
-        gameFlow.getPlayer(1).getAchievementProgress().getGameTimer().setElapsedTime(a);
+        gameFlow.getPlayer(1).getAchievementProgress().setElapsedSeconds(7200L);
+
         achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+
         AchievementStatus saved = achievementRepository.findByUserId(1L);
         assertTrue(saved.isEndurance1());
         assertTrue(saved.isEndurance2());
+        assertFalse(saved.isEndurance3());
         assertEquals(0,saved.getTotalGamesWon());
     }
 

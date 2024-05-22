@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import org.json.*;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ public class GameFlow {
     private boolean hasMoved;
     private boolean itemultused;
     private boolean cardDiceUsed;
+    private LocalDateTime startTime;
     private Map<String, Object> winMsg;
     private JSONObject choices;
 
@@ -108,6 +111,14 @@ public class GameFlow {
     }
     public void setTurnCounter(int turnCounter) {
         this.turnCounter = turnCounter;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public Map<String, Object> getWinMsg() {
@@ -955,7 +966,9 @@ public class GameFlow {
         winners.add(rich.get(randNum).toString());
         winnersUsername.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
-        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
+        System.out.println("rich are");
+        System.out.println(rich.toString());
+        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()-1].getUser().getUsername());
         reason.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         reason.add("maxCash");
 
@@ -973,12 +986,15 @@ public class GameFlow {
     }
 
     public void initializeUpdates(Set<String> winners){
+        LocalDateTime endTime = LocalDateTime.now();
+        long timeDifferenceSeconds = this.startTime.until(endTime, ChronoUnit.SECONDS);
         for(String winner : winners){
                 Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
         for(Player player : players){
+            player.getAchievementProgress().setElapsedSeconds(timeDifferenceSeconds);
             GetBean.getAchievementService().updateAchievements(player.getAchievementProgress());
         }
     }
