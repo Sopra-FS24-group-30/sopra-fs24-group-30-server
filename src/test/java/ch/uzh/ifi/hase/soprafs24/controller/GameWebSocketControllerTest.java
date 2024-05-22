@@ -58,9 +58,9 @@ public class GameWebSocketControllerTest {
         return gameFlow;
     }
 
-    private JSONObject onlyFansAbo = new JSONObject("{\"itemUsed\":\"OnlyFansAbo\",\"choices\":{}}");
-    private JSONObject pickPocket = new JSONObject("{\"ultimateUsed\":\"PickPocket\",\"choices\":{}}");
-    private JSONObject freshStart = new JSONObject("{\"ultimateUsed\":\"FreshStart\",\"choices\":{}}");
+    private JSONObject onlyFansAbo = new JSONObject("{\"used\":\"OnlyFansAbo\",\"choice\":{}}");
+    private JSONObject pickPocket = new JSONObject("{\"used\":\"PickPocket\",\"choice\":{}}");
+    private JSONObject freshStart = new JSONObject("{\"used\":\"FreshStart\",\"choice\":{}}");
     @Test
     void testUsingItemUpdatesItemUsed(){
         GameFlow gameFlow = basicGameFlowSetup();

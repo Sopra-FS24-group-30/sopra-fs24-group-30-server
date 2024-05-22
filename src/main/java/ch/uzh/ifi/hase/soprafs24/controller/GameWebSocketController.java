@@ -49,7 +49,7 @@ public class GameWebSocketController {
         gameFlow.setTurnPlayerId(1L);
         gameFlow.setGameId(123456L);
         gameFlows.put(123456L,gameFlow);
-        handleUltimate("{\"ultimateUsed\": \"Chameleon\",\"choices\": {}}",123456L);
+        handleUltimate("{\"ultimateUsed\": \"Chameleon\",\"choice\": {}}",123456L);
         System.out.println("player 1");
         System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
         System.out.println("items" + gameFlow.getPlayer(1).getItemNames());
@@ -201,10 +201,10 @@ public class GameWebSocketController {
             return;
         }
         //extract infos
-        String itemName = jsonObject.getString("itemUsed");
+        String itemName = jsonObject.getString("used");
         String effectName;
         JSONObject effectParas;
-        JSONObject choices = jsonObject.getJSONObject("choices");
+        JSONObject choices = jsonObject.getJSONObject("choice");
         gameFlow.setChoices(choices);
         //get the effect with paras
         HashMap<String, JSONObject> items = Getem.getItems();
@@ -236,8 +236,8 @@ public class GameWebSocketController {
             return;
         }
         //extract Info from message
-        String usable = jsonObject.getString("ultimateUsed");
-        JSONObject choices = jsonObject.getJSONObject("choices");
+        String usable = jsonObject.getString("used");
+        JSONObject choices = jsonObject.getJSONObject("choice");
         gameFlow.setChoices(choices);
         String effectName;
         JSONObject effectParas;
@@ -279,7 +279,6 @@ public class GameWebSocketController {
                 gameFlow.updateMoney(effectParas);
                 break;
             case "exchange":
-                //TODO: insert choices here
                 gameFlow.exchange(effectParas);
                 break;
             case "givePlayerDice":
