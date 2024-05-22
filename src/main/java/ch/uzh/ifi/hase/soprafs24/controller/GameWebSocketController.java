@@ -195,17 +195,13 @@ public class GameWebSocketController {
         handleEffects(effectName,effectParas, gameId);
     }
 
-    @MessageMapping("/game/{gameId}/board/test")
-    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
-        ArrayList<Integer> dice = new ArrayList<>();
-        dice.add(5);
-        DiceData diceData = new DiceData(dice);
-        messagingTemplate.convertAndSend("/topic/board/goal/" + gameId, diceData);
-    }
-
     @MessageMapping("/game/{gameId}/board/ultimate")
     public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
+
         GameFlow gameFlow = gameFlows.get(gameId);
+        if(gameFlow.isItemUltuSED()){
+
+        }
         //extract Info from message
         JSONObject jsonObject = new JSONObject(msg);
         String usable = jsonObject.getString("ultimateUsed");
@@ -223,6 +219,19 @@ public class GameWebSocketController {
 
         handleEffects(effectName,effectParas,gameId);
     }
+
+    public static void sendError(String error, Long gameId, Long userId){
+        String userIdString = userId.toString();
+        String destination = "/topic/board/error/" + gameId;
+        messagingTemplate.convertAndSend(destination,error);
+    }
+
+    @MessageMapping("/game/{gameId}/board/test")
+    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
+        GameFlow gameFlow = gameFlows.get(gameId);
+        sendError("hello",gameFlow.getGameId(),gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()).getUserId());
+    }
+
 
     public static void handleEffects(String effect, JSONObject effectParas, Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);

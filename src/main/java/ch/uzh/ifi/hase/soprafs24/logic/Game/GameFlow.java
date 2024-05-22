@@ -5,21 +5,11 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
-import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
-import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GameFlow {
 
@@ -34,8 +24,26 @@ public class GameFlow {
     private int turnCounter;
     private int movesLeft;
     private boolean hasMoved;
+    private boolean itemUltuSED;
+    private boolean cardDiceUsed;
     private Map<String, Object> winMsg;
     private JSONObject choices;
+
+    public boolean isItemUltuSED() {
+        return itemUltuSED;
+    }
+
+    public void setItemUltuSED(boolean itemUltuSED) {
+        this.itemUltuSED = itemUltuSED;
+    }
+
+    public boolean isCardDiceUsed() {
+        return cardDiceUsed;
+    }
+
+    public void setCardDiceUsed(boolean cardDiceUsed) {
+        this.cardDiceUsed = cardDiceUsed;
+    }
 
     public JSONObject getChoices() {
         return choices;
