@@ -349,15 +349,21 @@ public class GameManagementService {
 
     public String getWincondition(Long gameId, String userId){
         Game game = findGame(gameId);
-        Player player = findPlayerById(game, Long.valueOf(userId));
-
-        return player.getWinCondition();
+        for (Player p : game.getactive_Players()) {
+            if (p.getUserId().toString().equals(userId)) {
+                return p.getWinCondition();
+            }
+        }
+        return "nothing";
     }
 
     public String getUltimateAttack(Long gameId, String userId){
         Game game = findGame(gameId);
-        Player player = findPlayerById(game, Long.valueOf(userId));
-
-        return player.getUltimate();
+        for (Player p : game.getactive_Players()) {
+            if (p.getUserId().toString().equals(userId)) {
+                return p.getUltimate();
+            }
+        }
+        return "not nothing";
     }
 }

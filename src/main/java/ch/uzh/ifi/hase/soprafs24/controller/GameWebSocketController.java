@@ -533,17 +533,21 @@ public class GameWebSocketController {
 
         String destinationMove = "/topic/game/" + gameId + "/board/move";
         String destinationUltimate = "/queue/game/" + gameId + "/board/ultimative";
-        String destinationWinCondition = "/queue/game/" + gameId + "/board/winCondition";
         for (Player p : gameFlow.getPlayers()){
             String pUserId = p.getUserId().toString();
+
             ArrayList<Long> moveit = new ArrayList<>();
             moveit.add(p.getPosition());
             MoveData moveData = new MoveData("teleport");
             moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), moveit, 0, null);
             Map<String, Object> aha = moveData.getPlayerMoveMap(p.getPlayerId().intValue());
+
+            gameFlow.checkWinCondition(p);
+
+            Map<String, Object> ultimap = Map.of("name", p.getUltimate(), "active", false);
+
             messagingTemplate.convertAndSend(destinationMove, aha);
-            messagingTemplate.convertAndSendToUser(pUserId, destinationUltimate, p.getUltimate());
-            messagingTemplate.convertAndSendToUser(pUserId, destinationWinCondition, p.getWinCondition());
+            messagingTemplate.convertAndSendToUser(pUserId, destinationUltimate, ultimap);
         }
 
         Map<String, Long> goalData = gameFlow.setBoardGoal(gameFlow.getGameBoard().getSpaces());
@@ -695,7 +699,7 @@ public class GameWebSocketController {
     }
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
-        String destination = "/queue/game/" + gameId + "/board/ultimate";
+        String destination = "/queue/game/" + gameId + "/board/ultimative";
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 
