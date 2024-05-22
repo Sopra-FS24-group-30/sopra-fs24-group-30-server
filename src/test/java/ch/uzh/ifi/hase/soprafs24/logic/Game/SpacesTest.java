@@ -433,7 +433,72 @@ public class SpacesTest {
         assertEquals(100,gameFlow.getPlayer(2).getCash());
     }
 
+    @Test
+    void testTeleportToRandomOnlyPlayer(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setPosition(1L);
+        gameFlow.getPlayer(2).setPosition(2L);
+        spaces = Mockito.spy(spaces);
+        when(spaces.randomInt(4)).thenReturn(1);
+        when(spaces.randomInt(2)).thenReturn(1);
 
+        spaces.teleportToRandom(gameFlow);
+
+        assertEquals(2L,gameFlow.getPlayer(1).getPosition());
+        assertEquals(2L,gameFlow.getPlayer(2).getPosition());
+    }
+
+    @Test
+    void testTeleportToRandomExchangePlayers(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setPosition(1L);
+        gameFlow.getPlayer(2).setPosition(2L);
+        spaces = Mockito.spy(spaces);
+        when(spaces.randomInt(4)).thenReturn(1);
+        when(spaces.randomInt(2)).thenReturn(0);
+
+        spaces.teleportToRandom(gameFlow);
+
+        assertEquals(2L,gameFlow.getPlayer(1).getPosition());
+        assertEquals(1L,gameFlow.getPlayer(2).getPosition());
+    }
+
+    @Test
+    void testGetRandomGetBrotherAndCo(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        spaces = Mockito.spy(spaces);
+        when(spaces.randomInt(3)).thenReturn(0);
+
+        spaces.getRandomStuff(gameFlow);
+
+        assertEquals(2,gameFlow.getPlayer(1).getItemNames().size());
+        assertEquals("TheBrotherAndCo",gameFlow.getPlayer(1).getItemNames().get(1));
+        assertEquals(2,gameFlow.getPlayer(3).getItemNames().size());
+        assertEquals("TheBrotherAndCo",gameFlow.getPlayer(3).getItemNames().get(1));
+    }
+
+    @Test
+    void testGetRandomGetTwoCards(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        spaces = Mockito.spy(spaces);
+        when(spaces.randomInt(3)).thenReturn(1);
+
+        spaces.getRandomStuff(gameFlow);
+
+        assertEquals(1,gameFlow.getPlayer(1).getItemNames().size());
+        assertEquals(3,gameFlow.getPlayer(1).getCardNames().size());
+    }
+
+    @Test
+    void testGetRandomGetGoldItem(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        spaces = Mockito.spy(spaces);
+        when(spaces.randomInt(3)).thenReturn(2);
+
+        spaces.getRandomStuff(gameFlow);
+
+        assertEquals(2,gameFlow.getPlayer(1).getItemNames().size());
+    }
 
 
 }
