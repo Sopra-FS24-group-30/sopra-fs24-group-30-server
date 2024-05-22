@@ -739,7 +739,7 @@ public class GameFlow {
         return allCards[(int) (Math.random()*allCards.length)]; //NOSONAR
     }
 
-    private List<Long> findMostCash(Player[] players){
+    public List<Long> findMostCash(Player[] players){
         List<Long> richest = new ArrayList<>();
         int maxCash = players[0].getCash();
         for (Player player : players){
@@ -754,7 +754,7 @@ public class GameFlow {
         return richest;
     }
 
-    private Map<String, Object> nextPlayer() {
+    public Map<String, Object> nextPlayer() {
         turnPlayerId++;
         turnCounter++;
         if (turnPlayerId > 4L){
@@ -911,7 +911,7 @@ public class GameFlow {
         return mappi;
     }
 
-    private Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
+    public Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
         Set<String> winnersUsername = new HashSet<>();
@@ -972,7 +972,7 @@ public class GameFlow {
 
     public void initializeUpdates(Set<String> winners){
         for(String winner : winners){
-            Player player = getPlayer(Integer.valueOf(winner));
+                Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
