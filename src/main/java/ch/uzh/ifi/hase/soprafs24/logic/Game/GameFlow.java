@@ -159,6 +159,8 @@ public class GameFlow {
                     player = (int) (Math.random() * 3 + 1);
                 }while (player == turnPlayerId);
                 return players[player-1].getPosition();
+            case "random":
+                return (long) (int) (Math.random()*52+1);
             default:
                 return (long) Integer.parseInt(fieldId);
         }
