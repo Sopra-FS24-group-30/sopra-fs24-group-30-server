@@ -119,33 +119,6 @@ public class GameFlow {
         //this is needed for tests and creating a GameFlow
     }
 
-    /*
-    TODO:
-     -[x] add variables to keep track of what was done
-     -[x] set in Gamewebsocketcontroller when used
-     -[x] check if already used and send error
-        -[x] items and ults only once
-        -[x] ult only if not yet used
-        -[x] cards and dice only once => care magic mushrooms count as dicethrow
-     -[] when turn is finished release before letting next player do things
-     -[x] when card/item is removed send info to frontend
-     -[x] when utlimate is used inform frontend about usageStatus
-     */
-
-    /*
-    possible Effects
-    Items can have the following effects:
-        give a player more turns
-        update a players money
-        let a player move differently (abiegekarte)
-        get cards from other players
-        give a player a special status in case he lands on a field or overtakes other people
-        teleport players
-        exchange cards/items from players (can steal with nothing given back)
-        exchange something for usables (if getting give nothing back)
-        mute a player
-        force a player to do an action
-     */
 
 
     /**
@@ -165,7 +138,6 @@ public class GameFlow {
     }
 
 
-    //TODO: let handle choice
 
     /**
      * resolve the special fieldId to an actual ID
