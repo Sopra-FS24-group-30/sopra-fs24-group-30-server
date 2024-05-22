@@ -63,21 +63,27 @@ public class GameWebSocketController {
         private Timer timer;
         private long startTime;
         private long elapsedTime;
+        private boolean isRunning;
 
         public GameTimer() {
             timer = new Timer();
             startTime = System.currentTimeMillis();
             elapsedTime = 0;
+            isRunning = false;
         }
 
         public void startTimer() {
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    elapsedTime = System.currentTimeMillis() - startTime;
-                }
-            }, 0, 1000); // Update every second
+            if (!isRunning) {
+                isRunning = true;
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        elapsedTime = System.currentTimeMillis() - startTime;
+                    }
+                }, 0, 1000); // Update every second
+            }
         }
+
 
         public long getElapsedTime() {
             return elapsedTime / 1000; // Return elapsed time in seconds
@@ -93,7 +99,15 @@ public class GameWebSocketController {
         }
 
         public void stopTimer() {
-            timer.cancel();
+            if (isRunning) {
+                timer.cancel();
+                isRunning = false;
+                timer = new Timer(); // Reset the timer so it can be started again
+            }
+        }
+
+        public boolean isTimerRunning() {
+            return isRunning;
         }
     }
 

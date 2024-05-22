@@ -1,5 +1,4 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
-
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;

@@ -63,6 +63,11 @@ public class UserService {
         if (!savedPassword.equals(givenPassword)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is incorrect!");
         }
+        if (!user.getStatus().equals(UserStatus.OFFLINE)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already online!");
+        }
+        user.setStatus(UserStatus.ONLINE);
+        userRepository.save(user);
         return user;
     }
 
@@ -111,6 +116,15 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the user with id %s does not exist",username));
         }
         return foundUser.get();
+    }
+
+    public void logout(Long userId) {
+        User user = findUserWithId(userId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        user.setStatus(UserStatus.OFFLINE);
+        userRepository.save(user);
     }
 
     /**
