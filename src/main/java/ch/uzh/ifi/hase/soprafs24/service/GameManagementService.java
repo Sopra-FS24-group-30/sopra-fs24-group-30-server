@@ -174,9 +174,19 @@ public class GameManagementService {
      * Used to get all the players and display it in the front end
      * @param gameId the game ID to check
      */
-    public List<String> lobbyPlayers(Long gameId) {
-        List<String> plrs = getPlayersInGame(gameId);
-        return plrs;
+    public List<Object> lobbyPlayers(Long gameId) {
+        List<Object> response = new ArrayList<>();
+        Game game = findGame(gameId);
+        List<Player> playerList = game.getactive_Players();
+
+        for(Player player: playerList){
+            HashMap<String, Object> dict = new HashMap<>();
+            dict.put("username", player.getPlayerName());
+            dict.put("id", player.getUserId());
+            response.add(dict);
+        }
+
+        return response;
     }
 
     /**

@@ -271,17 +271,17 @@ public class GameManagementServiceTest {
     void test_lobbyPlayers(){
         Game game = createGameWithPlayers();
 
-        List<String> playerIds = new ArrayList<>();
-        playerIds.add("1");
+        List<Object> expected = new ArrayList<>();
 
-        game.setPlayers(playerIds);
-        game.addPlayer("3");
-        game.addPlayer("2");
+        for(int i=1; i<=4; i++){
+            HashMap<String, Object> dict = new HashMap<>();
+            String name = "player " +i;
+            dict.put("username", name);
+            dict.put("id", (long) i);
+            expected.add(dict);
+        }
 
-        playerIds.add("3");
-        playerIds.add("2");
-
-        assertEquals(playerIds, gameManagementService.getPlayersInGame(game.getId()));
+        assertEquals(expected, gameManagementService.lobbyPlayers(game.getId()));
     }
 
     @Test

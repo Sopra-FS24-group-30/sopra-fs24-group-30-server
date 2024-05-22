@@ -295,7 +295,7 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/lobby")
     public void lobby(@DestinationVariable Long gameId){
-        List<String> response = gameManagementService.lobbyPlayers(gameId);
+        List<Object> response = gameManagementService.lobbyPlayers(gameId);
 
         String destination = "/topic/players/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
