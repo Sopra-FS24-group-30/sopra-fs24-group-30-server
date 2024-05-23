@@ -253,6 +253,9 @@ public class GameWebSocketController {
             case "exchangeAll":
                 gameFlow.exchangeAll();
                 break;
+            case "rechargeUlt":
+                gameFlow.rechargeUlt(effectParas);
+                break;
             default:
                 throw new RuntimeException("the defined effect: " + effect + " does not exist");
         }
