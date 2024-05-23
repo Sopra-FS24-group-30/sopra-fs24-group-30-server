@@ -459,7 +459,7 @@ public class GameFlowTest {
         players[3].setWinCondition("JackSparrow");
         players[0].addCardNames("S2");
         players[0].addCardNames("S5");
-        players[2].addItemNames("OwoWhatisThis");
+        players[2].addItemNames("WhatsThis");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchangeAll();
@@ -468,7 +468,7 @@ public class GameFlowTest {
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OnlyFansSub");
-        expectedItemsPlayer10.add("OwoWhatisThis");
+        expectedItemsPlayer10.add("WhatsThis");
         ArrayList<String> expectedCards = new ArrayList<>();
         expectedCards.add("S2");
         expectedCards.add("S5");
@@ -490,8 +490,8 @@ public class GameFlowTest {
         players[3].setWinCondition("JackSparrow");
         players[0].addCardNames("S2");
         players[0].addCardNames("S5");
-        players[2].addItemNames("MeowYOU");
-        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("MeowYou");
+        players[2].addItemNames("ImOut");
         players[2].addItemNames("UltraMagicMushroom");
         JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
@@ -500,8 +500,8 @@ public class GameFlowTest {
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OnlyFansSub");
-        expectedItemsPlayer10.add("MeowYOU");
-        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("MeowYou");
+        expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
         assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
@@ -512,7 +512,7 @@ public class GameFlowTest {
     public void allyouritemsLESS4() {
         GameFlow gameFlow = extensiveGameFlowSetup();
         Player[] players = gameFlow.getPlayers();
-        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("ImOut");
         players[2].addItemNames("UltraMagicMushroom");
         JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
@@ -521,7 +521,7 @@ public class GameFlowTest {
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OnlyFansSub");
-        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
         assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
@@ -532,20 +532,18 @@ public class GameFlowTest {
     public void timersWork() {
         GameFlow gameFlow = extensiveGameFlowSetup();
         Player[] players = gameFlow.getPlayers();
-        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("ImOut");
         players[2].addItemNames("UltraMagicMushroom");
         JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
-        players[0].getGameTimer().startTimer();
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OnlyFansSub");
-        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
-        assertEquals(true, players[0].getGameTimer().isTimerRunning());
     }
 */
     @Test
@@ -621,23 +619,6 @@ public class GameFlowTest {
         Map<String, Object> result = new HashMap<>();
 
         assertEquals(result, gameFlow.move(1, initialPosition));
-    }
-
-
-    @Test
-    public void testPrintiMethod() throws Exception {
-        GameFlow gameFlow = extensiveGameFlowSetup();
-        gameFlow.getPlayers()[0].addCardNames("S1");
-        gameFlow.getPlayers()[0].setCash(150);
-        gameFlow.getPlayers()[0].setLostCash(10);
-
-        // Access the 'printi' method
-        Method method = GameFlow.class.getDeclaredMethod("printi");
-        method.setAccessible(true);
-        method.invoke(gameFlow);
-
-        String output = outContent.toString();
-        assertTrue(output.contains("P1:  Items: [OnlyFansSub]  Cards: [S1]  Cash: 150  Space: 30  WinCondi: Golden  LostCash: 10"), "Output should contain the expected text for player 1.");
     }
 
     @Test

@@ -1,4 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
+
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
@@ -19,6 +20,8 @@ import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.retur
 
 public class GameFlow {
 
+    public Spaces spaces = new Spaces();
+
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
 
@@ -29,6 +32,8 @@ public class GameFlow {
     private int currentTurn;
     private int turnCounter;
     private int movesLeft;
+    private boolean hadJunction = false;
+    private boolean hadJunctionForGoal = false;
     private boolean hasMoved;
     private boolean itemultused;
     private boolean cardDiceUsed;
@@ -108,6 +113,20 @@ public class GameFlow {
         return movesLeft;
     }
 
+    public void setHadJunction(boolean hadJunction) {
+        this.hadJunction = hadJunction;
+    }
+    public boolean getHadJunction(){
+        return hadJunction;
+    }
+
+    public void setHadJunctionForGoal(boolean hadJunctionForGoal) {
+        this.hadJunctionForGoal = hadJunctionForGoal;
+    }
+    public boolean getHadJunctionForGoal(){
+        return hadJunctionForGoal;
+    }
+
     public int getTurnCounter() {
         return turnCounter;
     }
@@ -134,6 +153,20 @@ public class GameFlow {
         //this is needed for tests and creating a GameFlow
     }
 
+    /*
+    possible Effects
+    Items can have the following effects:
+        give a player more turns
+        update a players money
+        let a player move differently (abiegekarte)
+        get cards from other players
+        give a player a special status in case he lands on a field or overtakes other people
+        teleport players
+        exchange cards/items from players (can steal with nothing given back)
+        exchange something for usables (if getting give nothing back)
+        mute a player
+        force a player to do an action
+     */
 
 
     /**
@@ -547,7 +580,6 @@ public class GameFlow {
     }
 
     public Map<String, Object> updateCardPositions (JSONObject args, int count){
-        //System.out.println(args);
         JSONArray movesArray = args.getJSONArray("moves");
         String category = args.getString("category");
         switch (category){ //NOSONAR
@@ -599,7 +631,7 @@ public class GameFlow {
                 }else if(amount < 0){
                     switch (type){//NOSONAR
                         case "absolute":
-                            int toPayAbsolute = checkCash(players[id-1].getPlayerId().intValue(),amount);
+                            int toPayAbsolute = getMaxPay(players[id-1].getPlayerId().intValue(),amount);
                             totalPot += toPayAbsolute;
                             players[id-1].setCash(players[id-1].getCash()+toPayAbsolute);
                             calculatedAmount.put(Long.valueOf(id),amount);
@@ -752,9 +784,8 @@ public class GameFlow {
      * @param cashAmount cash amount if has to pay negative amount
      * @return amount the player can pay
      */
-    private int checkCash(int playerId, int cashAmount){
-        int playerCash = players[playerId-1].getCash();
-        return (playerCash + cashAmount < 0) ? playerCash*-1 : cashAmount;
+    private int getMaxPay(int playerId, int cashAmount){
+        return (Math.max(cashAmount,getPlayer(playerId).getCash()*-1));
     }
 
     public void addPlayer(Player player){
@@ -802,6 +833,10 @@ public class GameFlow {
     public Map<String, Object> move(int moves, long posi) {
         Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
+        if (currPosi == 3L || currPosi == 44L){
+            player.removeItemNames("TheBrotherAndCo");
+            GameWebSocketController.specItem(toItem(player), getGameId());
+        }
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
 
@@ -815,8 +850,16 @@ public class GameFlow {
         GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi);
         String color = currentSpace.getColor();
 
+        if (getHadJunction()){
+            movies--;
+            listi.add(currPosi);
+            player.setPosition(currPosi);
+            setHadJunction(false);
+            setHadJunctionForGoal(true);
+        }
+
         //check if game is over, or player gets cash, in case the player moves 0
-        if (moves==0 && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
+        if ((moves==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
@@ -849,13 +892,15 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        if (moves == 0) {
-            (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+        printi();
+        if (moves == 0 || getHadJunctionForGoal()) {
+            setHadJunctionForGoal(false);
+            (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
-            (Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(GameWebSocketController.getGameFlow(gameId)); //NOSONAR
+            (spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
 
-        endOfWalkCheck(player, color, currentSpace, moves);
+        endOfWalkCheck(player, color, currentSpace);
 
         GameWebSocketController.newPlayer(nextPlayer(), getGameId());
 
@@ -895,6 +940,7 @@ public class GameFlow {
         if (movies <= 0){
             return Collections.emptyMap();
         }
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -983,8 +1029,6 @@ public class GameFlow {
         winners.add(rich.get(randNum).toString());
         winnersUsername.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
-        System.out.println("rich are");
-        System.out.println(rich.toString());
         winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()-1].getUser().getUsername());
         reason.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         reason.add("maxCash");
@@ -1061,7 +1105,7 @@ public class GameFlow {
         return response;
     }
 
-    public void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace, int moves){
+    public void endOfWalkCheck(Player player, String color, GameBoardSpace currentSpace){
         player.setShipAct(player.getShipTemp());
         if ("Yellow".equals(color)){
             player.addLandYellow();
@@ -1119,7 +1163,6 @@ public class GameFlow {
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-        System.out.println("reached case junction");
         GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), getGameId(), player.getUserId());
         return Collections.emptyMap();
     }
@@ -1138,6 +1181,7 @@ public class GameFlow {
             }
         }
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1145,6 +1189,7 @@ public class GameFlow {
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.specItem(toItem(player), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1164,6 +1209,7 @@ public class GameFlow {
      * in case when the move gets interrupted and needs data from frontend
      * in case when player gets an item
      */
+
     private Map<String, Object> toMove(Player player, List<Long> walkedSpaces, int initialMoves, String landedSpace){
         Map<String, Object> response = new HashMap<>();
         response.put("spaces", walkedSpaces);

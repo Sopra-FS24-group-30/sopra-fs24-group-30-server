@@ -40,7 +40,7 @@ public class GameWebSocketController {
             p.setCash(100);
             p.setPosition(30L);
             ArrayList<String> itemNames = new ArrayList<>();
-            itemNames.add("OnlyFansAbo");
+            itemNames.add("OnlyFansSub");
             p.addItemNames(itemNames);
             gameFlow.addPlayer(p);
         }
@@ -88,8 +88,6 @@ public class GameWebSocketController {
     public static void removeGame(Long lobbyId){
         allGames.remove(lobbyId);
     }
-
-    //TODO: Setup the game
 
     public static GameFlow getGameFlow(Long lobbyId){
         return gameFlows.get(lobbyId);
@@ -262,9 +260,8 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/join")
-    public  void joinGame(String msg) {
-        System.out.println(msg);
-        Map<String, String> message = gameManagementService.manualParse(msg);
+    public  void joinGame(@Payload Map<String, String> message) {
+        System.out.println(message);
 
         Long gameId = Long.valueOf(message.get("gameId"));
         String userId = message.get("userId");
@@ -437,7 +434,7 @@ public class GameWebSocketController {
 
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
-        gameFlow.setCurrentTurn(1);
+        gameFlow.setCurrentTurn(17);
         int startingPlayer = (int) (Math.random() * 4 + 1);
         gameFlow.setTurnPlayerId((long) startingPlayer);
         gameFlows.put(gameId, gameFlow);
@@ -477,7 +474,7 @@ public class GameWebSocketController {
 
             ArrayList<Long> moveit = new ArrayList<>();
             moveit.add(p.getPosition());
-            MoveData moveData = new MoveData("teleport");
+            MoveData moveData = new MoveData("start");
             moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), moveit, 0, null);
             Map<String, Object> aha = moveData.getPlayerMoveMap(p.getPlayerId().intValue());
 
@@ -526,6 +523,7 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/dice")
     public static void diceWalk(@DestinationVariable Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.setHadJunctionForGoal(false);
         if(gameFlow.isCardDiceUsed()){
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
@@ -541,6 +539,8 @@ public class GameWebSocketController {
         long selectedSpace =  Long.parseLong(payload.get("choice"));
         String destination = "/topic/game/" + gameId + "/board/move";
         GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.setHadJunction(true);
+        gameFlow.setHadJunctionForGoal(false);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
