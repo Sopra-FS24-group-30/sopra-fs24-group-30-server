@@ -47,18 +47,21 @@ public class Spaces {
     }
 
     public static void blue(GameFlow gameFlow) {
+        System.out.println("blue");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         currPlayer.addCash(4);
         toCash(currPlayer, 4, gameFlow);
     }
 
     public static void item(GameFlow gameFlow) {
+        System.out.println("item");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoItem();
         currPlayer.addItemNames(it);
         toUsable(gameFlow);
     }
     public static void card(GameFlow gameFlow) {
+        System.out.println("card");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoCard();
         currPlayer.addCardNames(it);
@@ -74,23 +77,27 @@ public class Spaces {
         boolean item = random < 2;
         if(item) {
             if (win) {
+                System.out.println("gambling item +");
                 ArrayList<String> items = new ArrayList<>();
                 for(int i=0;i<currPlayer.getItemNames().size();i++){
                     items.add(GameFlow.randoItem());
                 }
                 currPlayer.addItemNames(items);
             }else {
+                System.out.println("gambling item -");
                 currPlayer.setItemNames(new ArrayList<>());
             }
         }else {
             //cards
             if (win) {
+                System.out.println("gambling card +");
                 ArrayList<String> cards = new ArrayList<>();
                 for(int i=0;i<currPlayer.getCardNames().size();i++){
                     cards.add(GameFlow.randoCard());
                 }
                 currPlayer.addCardNames(cards);
             }else {
+                System.out.println("gambling card -");
                 currPlayer.setCardNames(new ArrayList<>());
             }
         }
@@ -103,13 +110,16 @@ public class Spaces {
         String pWin = currPlayer.getWinCondition();
         int mateId = currPlayer.getTeammateId().intValue();
         if (x==0){
+            System.out.println("catnami +69");
             currPlayer.addCash(+69);
             toCash(currPlayer, 69, gameFlow);
         } else if (x==1){
+            System.out.println("catnami wincondiTM");
             currPlayer.setWinCondition(currPlayers[mateId-1].getWinCondition());
             currPlayers[mateId-1].setWinCondition(pWin);
             toWinCondi(currPlayer, currPlayers[mateId-1], gameFlow);
         } else if (x==2){
+            System.out.println("catnami wincondiE");
             List<Integer> pRand = new ArrayList<>();
             int randi = (currPlayer.getPlayerId().intValue() + mateId)/2;
             pRand.add(randi);
@@ -120,6 +130,7 @@ public class Spaces {
             currPlayer.setWinCondition(rWin);
             toWinCondi(currPlayer, currPlayers[pRand.get(y)-1], gameFlow);
         } else{
+            System.out.println("catnami TM-69");
             int currCashMate = currPlayers[mateId-1].getCash();
             currPlayers[mateId-1].setCash(0);
             currPlayers[mateId-1].addLostCash(currCashMate);
@@ -137,10 +148,12 @@ public class Spaces {
             allCash += p.getCash();
         }
         if (x==0){
+            System.out.println("black -69");
             int cash = Math.min(69, currPlayer.getCash());
             currPlayer.addCash(-cash);
             toCash(currPlayer, -cash, gameFlow);
         } else if (x==1){
+            System.out.println("black communist");
             int partial = allCash / 4;
             int initial;
             int delta;
@@ -163,6 +176,7 @@ public class Spaces {
 //            }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else{
+            System.out.println("black allshufle");
             Collections.shuffle(allPosis);
             MoveData moveData = new MoveData("teleport");//NOSONAR
             for (Player p: currPlayers){
@@ -185,10 +199,12 @@ public class Spaces {
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(3);
         if (x==0){
+            System.out.println("red -10");
             int cash = Math.min(10, currPlayer.getCash());
             currPlayer.addCash(-cash);
             toCash(currPlayer, -cash, gameFlow);
         } else if (x==1){
+            System.out.println("red all-10");
             CashData cashData = new CashData(gameFlow);
             for (Player p : currPlayers){
                 int cash = Math.min(10, p.getCash());
@@ -205,20 +221,24 @@ public class Spaces {
 //            }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else {
+            System.out.println("red tpstart");
             teleportToTheirStart(gameFlow);
         }
     }
     public static void teleportToSpace49(GameFlow gameFlow) {
+        System.out.println("tp49");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         currPlayer.setPosition(49L);
         toMoveTp(currPlayer, gameFlow);
     }
     public static void teleportToSpace13(GameFlow gameFlow) {
+        System.out.println("tp13");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         currPlayer.setPosition(13L);
         toMoveTp(currPlayer, gameFlow);
     }
     public static void teleportToTheirStart(GameFlow gameFlow) {
+        System.out.println("tpstart");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         int pId = currPlayer.getPlayerId().intValue();
         Long theirStart = GameFlow.findStart(pId);
@@ -226,6 +246,7 @@ public class Spaces {
         toMoveTp(currPlayer, gameFlow);
     }
     public static void sellAllItems(GameFlow gameFlow) {
+        System.out.println("sellallitem");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Map<String, ArrayList<String>> allItems = getItemsByColor();
         int totalChange = 0;
@@ -244,6 +265,7 @@ public class Spaces {
         toCash(currPlayer, totalChange, gameFlow);
     }
     public static void getMushroom(GameFlow gameFlow) {
+        System.out.println("getmushroom");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(2);
@@ -259,6 +281,7 @@ public class Spaces {
         toUsable(gameFlow);
     }
     public static void mustBuyItemOrCard(GameFlow gameFlow) {
+        System.out.println("mustbuyitemcard");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         int cash = Math.min(15, currPlayer.getCash());
         if (cash>=15){
@@ -273,6 +296,7 @@ public class Spaces {
         toCash(currPlayer, -cash, gameFlow);
     }
     public static void stealOthersMoney(GameFlow gameFlow) {
+        System.out.println("stealothersmoney");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
         int cash = 0;
@@ -298,6 +322,7 @@ public class Spaces {
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
     public static void nothing(GameFlow gameFlow) {
+        System.out.println("nöthing");
         //nothing, next player
     }
     public static void found20Money(GameFlow gameFlow) {
@@ -306,14 +331,17 @@ public class Spaces {
         int x = randomInt(3);
         int mateId = currPlayer.getTeammateId().intValue();
         if (x==0){
+            System.out.println("found20 self");
             currPlayer.addCash(+20);
             toCash(currPlayer, 20, gameFlow);
         }else if (x==1) {
+            System.out.println("found20 TM");
             currPlayers[mateId - 1].addCash(+20);
             toCash(currPlayers[mateId-1], 20, gameFlow);
         }
     }
     public static void teleportToRandom(GameFlow gameFlow) {
+        System.out.println("tpToRando");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(2);
@@ -336,21 +364,25 @@ public class Spaces {
         Player[] currPlayers = gameFlow.getPlayers();
         int x = randomInt(3);
         if (x==0){
+            System.out.println("getRando Brother");
             int mateId = currPlayer.getTeammateId().intValue();
             currPlayer.addItemNames("TheBrotherAndCo"); //NOSONAR
             currPlayers[mateId-1].addItemNames("TheBrotherAndCo");
         } else if (x==1){
+            System.out.println("getRando twocard");
             int rando = randomInt(GameFlow.allCards.length);
             currPlayer.addCardNames(GameFlow.allCards[rando]);
             int randi = randomInt(GameFlow.allCards.length);
             currPlayer.addCardNames(GameFlow.allCards[randi]);
         } else {
+            System.out.println("getRando golditem");
             ArrayList<String> goldItems = getItemsByColor().get("gold");
             currPlayer.addItemNames(goldItems.get(randomInt(goldItems.size())));
         }
         toUsable(gameFlow);
     }
     public static void gift10Money(GameFlow gameFlow) {
+        System.out.println("gift10");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Player[] currPlayers = gameFlow.getPlayers();
         int mateId = currPlayer.getTeammateId().intValue();
@@ -360,6 +392,7 @@ public class Spaces {
         toCash(currPlayer, currPlayers[mateId-1], -cash, gameFlow);
     }
     public static void sellAllCards(GameFlow gameFlow) {
+        System.out.println("sellallcards");
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         Map<String, ArrayList<String>> allCards = getCardsByColor();
         int allCash = 0;
@@ -384,10 +417,12 @@ public class Spaces {
         CashData cashData = new CashData(gameFlow);
         for (Player p : currPlayers){
             if (p.getCardNames().isEmpty()){
+                System.out.println("getotherscard nocard");
                 int cash = Math.min(5, p.getCash());
                 p.addCash(-cash);
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
             } else {
+                System.out.println("getotherscard card");
                 String cardname = p.getCardNames().get(0);
                 currPlayer.addCardNames(cardname);
                 p.removeCardNames(cardname);
@@ -404,6 +439,7 @@ public class Spaces {
         toUsable(gameFlow);
     }
     public static void surpriseMF(GameFlow gameFlow) {
+        System.out.println("SURPRISE");
         catnami(gameFlow);
     }
     public static void swapCardsOrItems(GameFlow gameFlow) {
@@ -412,10 +448,12 @@ public class Spaces {
         int x = randomInt(2);
         int mateId = currPlayer.getTeammateId().intValue();
         if (x==0){
+            System.out.println("swwapcarditem item");
             ArrayList<String> temp1 = currPlayer.getItemNames();
             currPlayer.setItemNames(currPlayers[mateId-1].getItemNames());
             currPlayers[mateId-1].setItemNames(temp1);
         }else{
+            System.out.println("swwapcarditem card");
             ArrayList<String> temp2 = currPlayer.getCardNames();
             currPlayer.setCardNames(currPlayers[mateId-1].getCardNames());
             currPlayers[mateId-1].setCardNames(temp2);
@@ -431,9 +469,9 @@ public class Spaces {
      *
      */
     private static Map<String, ArrayList<String>> getItemsByColor(){
-        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo")); // "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"
-        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom")); // "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"
-        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
+        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo", "PeaceImOut", "Fusion", "WhatsThis", "IceCreamChest")); // , "TwoMushrooms"
+        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom", "TreasureChest", "ImOut", "MeowYou", "XBoxController")); // , "Stick", "BadWifi"
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub", "BestTradeDeal", "ItemsAreBelongToMe")); // , "Confusion", "GoldenSnitch", "ChickyNuggie"
         return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
     }
     private static Map<String, ArrayList<String>> getCardsByColor(){

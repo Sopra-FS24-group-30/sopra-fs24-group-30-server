@@ -58,17 +58,17 @@ public class GameWebSocketControllerTest {
         return gameFlow;
     }
 
-    private JSONObject onlyFansAbo = new JSONObject("{\"used\":\"OnlyFansAbo\",\"choice\":{}}");
+    private JSONObject onlyFansSub = new JSONObject("{\"used\":\"OnlyFansSub\",\"choice\":{}}");
     private JSONObject pickPocket = new JSONObject("{\"used\":\"PickPocket\",\"choice\":{}}");
     private JSONObject freshStart = new JSONObject("{\"used\":\"FreshStart\",\"choice\":{}}");
     @Test
     void testUsingItemUpdatesItemUsed(){
         GameFlow gameFlow = basicGameFlowSetup();
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
 
-        GameWebSocketController.handleItems(onlyFansAbo,1L);
+        GameWebSocketController.handleItems(onlyFansSub,1L);
 
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());
     }
@@ -96,11 +96,11 @@ public class GameWebSocketControllerTest {
     void testItemDoesNotTriggerAfterUltimate(){
         GameFlow gameFlow = basicGameFlowSetup();
         gameFlow.getPlayer(1).setUltimate("FreshStart");
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
         GameWebSocketController.handleUltimate(freshStart,1L);
-        GameWebSocketController.handleItems(onlyFansAbo,1L);
+        GameWebSocketController.handleItems(onlyFansSub,1L);
 
         assertFalse(GameWebSocketController.getGameFlow(1L).getPlayer(1).isUltActive());
         assertTrue(GameWebSocketController.getGameFlow(1L).isItemultused());

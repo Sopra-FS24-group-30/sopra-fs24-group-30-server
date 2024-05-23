@@ -43,7 +43,7 @@ public class GameWebSocketController {
             p.setCash(100);
             p.setPosition(30L);
             ArrayList<String> itemNames = new ArrayList<>();
-            itemNames.add("OnlyFansAbo");
+            itemNames.add("OnlyFansSub");
             p.addItemNames(itemNames);
             gameFlow.addPlayer(p);
         }
@@ -91,8 +91,6 @@ public class GameWebSocketController {
     public static void removeGame(Long lobbyId){
         allGames.remove(lobbyId);
     }
-
-    //TODO: Setup the game
 
     public static GameFlow getGameFlow(Long lobbyId){
         return gameFlows.get(lobbyId);
@@ -433,7 +431,7 @@ public class GameWebSocketController {
 
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
-        gameFlow.setCurrentTurn(1);
+        gameFlow.setCurrentTurn(17);
         int startingPlayer = (int) (Math.random() * 4 + 1);
         gameFlow.setTurnPlayerId((long) startingPlayer);
         gameFlows.put(gameId, gameFlow);
@@ -473,7 +471,7 @@ public class GameWebSocketController {
 
             ArrayList<Long> moveit = new ArrayList<>();
             moveit.add(p.getPosition());
-            MoveData moveData = new MoveData("teleport");
+            MoveData moveData = new MoveData("start");
             moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), moveit, 0, null);
             Map<String, Object> aha = moveData.getPlayerMoveMap(p.getPlayerId().intValue());
 
@@ -536,6 +534,7 @@ public class GameWebSocketController {
         long selectedSpace =  Long.parseLong(payload.get("choice"));
         String destination = "/topic/game/" + gameId + "/board/move";
         GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.setHadJunction(true);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
