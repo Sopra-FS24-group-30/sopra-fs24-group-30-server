@@ -537,14 +537,12 @@ public class GameFlowTest {
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
-        players[0].getGameTimer().startTimer();
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
-        assertEquals(true, players[0].getGameTimer().isTimerRunning());
     }
 */
     @Test

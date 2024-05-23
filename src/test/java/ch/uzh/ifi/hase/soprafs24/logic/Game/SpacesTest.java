@@ -25,11 +25,11 @@ public class SpacesTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
-            p.addItemNames("OnlyFansAbo");
+            p.addItemNames("OnlyFansSub");
             p.addCardNames("B26");
             gameFlow.addPlayer(p);
         }
@@ -319,7 +319,7 @@ public class SpacesTest {
         gameFlow.getPlayer(1).addItemNames("MagicMushroom");
         gameFlow.getPlayer(1).addItemNames("SuperMagicMushroom");
 
-        //Player sells MagicMushroom and OnlyFansAbo which are worth 5, 7 or 10 cash
+        //Player sells MagicMushroom and OnlyFansSub which are worth 5, 7 or 10 cash
         spaces.sellAllItems(gameFlow);
 
         assertEquals(122,gameFlow.getPlayer(1).getCash());
@@ -595,7 +595,7 @@ public class SpacesTest {
     @Test
     void testSwapCardsOrItemsItemSwapOddTeam(){
         GameFlow gameFlow = basicGameFlowSetup();
-        gameFlow.getPlayer(1).removeItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).removeItemNames("OnlyFansSub");
         gameFlow.getPlayer(1).addItemNames("MagicMushroom");
         spaces = Mockito.spy(spaces);
         when(spaces.randomInt(2)).thenReturn(0);
@@ -603,7 +603,7 @@ public class SpacesTest {
         spaces.swapCardsOrItems(gameFlow);
 
         assertEquals(1,gameFlow.getPlayer(1).getItemNames().size());
-        assertEquals("OnlyFansAbo",gameFlow.getPlayer(1).getItemNames().get(0));
+        assertEquals("OnlyFansSub",gameFlow.getPlayer(1).getItemNames().get(0));
         assertEquals(1,gameFlow.getPlayer(3).getItemNames().size());
         assertEquals("MagicMushroom",gameFlow.getPlayer(3).getItemNames().get(0));
     }
