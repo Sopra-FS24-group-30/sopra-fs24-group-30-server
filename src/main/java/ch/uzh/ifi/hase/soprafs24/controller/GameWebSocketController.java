@@ -259,9 +259,8 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/join")
-    public  void joinGame(String msg) {
-        System.out.println(msg);
-        Map<String, String> message = gameManagementService.manualParse(msg);
+    public  void joinGame(@Payload Map<String, String> message) {
+        System.out.println(message);
 
         Long gameId = Long.valueOf(message.get("gameId"));
         String userId = message.get("userId");
