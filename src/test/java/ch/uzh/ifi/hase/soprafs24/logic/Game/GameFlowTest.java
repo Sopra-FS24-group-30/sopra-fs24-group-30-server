@@ -62,7 +62,7 @@ public class GameFlowTest {
         for(int i=1; i<=4; i++){
 
             ArrayList<String> itemNames = new ArrayList();
-            itemNames.add("OnlyFansAbo");
+            itemNames.add("OnlyFansSub");
             Player p = new Player();
             p.setUserId((long)i);
             p.setAchievementProgress(new AchievementProgress((long) i));
@@ -89,7 +89,7 @@ public class GameFlowTest {
         assertEquals(54L,gameFlow.getPlayer(4).getPosition());
     }
     @Test
-    public void testPayAbsoluteOnlyFansAbo(){
+    public void testPayAbsoluteOnlyFansSub(){
         GameFlow gameFlow = basicGameFlowSetup();
         JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"others\":\"-7\",\"current\":\"givenAmount\"}}");
         gameFlow.updateMoney(jsonObject);
@@ -173,10 +173,10 @@ public class GameFlowTest {
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
         ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
-        expectedItemsPlayer3.add("OnlyFansAbo");
+        expectedItemsPlayer3.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -190,10 +190,10 @@ public class GameFlowTest {
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"all\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
         ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
-        expectedItemsPlayer3.add("OnlyFansAbo");
+        expectedItemsPlayer3.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -236,13 +236,13 @@ public class GameFlowTest {
     @Test
     public void testExchangeTreasureChestChoiceItem(){
         GameFlow gameFlow = extensiveGameFlowSetup();
-        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"items\":  [\"OnlyFansAbo\"]}");
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"items\":  [\"OnlyFansSub\"]}");
         gameFlow.setChoices(choices);
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"choice\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -466,8 +466,8 @@ public class GameFlowTest {
         assertEquals(2, players[2].getCardNames().size());
         assertEquals(3, players[0].getItemNames().size());
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("OwoWhatisThis");
         ArrayList<String> expectedCards = new ArrayList<>();
         expectedCards.add("S2");
@@ -498,8 +498,8 @@ public class GameFlowTest {
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("MeowYOU");
         expectedItemsPlayer10.add("MeowImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
@@ -519,8 +519,8 @@ public class GameFlowTest {
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("MeowImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
@@ -540,8 +540,8 @@ public class GameFlowTest {
         gameFlow.exchange(param);
         players[0].getGameTimer().startTimer();
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
         expectedItemsPlayer10.add("MeowImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
@@ -637,7 +637,7 @@ public class GameFlowTest {
         method.invoke(gameFlow);
 
         String output = outContent.toString();
-        assertTrue(output.contains("P1:  Items: [OnlyFansAbo]  Cards: [S1]  Cash: 150  Space: 30  WinCondi: Golden  LostCash: 10"), "Output should contain the expected text for player 1.");
+        assertTrue(output.contains("P1:  Items: [OnlyFansSub]  Cards: [S1]  Cash: 150  Space: 30  WinCondi: Golden  LostCash: 10"), "Output should contain the expected text for player 1.");
     }
 
     @Test

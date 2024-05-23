@@ -83,23 +83,16 @@ public class GameWebSocketControllerTest {
         return gameFlow;
     }
 
-    private JSONObject onlyFansAbo = new JSONObject("{\"used\":\"OnlyFansAbo\",\"choice\":{}}");
-    private JSONObject pickPocket = new JSONObject("{\"used\":\"PickPocket\",\"choice\":{}}");
-    private JSONObject freshStart = new JSONObject("{\"used\":\"FreshStart\",\"choice\":{}}");
-    private static HashMap<String, String> silverOne = new HashMap<>();
+    private String onlyFansAbo = "{\"used\":\"OnlyFansSub\",\"choice\":{}}";
+    private String pickPocket = "{\"used\":\"PickPocket\",\"choice\":{}}";
+    private String freshStart = "{\"used\":\"FreshStart\",\"choice\":{}}";
+    private static String silverOne = "{\"used\":\"S1\",\"choice\":{}}";
 
-    @BeforeAll
-    public static void createSilverOne(){
-        //DO NOT CHANGE THIS IT IS NEEDED FOR A TEST
-        //Need exactly this value to be able to predict the space where the player lands
-        silverOne.put("used","S1");
-        silverOne.put("choice","{}");
-    }
 
     @Test
     void testUsingItemUpdatesItemUsed(){
         GameFlow gameFlow = basicGameFlowSetup();
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
 
@@ -131,7 +124,7 @@ public class GameWebSocketControllerTest {
     void testItemDoesNotTriggerAfterUltimate(){
         GameFlow gameFlow = basicGameFlowSetup();
         gameFlow.getPlayer(1).setUltimate("FreshStart");
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
         GameWebSocketController.handleUltimate(freshStart,1L);
@@ -224,7 +217,7 @@ public class GameWebSocketControllerTest {
     void testDiceUpdatesStatusCardsUsedCantUseUltOrItemAfter(){
         GameFlow gameFlow = basicGameFlowSetupCards();
         gameFlow.getPlayer(1).setPosition(27L);
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
         gameFlow.setMovesLeft(1);
 
@@ -256,7 +249,7 @@ public class GameWebSocketControllerTest {
     void testDiceUpdatesStatusCardsUsedCantUseDiceOrCardAfter(){
         GameFlow gameFlow = basicGameFlowSetupCards();
         gameFlow.getPlayer(1).setPosition(27L);
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
         gameFlow.setMovesLeft(1);
 
@@ -318,7 +311,7 @@ public class GameWebSocketControllerTest {
     @Test
     void testRemoveUsedItemFromPlayer(){
         GameFlow gameFlow = basicGameFlowSetup();
-        gameFlow.getPlayer(1).addItemNames("OnlyFansAbo");
+        gameFlow.getPlayer(1).addItemNames("OnlyFansSub");
         GameWebSocketController.addGameFlow(1L,gameFlow);
 
         GameWebSocketController.handleItems(onlyFansAbo,1L);

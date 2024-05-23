@@ -195,7 +195,7 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems(new JSONObject("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}"),gameId);
+                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
                 }
                 break;
             default:

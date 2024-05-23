@@ -35,7 +35,7 @@ public class Player {
     private int lostCash;
     private HashSet<Long> landedAll = new HashSet<>();
 
-    private boolean ultActive;
+    private boolean ultActive = true;
     private AchievementProgress achievementProgress;
 
 
