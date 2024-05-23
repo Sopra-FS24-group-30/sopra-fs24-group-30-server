@@ -211,8 +211,8 @@ public class GameFlow {
         ArrayList<Integer> players = specialIds(playerId);
 
         for(Integer id : players){
-            Player player = getPlayer(id-1);
-            player.addCash(Math.max(player.getCash()*-1,Integer.parseInt(cashPay)*-1));
+            Player player = getPlayer(id);
+            player.addCash(Math.max(player.getCash()*-1,Integer.parseInt(cashPay)));
             player.setUltActive(true);
             UltimateData ultimateData = new UltimateData();
             ultimateData.prepareDataForCurrentPlayer(this);
@@ -1008,6 +1008,9 @@ public class GameFlow {
         for(String winner : winners){
                 Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
+            if(winners.contains(getPlayer(player.getTeammateId().intValue()))){
+                player.getAchievementProgress().setTeamMateWinner(true);
+            }
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
         for(Player player : players){

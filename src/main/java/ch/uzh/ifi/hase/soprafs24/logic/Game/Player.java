@@ -193,7 +193,7 @@ public class Player {
     }
 
     public Long getTeammateId() {
-        return teammateId;
+        return (playerId + 1) % 4 + 1;
     }
 
     public void setTeammateId(Long teammateId) {

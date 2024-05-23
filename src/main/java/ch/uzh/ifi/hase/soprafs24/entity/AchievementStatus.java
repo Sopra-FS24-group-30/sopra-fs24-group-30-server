@@ -37,6 +37,8 @@ public class AchievementStatus {
     private int loseStreak = 0;
     @Column
     private boolean noWinner = false;
+    @Column
+    private boolean backStabber = false;
 
     public AchievementStatus(long id){
         this.userId = id;
@@ -185,5 +187,13 @@ public class AchievementStatus {
     }
     public void setNoWinner(boolean noWinner) {
         this.noWinner = noWinner;
+    }
+
+    public boolean isBackStabber() {
+        return backStabber;
+    }
+
+    public void setBackStabber(boolean backStabber) {
+        this.backStabber = backStabber;
     }
 }

@@ -12,6 +12,7 @@ public class AchievementProgress {
     private int maxAmountCash;
     private int cashWhenWinning;
     private boolean winner;
+    private boolean teamMateWinner;
     private boolean ultimateUsed;
     private int WinnerAmount;
     private long elapsedSeconds;
@@ -50,6 +51,14 @@ public class AchievementProgress {
 
     public void setWinner(boolean winner) {
         this.winner = winner;
+    }
+
+    public boolean isTeamMateWinner() {
+        return teamMateWinner;
+    }
+
+    public void setTeamMateWinner(boolean teamMateWinner) {
+        this.teamMateWinner = teamMateWinner;
     }
 
     public boolean isUltimateUsed() {

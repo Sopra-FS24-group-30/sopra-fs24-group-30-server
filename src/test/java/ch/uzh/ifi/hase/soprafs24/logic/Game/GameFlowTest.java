@@ -36,6 +36,7 @@ public class GameFlowTest {
         System.setOut(originalOut);
     }
 
+    private JSONObject dinoChickyParas = new JSONObject("{\"player\": \"current\", \"cash\":  \"-20\"}");
     //use this for only simpe tests which concern cash, position
     private GameFlow basicGameFlowSetup(){
         GameFlow gameFlow = new GameFlow();
@@ -698,7 +699,30 @@ public class GameFlowTest {
 
     }
 
+    @Test
+    void testDinoChickyNuggyMakesUltUsableCanPay(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setUltActive(false);
+        gameFlow.getPlayer(1).setUltimate("PickPocket");
 
+        gameFlow.rechargeUlt(dinoChickyParas);
+
+        assertEquals(80,gameFlow.getPlayer(1).getCash());
+        assertTrue(gameFlow.getPlayer(1).isUltActive());
+    }
+
+    @Test
+    void testDinoChickyNuggyMakesUltUsableCantPay(){
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setUltActive(false);
+        gameFlow.getPlayer(1).setUltimate("PickPocket");
+        gameFlow.getPlayer(1).setCash(7);
+
+        gameFlow.rechargeUlt(dinoChickyParas);
+
+        assertEquals(0,gameFlow.getPlayer(1).getCash());
+        assertTrue(gameFlow.getPlayer(1).isUltActive());
+    }
 
 
 
