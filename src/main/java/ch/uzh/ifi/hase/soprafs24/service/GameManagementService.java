@@ -174,9 +174,19 @@ public class GameManagementService {
      * Used to get all the players and display it in the front end
      * @param gameId the game ID to check
      */
-    public List<String> lobbyPlayers(Long gameId) {
-        List<String> plrs = getPlayersInGame(gameId);
-        return plrs;
+    public List<Object> lobbyPlayers(Long gameId) {
+        List<Object> response = new ArrayList<>();
+        Game game = findGame(gameId);
+        List<Player> playerList = game.getactive_Players();
+
+        for(Player player: playerList){
+            HashMap<String, Object> dict = new HashMap<>();
+            dict.put("username", player.getPlayerName());
+            dict.put("id", player.getUserId());
+            response.add(dict);
+        }
+
+        return response;
     }
 
     /**
@@ -338,20 +348,28 @@ public class GameManagementService {
         System.out.println(i);
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
+        }else if(i==3){
+            changeGameStatus(gameId, GameStatus.ALMOST_READY);
         }
     }
 
     public String getWincondition(Long gameId, String userId){
         Game game = findGame(gameId);
-        Player player = findPlayerById(game, Long.valueOf(userId));
-
-        return player.getWinCondition();
+        for (Player p : game.getactive_Players()) {
+            if (p.getUserId().toString().equals(userId)) {
+                return p.getWinCondition();
+            }
+        }
+        return "nothing";
     }
 
     public String getUltimateAttack(Long gameId, String userId){
         Game game = findGame(gameId);
-        Player player = findPlayerById(game, Long.valueOf(userId));
-
-        return player.getUltimate();
+        for (Player p : game.getactive_Players()) {
+            if (p.getUserId().toString().equals(userId)) {
+                return p.getUltimate();
+            }
+        }
+        return "not nothing";
     }
 }

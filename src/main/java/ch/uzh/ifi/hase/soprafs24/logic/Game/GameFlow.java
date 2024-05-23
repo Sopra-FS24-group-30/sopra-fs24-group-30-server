@@ -5,21 +5,17 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
-import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
-import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import org.json.JSONObject;
 import org.json.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
-//@Controller
+
 public class GameFlow {
 
     public Spaces spaces = new Spaces();
@@ -34,9 +30,34 @@ public class GameFlow {
     private int currentTurn;
     private int turnCounter;
     private int movesLeft;
+    private boolean hadJunction = false;
+    private boolean hadJunctionForGoal = false;
     private boolean hasMoved;
+    private boolean itemultused;
+    private boolean cardDiceUsed;
+    private LocalDateTime startTime;
     private Map<String, Object> winMsg;
     private JSONObject choices;
+
+    public Player getActivePlayer(){
+        return this.players[this.turnPlayerId.intValue()-1];
+    }
+
+    public boolean isItemultused() {
+        return itemultused;
+    }
+
+    public void setItemultused(boolean itemultused) {
+        this.itemultused = itemultused;
+    }
+
+    public boolean isCardDiceUsed() {
+        return cardDiceUsed;
+    }
+
+    public void setCardDiceUsed(boolean cardDiceUsed) {
+        this.cardDiceUsed = cardDiceUsed;
+    }
 
     public JSONObject getChoices() {
         return choices;
@@ -90,11 +111,33 @@ public class GameFlow {
         return movesLeft;
     }
 
+    public void setHadJunction(boolean hadJunction) {
+        this.hadJunction = hadJunction;
+    }
+    public boolean getHadJunction(){
+        return hadJunction;
+    }
+
+    public void setHadJunctionForGoal(boolean hadJunctionForGoal) {
+        this.hadJunctionForGoal = hadJunctionForGoal;
+    }
+    public boolean getHadJunctionForGoal(){
+        return hadJunctionForGoal;
+    }
+
     public int getTurnCounter() {
         return turnCounter;
     }
     public void setTurnCounter(int turnCounter) {
         this.turnCounter = turnCounter;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public Map<String, Object> getWinMsg() {
@@ -141,7 +184,6 @@ public class GameFlow {
     }
 
 
-    //TODO: let handle choice
 
     /**
      * resolve the special fieldId to an actual ID
@@ -182,7 +224,7 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                    GameWebSocketController.handleItems(new JSONObject("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}"),gameId);
                 }
                 break;
             default:
@@ -203,7 +245,8 @@ public class GameFlow {
                 Collections.shuffle(ultiNames);
                 for(int i=0;i<4;i++){
                     players[i].setUltimate(ultiNames.get(i));
-                    UltimateData ultimateData = UltimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
+                    UltimateData ultimateData = new UltimateData();
+                    ultimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
                     GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
                 }
                 break;
@@ -499,7 +542,6 @@ public class GameFlow {
      * @param args parameters for the updatemoney effect
      * @return key: playerId, value: the new amount of money the player has
      */
-    //TODO: make overloaded method for choosen playerids => need to if else either get id from call or with sepcialIds
     public void updateMoney(JSONObject args){
         String type = args.getString("type");
         Hashtable<Long,Integer> playersPayMoney;
@@ -519,7 +561,6 @@ public class GameFlow {
     }
 
     public Map<String, Object> updateCardPositions (JSONObject args, int count){
-        //System.out.println(args);
         JSONArray movesArray = args.getJSONArray("moves");
         String category = args.getString("category");
         switch (category){ //NOSONAR
@@ -706,6 +747,7 @@ public class GameFlow {
         for(Integer dice : diceThrows){
             totalAmount += dice;
         }
+        this.setCardDiceUsed(true);
         move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
     }
 
@@ -739,7 +781,7 @@ public class GameFlow {
         return allCards[(int) (Math.random()*allCards.length)]; //NOSONAR
     }
 
-    private List<Long> findMostCash(Player[] players){
+    public List<Long> findMostCash(Player[] players){
         List<Long> richest = new ArrayList<>();
         int maxCash = players[0].getCash();
         for (Player player : players){
@@ -754,7 +796,7 @@ public class GameFlow {
         return richest;
     }
 
-    private Map<String, Object> nextPlayer() {
+    public Map<String, Object> nextPlayer() {
         turnPlayerId++;
         turnCounter++;
         if (turnPlayerId > 4L){
@@ -774,6 +816,7 @@ public class GameFlow {
         Long currPosi = posi;
         if (currPosi == 3L || currPosi == 44L){
             player.removeItemNames("TheBrotherAndCo");
+            GameWebSocketController.specItem(toItem(player), getGameId());
         }
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
@@ -788,8 +831,16 @@ public class GameFlow {
         GameBoardSpace nextSpace = findSpaceById(allSpaces, nextPosi);
         String color = currentSpace.getColor();
 
+        if (getHadJunction()){
+            movies--;
+            listi.add(currPosi);
+            player.setPosition(currPosi);
+            setHadJunction(false);
+            setHadJunctionForGoal(true);
+        }
+
         //check if game is over, or player gets cash, in case the player moves 0
-        if (moves==0 && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
+        if ((moves==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
@@ -823,12 +874,12 @@ public class GameFlow {
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
         printi();
-        if (moves == 0) {
+        if (moves == 0 || getHadJunctionForGoal()) {
+            setHadJunctionForGoal(false);
             (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
             (spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
-        printi();
 
         endOfWalkCheck(player, color, currentSpace);
 
@@ -860,7 +911,7 @@ public class GameFlow {
             return Collections.emptyMap();
         }
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-        GameWebSocketController.changeCash(toMoney(player, +15), getGameId());
+        GameWebSocketController.returnMoney(toMoney(player, +15), getGameId());
 
         player.addPassGoal();
 
@@ -870,12 +921,14 @@ public class GameFlow {
         if (movies <= 0){
             return Collections.emptyMap();
         }
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
     public Map<String, Object> doGameOverWinCondi(Player player){
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
+        Set<String> winnersUsername = new HashSet<>();
         List<String> reason = new ArrayList<>();
 
         Long jack = 50L;
@@ -890,11 +943,14 @@ public class GameFlow {
         reason.add(player.getPlayerId().toString());
         reason.add(player.getWinCondition());
         winners.add(player.getPlayerId().toString());
+        winnersUsername.add(player.getUser().getUsername());
 
         if (!player.getTeammateId().equals(jack)){
             winners.add(player.getTeammateId().toString());
+            winnersUsername.add(getPlayer(player.getTeammateId().intValue()).getUser().getUsername());
             if (jack!=50L){
                 winners.add(jack.toString());
+                winnersUsername.add(getPlayer(jack.intValue()).getUser().getUsername());
             }
         }
         int sizeOfWinners = winners.size();
@@ -903,48 +959,59 @@ public class GameFlow {
         }
 
 
-        mappi.put("winners", winners); //NOSONAR
-        mappi.put("reason", reason); //NOSONAR
-        System.out.println("gameOverWinCondi  " + mappi);
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+        mappi.put("winners", resWinner);
+        mappi.put("reason", resReason);
 
         initializeUpdates(winners);
         return mappi;
     }
 
-    private Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
+    public Map<String, Object> doGameOverMaxTurns(List<Long> rich) {
         Map<String, Object> mappi = new HashMap<>();
         Set<String> winners = new HashSet<>();
+        Set<String> winnersUsername = new HashSet<>();
         List<String> reason = new ArrayList<>();
 
         for (Player player : players) {
             if (player.getWinCondition().equals("JackSparrow")) {
+                Player currPlayer = players[player.getPlayerId().intValue() - 1];
+                Player currPlayerMate = players[currPlayer.getTeammateId().intValue()];
                 winners.add(players[player.getPlayerId().intValue() - 1].getTeammateId().toString());
-                reason.add(player.getPlayerId().toString());
+                winnersUsername.add(currPlayerMate.getUser().getUsername());
+                reason.add(currPlayer.getUser().getUsername());
                 reason.add("JackSparrow");
-                mappi.put("winners", winners);
-                mappi.put("reason", reason);
+                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+                String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+                mappi.put("winners", resWinner);
+                mappi.put("reason", resReason);
                 initializeUpdates(winners);
-                System.out.println("gameOverMaxTurn  " + mappi);
                 return mappi;
             }
         }
 
         if (rich.size() == 1) {
             winners.add(rich.get(0).toString());
+            winnersUsername.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             winners.add(players[rich.get(0).intValue() - 1].getTeammateId().toString());
-            reason.add(rich.get(0).toString());
+            winnersUsername.add(players[players[rich.get(0).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
+            reason.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             reason.add("maxCash");
-            mappi.put("winners", winners);
-            mappi.put("reason", reason);
+            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+            String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+            mappi.put("winners", resWinner);
+            mappi.put("reason", resReason);
             initializeUpdates(winners);
-            System.out.println("gameOverMaxTurn  " + mappi);
             return mappi;
         }
 
         int randNum = (int) (Math.random() * rich.size()); //NOSONAR
         winners.add(rich.get(randNum).toString());
+        winnersUsername.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         winners.add(players[rich.get(randNum).intValue() - 1].getTeammateId().toString());
-        reason.add(rich.get(randNum).toString());
+        winnersUsername.add(players[players[rich.get(randNum).intValue() - 1].getTeammateId().intValue()-1].getUser().getUsername());
+        reason.add(getPlayer(rich.get(randNum).intValue()).getUser().getUsername());
         reason.add("maxCash");
 
         int sizeOfWinners = winners.size();
@@ -952,20 +1019,24 @@ public class GameFlow {
             player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
         }
 
-        mappi.put("winners", winners);
-        mappi.put("reason", reason);
-        System.out.println("gameOverMaxTurn  " + mappi);
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
+        mappi.put("winners", resWinner);
+        mappi.put("reason", resReason);
         initializeUpdates(winners);
         return mappi;
     }
 
     public void initializeUpdates(Set<String> winners){
+        LocalDateTime endTime = LocalDateTime.now();
+        long timeDifferenceSeconds = this.startTime.until(endTime, ChronoUnit.SECONDS);
         for(String winner : winners){
-            Player player = getPlayer(Integer.valueOf(winner));
+                Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
         for(Player player : players){
+            player.getAchievementProgress().setElapsedSeconds(timeDifferenceSeconds);
             GetBean.getAchievementService().updateAchievements(player.getAchievementProgress());
         }
     }
@@ -1009,7 +1080,6 @@ public class GameFlow {
         } while (newGoal.equals(oldGoal.getSpaceId()));
         findSpaceById(spaces, newGoal).setIsGoal(true); //NOSONAR
         response.put("result", newGoal);
-        System.out.println("setGoal  " + response);
         return response;
     }
 
@@ -1034,24 +1104,24 @@ public class GameFlow {
 
     public void checkWinCondition(Player player){
         switch (player.getWinCondition()) { //NOSONAR
-            case "JackSparrow" -> GameWebSocketController.winCondiProgress(toWinCondi(player, 0, 1), player.getPlayerId(), getGameId());
+            case "JackSparrow" -> GameWebSocketController.winCondiProgress(toWinCondi(player, 0, 1), player.getUserId(), getGameId());
             case "Marooned" -> {
                 int mCash = (player.getCash() == 0) ? 1 : 0;
                 int mCard = (player.getCardNames().isEmpty()) ? 1 : 0;
                 int mItem = (player.getItemNames().isEmpty()) ? 1 : 0;
-                GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getPlayerId(), getGameId());
+                GameWebSocketController.winCondiProgress(toWinCondi(player, mCash + mCard + mItem, 3), player.getUserId(), getGameId());
             }
-            case "Golden" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getPlayerId(), getGameId());
-            case "Drunk" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getPlayerId(), getGameId());
-            case "ThirdTime" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getPlayerId());
+            case "Golden" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandYellow(), 7), player.getUserId(), getGameId());
+            case "Drunk" -> GameWebSocketController.winCondiProgress(toWinCondi(player,player.getLandCat(), 3), player.getUserId(), getGameId());
+            case "ThirdTime" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getPassGoal(), 2), getGameId(), player.getUserId());
             case "Company" -> {
                 int cash60 = (player.getCash()>=60) ? 1 : 0;
-                GameWebSocketController.winCondiProgress(toWinCondi(player, cash60, 1), player.getPlayerId(), getGameId());
+                GameWebSocketController.winCondiProgress(toWinCondi(player, cash60, 1), player.getUserId(), getGameId());
             }
-            case "Ship" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getShipAct(), 1), player.getPlayerId(), getGameId());
+            case "Ship" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getShipAct(), 1), player.getUserId(), getGameId());
 
-            case "Explorer" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLandedAll().size(), 61), player.getPlayerId(), getGameId());
-            case "Unlucky" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLostCash(), 40), player.getPlayerId(), getGameId());
+            case "Explorer" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLandedAll().size(), 61), player.getUserId(), getGameId());
+            case "Unlucky" -> GameWebSocketController.winCondiProgress(toWinCondi(player, player.getLostCash(), 40), player.getUserId(), getGameId());
         }
     }
 
@@ -1071,8 +1141,7 @@ public class GameFlow {
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-        System.out.println("reached case junction");
-        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+        GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), getGameId(), player.getUserId());
         return Collections.emptyMap();
     }
 
@@ -1085,11 +1154,12 @@ public class GameFlow {
                 unlock.add(nextSpace.getNext().get(0));
                 lock.add(nextSpace.getNext().get(1));
                 GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), player.getPlayerId(), getGameId());
+                GameWebSocketController.returnJunction(toJunction(player, currPosi, unlock, lock), getGameId(), player.getUserId());
                 return Collections.emptyMap();
             }
         }
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1097,6 +1167,7 @@ public class GameFlow {
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.specItem(toItem(player), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1125,7 +1196,6 @@ public class GameFlow {
         Map<String, Object> retour = new HashMap<>();
         retour.put(player.getPlayerId().toString(), response);
         retour.put("movementType", "walk");
-        System.out.println("toMovee  " + retour);
         return retour;
     }
 
@@ -1135,7 +1205,6 @@ public class GameFlow {
         response.put("currentSpace", currSpace);
         response.put("nextUnlockedSpaces", nextUnlock);
         response.put("nextLockedSpaces", nextLock);
-        System.out.println("toJuncc  " + response);
         return response;
     }
 
@@ -1147,7 +1216,6 @@ public class GameFlow {
         response.put("items", player.getItemNames());
         response.put("cards", player.getCardNames());
         retour.put(player.getPlayerId().toString(), response);
-        System.out.println("toItemm  " + retour);
         return retour;
     }
 
@@ -1156,7 +1224,6 @@ public class GameFlow {
         retour.put("name", player.getWinCondition());
         retour.put("progress", progress);
         retour.put("total", needed);
-        System.out.println("toWincondi  " + retour);
         return retour;
     }
 
@@ -1168,7 +1235,6 @@ public class GameFlow {
         details.put("newAmountOfMoney", newAmount);
         details.put("changeAmountOfMoney", change);
         response.put(player.getPlayerId().toString(), details);
-        System.out.println("toCashh  " + response);
         return response;
     }
 
@@ -1178,43 +1244,4 @@ public class GameFlow {
         System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
         System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
     }
-
-    private void run(){} //NOSONAR
-    private void setup(){} //NOSONAR
-    private void teardown(){} //NOSONAR
-    private void flow(){} //NOSONAR
-
-
-    /*
-    TODO SETUP NOSONAR
-    Player kreieren
-    Teams assigne
-    Spieler reihefolg
-    ultimate wählen
-    win condition wählen
-    Board laden/screen lade
-
-    TODO TURNS NOSONAR
-    items/ultimates
-    update to player positions
-    updates to player status
-    würfeln/cards
-    Updates to player positions
-    updates to player status
-    give turn to next player
-
-    TODO ENDGAME NOSONAR
-    update userprofiles
-    remove players
-    destroy gameboard
-    display winners
-
-    TODO ALWAYS NOSONAR
-    display cash
-    voice chat
-    display items
-    display cards
-    display other players
-    display win/ultimate (only for self)
-     */
 }

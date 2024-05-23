@@ -10,14 +10,22 @@ import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class AchievementServiceTest {
@@ -45,13 +53,14 @@ public class AchievementServiceTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameWebSocketController.GameTimer());
-            p.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
+            p.setWinCondition("JackSparrow");
             p.setCash(15);
             p.setPosition(30L);
             gameFlow.addPlayer(p);
         }
+        gameFlow.setStartTime(LocalDateTime.now());
         gameFlow.setTurnPlayerId(1L);
 
 
@@ -230,10 +239,13 @@ public class AchievementServiceTest {
         gameFlow.getPlayer(1).setCash(300);
         gameFlow.getPlayer(2).setCash(0);
         gameFlow.getPlayer(3).getAchievementProgress().setUltimateUsed(false);
-
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime fiveHoursBefore = localDateTime.minusHours(5);
+        gameFlow.setStartTime(fiveHoursBefore);
         HashSet<String> winners = new HashSet<>();
         winners.add("2");
         winners.add("3");
+
         gameFlow.initializeUpdates(winners);
 
         AchievementStatus savedBaron = achievementRepository.findByUserId(1L);
@@ -244,11 +256,160 @@ public class AchievementServiceTest {
 
         assertTrue(savedBaron.isBaron3());
         assertTrue(savedBaron.isBaron2());
+        assertTrue(savedBaron.isEndurance3());
         assertFalse(savedNoBaron.isBaron1());
         assertTrue(savedNoMoney.isNoMoney());
         assertTrue(savedNoUltimate.isNoUltimate());
         assertEquals(1,savedNoMoney.getTotalGamesWon());
 
     }
+
+    @Test
+    public void testCorrectUpdateAchievementsEndurance(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).getAchievementProgress().setElapsedSeconds(10800L);
+
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertTrue(saved.isEndurance1());
+        assertTrue(saved.isEndurance2());
+        assertTrue(saved.isEndurance3());
+    }
+
+    @Test
+    void testEnduranceTwoCorrectUpdate(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        AchievementStatus gamerAchievementStatus = new AchievementStatus(1L);
+        gamerAchievementStatus.setTotalGamesWon(0);
+        achievementService.saveAChievements(gamerAchievementStatus);
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).getAchievementProgress().setElapsedSeconds(7200L);
+
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertTrue(saved.isEndurance1());
+        assertTrue(saved.isEndurance2());
+        assertFalse(saved.isEndurance3());
+        assertEquals(0,saved.getTotalGamesWon());
+    }
+
+    @Test
+    public void testJackSparrowWinCondition() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        Set<String> winners = new HashSet<>();
+        winners.add("1");
+        gameFlow.initializeUpdates(winners);
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertEquals(true, players[0].getAchievementProgress().isWinner());
+    }
+
+    @Test
+    public void checkGameOverMaxTurns() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setTeammateId(3L);
+        gameFlow.getPlayer(2).setTeammateId(4L);
+        gameFlow.getPlayer(3).setTeammateId(1L);
+        gameFlow.getPlayer(4).setTeammateId(2L);
+        Player[] players = gameFlow.getPlayers();
+        Set<String> winners = new HashSet<>();
+        Map<String, Object> mappi = new HashMap<>();
+        List<Long> rich = new ArrayList<>();
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        User user1 = simplestUser();
+        achievementService.saveInitialAchievements(user1);
+        User user2 = simplestUser();
+        achievementService.saveInitialAchievements(user2);
+        User user3 = simplestUser();
+        achievementService.saveInitialAchievements(user3);
+        players[0].setUser(user);
+        players[1].setUser(user1);
+        players[2].setUser(user2);
+        players[3].setUser(user3);
+        rich.add(1L);
+        rich.add(2L);
+        Map<String, Object> map = new HashMap<>();
+        map.put("winners", null);
+        map.put("reason", "null has JackSparrow");
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertEquals(map.toString(), gameFlow.doGameOverMaxTurns(rich).toString());
+    }
+
+    @Test
+    public void checkGameOverMaxTurns2() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).setTeammateId(3L);
+        gameFlow.getPlayer(2).setTeammateId(4L);
+        gameFlow.getPlayer(3).setTeammateId(1L);
+        gameFlow.getPlayer(4).setTeammateId(2L);
+        Player[] players = gameFlow.getPlayers();
+        for (Player p : players) {
+            p.setWinCondition("Golden");
+        }
+        Set<String> winners = new HashSet<>();
+        Map<String, Object> mappi = new HashMap<>();
+        List<Long> rich = new ArrayList<>();
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        User user1 = simplestUser();
+        achievementService.saveInitialAchievements(user1);
+        User user2 = simplestUser();
+        achievementService.saveInitialAchievements(user2);
+        User user3 = simplestUser();
+        achievementService.saveInitialAchievements(user3);
+        players[0].setUser(user);
+        players[1].setUser(user1);
+        players[2].setUser(user2);
+        players[3].setUser(user3);
+        rich.add(1L);
+        Map<String, Object> map = new HashMap<>();
+        map.put("winners", null);
+        map.put("reason", "null has maxCash");
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertEquals(map.toString(), gameFlow.doGameOverMaxTurns(rich).toString());
+    }
+
+    @Test
+    public void checkGameOverMaxTurns3() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[0].setTeammateId(3L);
+        players[1].setTeammateId(4L);
+        players[2].setTeammateId(1L);
+        players[3].setTeammateId(2L);
+        for (Player p : players) {
+            p.setWinCondition("Golden");
+        }
+        Set<String> winners = new HashSet<>();
+        Map<String, Object> mappi = new HashMap<>();
+        List<Long> rich = new ArrayList<>();
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+        User user1 = simplestUser();
+        achievementService.saveInitialAchievements(user1);
+        User user2 = simplestUser();
+        achievementService.saveInitialAchievements(user2);
+        User user3 = simplestUser();
+        achievementService.saveInitialAchievements(user3);
+        players[0].setUser(user);
+        players[1].setUser(user1);
+        players[2].setUser(user2);
+        players[3].setUser(user3);
+        rich.add(1L);
+        rich.add(2L);
+        Map<String, Object> map = new HashMap<>();
+        map.put("winners", null);
+        map.put("reason", "null has maxCash");
+        AchievementStatus saved = achievementRepository.findByUserId(1L);
+        assertEquals(map.toString(), gameFlow.doGameOverMaxTurns(rich).toString());
+    }
+
+
 
 }

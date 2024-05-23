@@ -168,13 +168,6 @@ public class Spaces {
                 }
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), delta);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(cashData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else{
             Collections.shuffle(allPosis);
@@ -183,13 +176,6 @@ public class Spaces {
                 ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList((allPosis.get(p.getPlayerId().intValue()-1))));
                 p.setPosition(allPosis.get(p.getPlayerId().intValue()-1));
                 moveData.setPlayerSpaceMovesColour(p.getPlayerId().intValue(), posiArr, 0, null);
-            }
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(moveData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             GameWebSocketController.returnMoves(moveData, gameFlow.getGameId());
         }
@@ -209,13 +195,6 @@ public class Spaces {
                 p.addCash(-cash);
                 p.addLostCash(cash);
                 cashData.setPlayerAmountAndUpdate(p.getPlayerId().intValue(), p.getCash(), -cash);
-            }
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String jsonData = objectMapper.writeValueAsString(cashData);
-                System.out.println(jsonData);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         } else {
@@ -302,13 +281,6 @@ public class Spaces {
         }
         currPlayer.addCash(+cash);
         cashData.setPlayerAmountAndUpdate(currPlayer.getPlayerId().intValue(), currPlayer.getCash(), cash);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
     public void nothing(GameFlow gameFlow) {
@@ -407,13 +379,6 @@ public class Spaces {
                 p.removeCardNames(cardname);
             }
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
         toUsable(gameFlow);
     }
@@ -445,9 +410,9 @@ public class Spaces {
      *
      */
     private Map<String, ArrayList<String>> getItemsByColor(){
-        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo")); // "TwoMushrooms", "PeaceImOut", "Fusion", "IceCreamChest", "WhatsThis"
-        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom")); // "TreasureChest", "Stick", "ImOut", "MeowYou", "XBoxController", "BadWifi"
-        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansAbo")); // "BestTradeDeal", "ItemsAreBelongToMe", "Confusion", "GoldenSnitch", "ChickyNuggie"
+        ArrayList<String> bronze = new ArrayList<>(Arrays.asList("MagicMushroom", "TheBrotherAndCo", "PeaceImOut", "Fusion", "WhatsThis", "IceCreamChest")); // , "TwoMushrooms"
+        ArrayList<String> silver = new ArrayList<>(Arrays.asList("SuperMagicMushroom", "TreasureChest", "ImOut", "MeowYou", "XBoxController")); // , "Stick", "BadWifi"
+        ArrayList<String> goldes = new ArrayList<>(Arrays.asList("UltraMagicMushroom", "OnlyFansSub", "BestTradeDeal", "ItemsAreBelongToMe")); // , "Confusion", "GoldenSnitch", "ChickyNuggie"
         return Map.ofEntries(Map.entry("bronze", bronze), Map.entry("silver", silver), Map.entry("gold", goldes));
     }
     private Map<String, ArrayList<String>> getCardsByColor(){
@@ -470,13 +435,6 @@ public class Spaces {
 
     private void toUsable(GameFlow gameFlow){
         UsableData usableData = UsableData.prepateData(gameFlow);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(usableData);
-            System.out.println(jsonData);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         GameWebSocketController.returnUsables(usableData, gameFlow.getGameId());
     }
 
@@ -486,13 +444,6 @@ public class Spaces {
         }
         CashData cashData = new CashData(gameFlow);
         cashData.setPlayerAmountAndUpdate(player.getPlayerId().intValue(), player.getCash(), change);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
 
@@ -503,13 +454,7 @@ public class Spaces {
         CashData cashData = new CashData(gameFlow);
         cashData.setPlayerAmountAndUpdate(player1.getPlayerId().intValue(), player1.getCash(), change);
         cashData.setPlayerAmountAndUpdate(player2.getPlayerId().intValue(), player2.getCash(), -change);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(cashData);
-            System.out.println(jsonData);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+
         GameWebSocketController.returnMoney(cashData, gameFlow.getGameId());
     }
 
@@ -518,13 +463,6 @@ public class Spaces {
         ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList(player.getPosition()));
         moveData.setPlayerSpaceMovesColour(player.getPlayerId().intValue(), posiArr, 0, null);
         Map<String, Object> oneMoveData = moveData.getPlayerMoveMap(player.getPlayerId().intValue());
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(oneMoveData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         GameWebSocketController.returnMoves(oneMoveData, gameFlow.getGameId());
     }
 
@@ -535,13 +473,6 @@ public class Spaces {
         moveData.setPlayerSpaceMovesColour(player1.getPlayerId().intValue(), posiArr1, 0, null);
         moveData.setPlayerSpaceMovesColour(player2.getPlayerId().intValue(), posiArr2, 0, null);
         Map<String, Object> twoMoveData = moveData.getPlayerMoveMap(player1.getPlayerId().intValue(), player2.getPlayerId().intValue());
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonData = objectMapper.writeValueAsString(twoMoveData);
-            System.out.println(jsonData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         GameWebSocketController.returnMoves(twoMoveData, gameFlow.getGameId());
     }
 }

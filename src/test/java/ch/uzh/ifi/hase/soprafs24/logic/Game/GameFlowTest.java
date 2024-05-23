@@ -1,28 +1,40 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
-
-
+import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class GameFlowTest {
 
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+
+    @BeforeEach
+    public void setUpStreams() {
+        System.setOut(new PrintStream(outContent));
+    }
+
+    @AfterEach
+    public void restoreStreams() {
+        System.setOut(originalOut);
+    }
 
     //use this for only simpe tests which concern cash, position
     private GameFlow basicGameFlowSetup(){
@@ -30,7 +42,7 @@ public class GameFlowTest {
         for(int i=1; i<=4; i++){
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
@@ -45,16 +57,18 @@ public class GameFlowTest {
     //use this for tests that require more infos such as the players having cards and items
     private GameFlow extensiveGameFlowSetup(){
         GameFlow gameFlow = new GameFlow();
+        gameFlow.setGameBoard();
         for(int i=1; i<=4; i++){
 
             ArrayList<String> itemNames = new ArrayList();
-            itemNames.add("OnlyFansAbo");
+            itemNames.add("OnlyFansSub");
             Player p = new Player();
             p.setUserId((long)i);
-            p.setAchievementProgress(new AchievementProgress((long) i, new GameTimer()), new GameTimer());
+            p.setAchievementProgress(new AchievementProgress((long) i));
             p.setPlayerId((long) i);
             p.setCash(100);
             p.setPosition(30L);
+            p.setWinCondition("Golden");
             p.setItemNames(itemNames);
             gameFlow.addPlayer(p);
         }
@@ -74,7 +88,7 @@ public class GameFlowTest {
         assertEquals(54L,gameFlow.getPlayer(4).getPosition());
     }
     @Test
-    public void testPayAbsoluteOnlyFansAbo(){
+    public void testPayAbsoluteOnlyFansSub(){
         GameFlow gameFlow = basicGameFlowSetup();
         JSONObject jsonObject = new JSONObject("{\"type\": \"absolute\",\"amount\": {\"others\":\"-7\",\"current\":\"givenAmount\"}}");
         gameFlow.updateMoney(jsonObject);
@@ -158,10 +172,10 @@ public class GameFlowTest {
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
         ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
-        expectedItemsPlayer3.add("OnlyFansAbo");
+        expectedItemsPlayer3.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -175,10 +189,10 @@ public class GameFlowTest {
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"2\",\"type\": \"item\",\"selection\": \"all\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
         ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
-        expectedItemsPlayer3.add("OnlyFansAbo");
+        expectedItemsPlayer3.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -221,13 +235,13 @@ public class GameFlowTest {
     @Test
     public void testExchangeTreasureChestChoiceItem(){
         GameFlow gameFlow = extensiveGameFlowSetup();
-        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"items\":  [\"OnlyFansAbo\"]}");
+        JSONObject choices = new JSONObject("{\"playerId\": \"2\",\"items\":  [\"OnlyFansSub\"]}");
         gameFlow.setChoices(choices);
         JSONObject jsonObject = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"choice\",\"amount\": 1}}");
         gameFlow.exchange(jsonObject);
         ArrayList<String> expectedItemsPlayer1 = new ArrayList<>();
-        expectedItemsPlayer1.add("OnlyFansAbo");
-        expectedItemsPlayer1.add("OnlyFansAbo");
+        expectedItemsPlayer1.add("OnlyFansSub");
+        expectedItemsPlayer1.add("OnlyFansSub");
 
         assertEquals(expectedItemsPlayer1,gameFlow.getPlayer(1).getItemNames());
         assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
@@ -444,16 +458,16 @@ public class GameFlowTest {
         players[3].setWinCondition("JackSparrow");
         players[0].addCardNames("S2");
         players[0].addCardNames("S5");
-        players[2].addItemNames("OwoWhatisThis");
+        players[2].addItemNames("WhatsThis");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchangeAll();
         assertEquals(2, players[2].getCardNames().size());
         assertEquals(3, players[0].getItemNames().size());
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OwoWhatisThis");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("WhatsThis");
         ArrayList<String> expectedCards = new ArrayList<>();
         expectedCards.add("S2");
         expectedCards.add("S5");
@@ -475,18 +489,18 @@ public class GameFlowTest {
         players[3].setWinCondition("JackSparrow");
         players[0].addCardNames("S2");
         players[0].addCardNames("S5");
-        players[2].addItemNames("MeowYOU");
-        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("MeowYou");
+        players[2].addItemNames("ImOut");
         players[2].addItemNames("UltraMagicMushroom");
         JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("MeowYOU");
-        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("MeowYou");
+        expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
         assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
@@ -497,23 +511,221 @@ public class GameFlowTest {
     public void allyouritemsLESS4() {
         GameFlow gameFlow = extensiveGameFlowSetup();
         Player[] players = gameFlow.getPlayers();
-        players[2].addItemNames("MeowImOut");
+        players[2].addItemNames("ImOut");
         players[2].addItemNames("UltraMagicMushroom");
         JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
         JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
         gameFlow.setChoices(choices1);
         gameFlow.exchange(param);
         ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("OnlyFansAbo");
-        expectedItemsPlayer10.add("MeowImOut");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("ImOut");
         expectedItemsPlayer10.add("UltraMagicMushroom");
         ArrayList<String> expectedCards = new ArrayList<>();
         assertEquals(expectedItemsPlayer10.size(), players[0].getItemNames().size());
         assertEquals(0, players[2].getItemNames().size());
     }
+/*
+    @Test
+    public void timersWork() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[2].addItemNames("ImOut");
+        players[2].addItemNames("UltraMagicMushroom");
+        JSONObject param = new JSONObject("{\"give\": {\"player\": \"current\",\"type\": \"\",\"selection\": \"\", \"amount\": 0}, \"get\": {\"player\": \"choice\",\"type\": \"item\",\"selection\": \"random\",\"amount\": 4}}");
+        JSONObject choices1 = new JSONObject("{\"playerId\": \"3\"}");
+        gameFlow.setChoices(choices1);
+        gameFlow.exchange(param);
+        players[0].getGameTimer().startTimer();
+        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("OnlyFansSub");
+        expectedItemsPlayer10.add("ImOut");
+        expectedItemsPlayer10.add("UltraMagicMushroom");
+        ArrayList<String> expectedCards = new ArrayList<>();
+        assertEquals(true, players[0].getGameTimer().isTimerRunning());
+    }
+*/
+    @Test
+    public void richestPlayer() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[0].setCash(1000);
+        List<Long> playerList = new ArrayList<>();
+        playerList.add(1L);
+        assertEquals(playerList, gameFlow.findMostCash(players));
+    }
+
+    @Test
+    public void richestPlayer2() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[3].setCash(1000);
+        List<Long> playerList = new ArrayList<>();
+        playerList.add(4L);
+        assertEquals(playerList, gameFlow.findMostCash(players));
+        assertEquals(4, players.length);
+    }
+
+    @Test
+    public void nextPLayerinLine() {
+        GameFlow gameflow = extensiveGameFlowSetup();
+        gameflow.setTurnPlayerId(1L);
+        Map<String, Object> nextPlayer = gameflow.nextPlayer();
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", gameflow.getCurrentTurn());
+        retour.put("activePlayer", gameflow.getTurnPlayerId().toString());
+        assertEquals(retour, nextPlayer);
+
+    }
+
+    @Test
+    public void nextPLayerinLine2() {
+        GameFlow gameflow = extensiveGameFlowSetup();
+        gameflow.setTurnPlayerId(4L);
+        Map<String, Object> nextPlayer = gameflow.nextPlayer();
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", gameflow.getCurrentTurn());
+        retour.put("activePlayer", gameflow.getTurnPlayerId().toString());
+        assertEquals(retour, nextPlayer);
+
+    }
+
+    @Test
+    public void nextPLayerinLine3() {
+        GameFlow gameflow = extensiveGameFlowSetup();
+        gameflow.setTurnCounter(16);
+        gameflow.setCurrentTurn(2);
+        Map<String, Object> nextPlayer = gameflow.nextPlayer();
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("currentTurn", gameflow.getCurrentTurn());
+        retour.put("activePlayer", gameflow.getTurnPlayerId().toString());
+        assertEquals(retour, nextPlayer);
+        assertEquals(2, gameflow.getCurrentTurn());
+
+    }
+
+    @Test
+    public void movePLayer() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
+        assertNotNull(gameFlow, "GameFlow should be properly initialized");
+        Player player = gameFlow.getPlayer(1);
+        assertNotNull(player, "Player should not be null");
+        player.setPosition(27L);
+
+        long initialPosition = player.getPosition();
+        //Map<String, Object> result = gameFlow.move(2, initialPosition);
+        Map<String, Object> result = new HashMap<>();
+
+        assertEquals(result, gameFlow.move(1, initialPosition));
+    }
+
+    @Test
+    public void IsgameId(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.setGameId(1L);
+        assertEquals(1L, gameFlow.getGameId());
+    }
+    @Test
+    public void MovesLeft(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.setMovesLeft(3);
+        assertEquals(3, gameFlow.getMovesLeft());
+    }
+
+    @Test
+    public void TestTurnCounter(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        gameFlow.setTurnCounter(3);
+        assertEquals(3, gameFlow.getTurnCounter());
+    }
+
+    @Test
+    public void TestWinMsg() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Map<String, Object> retour = new HashMap<>();
+        Map<String, Object> winMsg = new HashMap<>();
+        winMsg.put("You won the game!", "PLayer");
+        gameFlow.setWinMsg(winMsg);
+        retour.put("You won the game!", "PLayer");
+        assertEquals(retour, gameFlow.getWinMsg());
+
+    }
+
+    @Test
+    public void TestCardPosition() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
+        Player[] players = gameFlow.getPlayers();
+        players[0].setPosition(27L);
+        JSONObject card = Getem.getCards().get("S1");
+        gameFlow.updateCardPositions(card, -123);
+        assertEquals(28L, players[0].getPosition());
+
+    }
+
+    @Test
+    public void TestCardPosition2() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(),gameFlow);
+        Player[] players = gameFlow.getPlayers();
+        players[0].setPosition(27L);
+        JSONObject card = Getem.getCards().get("G13");
+        JSONObject choices = new JSONObject();
+        choices.put("count", "1");
+        gameFlow.setChoices(choices);
+        gameFlow.updateCardPositions(card, gameFlow.getChoices().getInt("count"));
+        assertEquals(28L, players[0].getPosition());
+
+    }
 
 
+
+
+
+
+
+
+
+/*
+    @Test
+    public void moveFunc() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        for (Player player: players) {
+            player.setPosition(21L);
+            player.setWinCondition("Golden");
+        }
+        Map<String, Object> retour = gameFlow.move(2, gameFlow.getPlayer(1).getPosition());
+        assertEquals(4, players.length);
+
+    }
+/*
+    @Test
+    public void GameOverMaxTurns() {
+        GameFlow gameflow = extensiveGameFlowSetup();
+        Player[] players = gameflow.getPlayers();
+        Map<String, Object> mappi = new HashMap<>();
+        Set<String> winners = new HashSet<>();
+        Set<String> winnersUsername = new HashSet<>();
+        List<String> reason = new ArrayList<>();
+        players[0].setTeammateId(2L);
+        players[0].setCash(1000);
+        List<Long> playerList = new ArrayList<>();
+        playerList.add(players[0]);
+        gameflow.doGameOverMaxTurns(playerList);
+        Map<String, Object> nextPlayer = gameflow.nextPlayer();
+        Map<String, Object> retour = new HashMap<>();
+        retour.put("winners", gameflow.getCurrentTurn());
+        retour.put("reason", gameflow.getTurnPlayerId().toString());
+        assertEquals(retour, nextPlayer);
+        assertEquals(2, gameflow.getCurrentTurn());
+
+    }
+
+*/
 
 
 
