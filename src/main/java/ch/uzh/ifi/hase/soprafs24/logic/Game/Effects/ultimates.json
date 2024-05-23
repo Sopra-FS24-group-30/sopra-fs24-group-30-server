@@ -1,7 +1,7 @@
 {
   "PickPocket": {"updateMoney": {"type": "relative","amount": {"others":"-50","current":"givenAmount"}}},
   "FreshStart": {"updatePositions": {"player": "others","field": "start"}},
-  "Tp": {"updatePositions": {"player": "current","field": "choice"}},
+  "Tp": {"updatePositions": {"player": "current","field": "random"}},
   "Nothing": {},
   "BigShuffle": {"shuffle": {"type":  "ultimates"}},
   "Stop": {"updateTurns": {"newTurnNumber": 15}},

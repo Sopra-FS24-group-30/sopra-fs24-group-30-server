@@ -15,6 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnUltToPlayer;
+
 
 public class GameFlow {
 
@@ -196,13 +198,15 @@ public class GameFlow {
             case "start":
                 return findStart(playerId);
             case "choice": //NOSONAR
-                return Long.valueOf(choices.getString("field"));
+                return Long.valueOf(choices.getString("field"));//NOSONAR
             case "randomPlayer":
                 int player;
                 do{
                     player = (int) (Math.random() * 3 + 1);
                 }while (player == turnPlayerId);
                 return players[player-1].getPosition();
+            case "random"://NOSONAR
+                return (long) (int) (Math.random()*52+1);
             default:
                 return (long) Integer.parseInt(fieldId);
         }
@@ -224,7 +228,7 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems(new JSONObject("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}"),gameId);
+                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
                 }
                 break;
             default:
@@ -232,6 +236,21 @@ public class GameFlow {
 
         }
 
+    }
+
+    public void rechargeUlt(JSONObject args){
+        String playerId = args.getString("player");//NOSONAR
+        String cashPay = args.getString("cash");
+        ArrayList<Integer> players = specialIds(playerId);
+
+        for(Integer id : players){
+            Player player = getPlayer(id);
+            player.addCash(Math.max(player.getCash()*-1,Integer.parseInt(cashPay)));
+            player.setUltActive(true);
+            UltimateData ultimateData = new UltimateData();
+            ultimateData.prepareDataForCurrentPlayer(this);
+            returnUltToPlayer(ultimateData,gameId,player.getUserId());
+        }
     }
 
     public void shuffle(JSONObject args){
@@ -247,7 +266,7 @@ public class GameFlow {
                     players[i].setUltimate(ultiNames.get(i));
                     UltimateData ultimateData = new UltimateData();
                     ultimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
-                    GameWebSocketController.returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
+                    returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
                 }
                 break;
             default:
@@ -356,7 +375,7 @@ public class GameFlow {
      */
 
     public void exchangeAll(){
-        String playerId = getChoices().getString("playerId");
+        String playerId = getChoices().getString("playerId");//NOSONAR
         Player otherplayey = players[Integer.parseInt(playerId)-1];
         Player currentPlayer = players[(int) (long) getTurnPlayerId()-1];
         ArrayList<String> otherPlayerItems = otherplayey.getItemNames();
@@ -960,9 +979,9 @@ public class GameFlow {
 
 
         String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
-        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
-        mappi.put("winners", resWinner);
-        mappi.put("reason", resReason);
+        String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));//NOSONAR
+        mappi.put("winners", resWinner);//NOSONAR
+        mappi.put("reason", resReason);//NOSONAR
 
         initializeUpdates(winners);
         return mappi;
@@ -1033,6 +1052,9 @@ public class GameFlow {
         for(String winner : winners){
                 Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
+            if(winners.contains(getPlayer(player.getTeammateId().intValue()))){
+                player.getAchievementProgress().setTeamMateWinner(true);
+            }
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
         }
         for(Player player : players){

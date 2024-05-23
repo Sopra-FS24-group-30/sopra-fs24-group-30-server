@@ -74,6 +74,10 @@ public class AchievementService {
             if(achievementStatus.getWinStreak() >= 3){
                 achievementStatus.setGamer(true);
             }
+            //update for Backstabber
+            if(achievementProgress.isTeamMateWinner()){
+                achievementStatus.setBackStabber(true);
+            }
         }else {
             //update for gamer and doingYourBest
             achievementStatus.setWinStreak(0);

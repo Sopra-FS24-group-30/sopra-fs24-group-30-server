@@ -410,6 +410,20 @@ public class AchievementServiceTest {
         assertEquals(map.toString(), gameFlow.doGameOverMaxTurns(rich).toString());
     }
 
+    @Test
+    void testBackStabberFulfilled(){
+        User user = simplestUser();
+        achievementService.saveInitialAchievements(user);
+
+        GameFlow gameFlow = basicGameFlowSetup();
+        gameFlow.getPlayer(1).getAchievementProgress().setWinner(true);
+        gameFlow.getPlayer(1).getAchievementProgress().setTeamMateWinner(true);
+
+        achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
+
+        AchievementStatus savedBackstabber = achievementRepository.findByUserId(1L);
+        assertTrue(savedBackstabber.isBackStabber());
+    }
 
 
 }

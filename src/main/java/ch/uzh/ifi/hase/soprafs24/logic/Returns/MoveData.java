@@ -19,7 +19,7 @@ public class MoveData {
     @JsonProperty("4")
     private PlayerMove player4 = new PlayerMove();
 
-    private String movetype;
+    private String movetype = "teleport";
     private static String response = "can only accept values from 1 to 4 you supplied: ";
 
     public MoveData(ArrayList<Long> playerPos1, ArrayList<Long> playerPos2, ArrayList<Long> playerPos3, ArrayList<Long> playerPos4){

@@ -17,15 +17,12 @@ import ch.uzh.ifi.hase.soprafs24.constant.PlayerStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.ArrayList;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 @Controller
 public class GameWebSocketController {
@@ -126,8 +123,8 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/items")
-    public static void handleItems(JSONObject jsonObject, @DestinationVariable("gameId") Long gameId){
-        //System.out.println(msg);
+    public static void handleItems(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject payLoad = new JSONObject(msg);
         GameFlow gameFlow = gameFlows.get(gameId);
         if(gameFlow.isItemultused()){
             sendError("you already used an item or Ultimate this turn",gameId,gameFlow.getActivePlayer().getUserId());
@@ -138,10 +135,10 @@ public class GameWebSocketController {
             return;
         }
         //extract infos
-        String itemName = jsonObject.getString("used");
+        String itemName = payLoad.getString("used");
         String effectName;
         JSONObject effectParas;
-        JSONObject choices = jsonObject.getJSONObject("choice");
+        JSONObject choices = payLoad.getJSONObject("choice");
         gameFlow.setChoices(choices);
         //get the effect with paras
         HashMap<String, JSONObject> items = Getem.getItems();
@@ -158,7 +155,8 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/ultimate")
-    public static void handleUltimate(JSONObject jsonObject, @DestinationVariable("gameId") Long gameId){
+    public static void handleUltimate(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject payLoad = new JSONObject(msg);
         GameFlow gameFlow = gameFlows.get(gameId);
         if(gameFlow.isItemultused()){
             sendError("you already used an item or Ultimate this turn",gameId,gameFlow.getActivePlayer().getUserId());
@@ -173,8 +171,8 @@ public class GameWebSocketController {
             return;
         }
         //extract Info from message
-        String usable = jsonObject.getString("used");
-        JSONObject choices = jsonObject.getJSONObject("choice");
+        String usable = payLoad.getString("used");
+        JSONObject choices = payLoad.getJSONObject("choice");
         gameFlow.setChoices(choices);
         String effectName;
         JSONObject effectParas;
@@ -194,8 +192,10 @@ public class GameWebSocketController {
 
     public static void sendError(String error, Long gameId, Long userId){
         String userIdString = userId.toString();
-        String destination = "/queue/board/" + gameId + "/error";
-        messagingTemplate.convertAndSendToUser(userIdString,destination,error);
+        ErrorData errorData = new ErrorData();
+        errorData.setErrorMessage(error);
+        String destination = "/queue/game/" + gameId + "/board/error";
+        messagingTemplate.convertAndSendToUser(userIdString,destination,errorData);
     }
 
     @MessageMapping("/game/{gameId}/board/test")
@@ -250,6 +250,9 @@ public class GameWebSocketController {
                 break;
             case "exchangeAll":
                 gameFlow.exchangeAll();
+                break;
+            case "rechargeUlt":
+                gameFlow.rechargeUlt(effectParas);
                 break;
             default:
                 throw new RuntimeException("the defined effect: " + effect + " does not exist");
@@ -489,20 +492,21 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/cards")
-    public void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
+    public static void handleCardPosition(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject payload = new JSONObject(msg);
         GameFlow gameFlow = gameFlows.get(gameId);
-        String selectedCard = payload.get("usableUsed");
+        String selectedCard = payload.getString("used");
         if(gameFlow.isCardDiceUsed()){
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
         }
-        int count = -123;
+        int count;
 
-        if (payload.get("choice")!= null){
-            JSONObject choiceJson = new JSONObject(payload.get("choice"));
-            Map<String, Object> choice = choiceJson.toMap();
-            // Extract the count value from the choice map
-            count = (int) choice.getOrDefault("count", -123);
+        JSONObject choice = payload.getJSONObject("choice");
+        if(selectedCard.startsWith("G")){
+            count = choice.getInt("count");
+        }else{
+            count = 0;
         }
         JSONObject card = Getem.getCards().get(selectedCard);
         String destination = "/topic/game/" + gameId + "/board/move";
@@ -643,4 +647,6 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
         messagingTemplate.convertAndSend(destination,turnActiveData);
     }
+
+
 }
