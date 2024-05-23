@@ -111,9 +111,15 @@ public class GameFlow {
     public void setHadJunction(boolean hadJunction) {
         this.hadJunction = hadJunction;
     }
+    public boolean getHadJunction(){
+        return hadJunction;
+    }
 
-    public void setHadJunctionForGoal(boolean hadJunction) {
-        this.hadJunction = hadJunction;
+    public void setHadJunctionForGoal(boolean hadJunctionForGoal) {
+        this.hadJunctionForGoal = hadJunctionForGoal;
+    }
+    public boolean getHadJunctionForGoal(){
+        return hadJunctionForGoal;
     }
 
     public int getTurnCounter() {
@@ -808,7 +814,7 @@ public class GameFlow {
         String color = currentSpace.getColor();
 
         printi();
-        if (hadJunction){
+        if (getHadJunction()){
             movies--;
             listi.add(currPosi);
             player.setPosition(currPosi);
@@ -818,7 +824,7 @@ public class GameFlow {
         }
 
         //check if game is over, or player gets cash, in case the player moves 0
-        if ((moves==0 || hadJunctionForGoal) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
+        if ((moves==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
@@ -851,11 +857,12 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        System.out.println("currentSpace: " + currentSpace.getSpaceId() + "   onspace: " + currentSpace.getOnSpace());
-        if (moves == 0 || hadJunctionForGoal) {
+        if (moves == 0 || getHadJunctionForGoal()) {
+            System.out.println("aaaaa currentSpace: " + currentSpace.getSpaceId() + "   onspace: " + currentSpace.getOnSpace());
             setHadJunctionForGoal(false);
             (Spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
+            System.out.println("bbbb currentSpace: " + currentSpace.getSpaceId() + "   onspace: " + currentSpace.getOnSpace());
             (Spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
         printi();
@@ -901,6 +908,7 @@ public class GameFlow {
         if (movies <= 0){
             return Collections.emptyMap();
         }
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1147,6 +1155,7 @@ public class GameFlow {
             }
         }
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 
@@ -1154,6 +1163,7 @@ public class GameFlow {
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.specItem(toItem(player), getGameId());
+        setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
 

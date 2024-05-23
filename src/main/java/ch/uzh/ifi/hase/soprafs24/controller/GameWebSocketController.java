@@ -519,6 +519,7 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/dice")
     public static void diceWalk(@DestinationVariable Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
+        gameFlow.setHadJunctionForGoal(false);
         if(gameFlow.isCardDiceUsed()){
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
@@ -535,6 +536,7 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/move";
         GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.setHadJunction(true);
+        gameFlow.setHadJunctionForGoal(false);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
