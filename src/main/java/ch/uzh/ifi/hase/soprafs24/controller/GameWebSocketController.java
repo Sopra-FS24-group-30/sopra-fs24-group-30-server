@@ -495,9 +495,9 @@ public class GameWebSocketController {
     }
 
     @MessageMapping("/game/{gameId}/board/cards")
-    public void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
+    public static void handleCardPosition(@Payload Map<String, String> payload, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
-        String selectedCard = payload.get("usableUsed");
+        String selectedCard = payload.get("used");
         if(gameFlow.isCardDiceUsed()){
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
@@ -646,4 +646,6 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
         messagingTemplate.convertAndSend(destination,turnActiveData);
     }
+
+
 }
