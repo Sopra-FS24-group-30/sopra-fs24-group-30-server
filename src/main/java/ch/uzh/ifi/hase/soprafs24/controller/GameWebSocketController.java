@@ -582,11 +582,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, nextTurnMsg);
     }
 
-    public static void specItem(Map<String, Object> getItemMsg, Long gameId){
-        String destination = "/topic/game/" + gameId + "/board/usables";
-        messagingTemplate.convertAndSend(destination, getItemMsg);
-    }
-
     public static void winCondiProgress(Map<String, Object> winCondiUpdate, Long userId, Long gameId){
         String destination = "/queue/game/" + gameId + "/board/winCondition";
         messagingTemplate.convertAndSendToUser(userId.toString(), destination, winCondiUpdate);
@@ -618,6 +613,11 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSend(destination, usableData);
     }
 
+    public static void returnUsables(Map<String, Object> getItemMsg, Long gameId){
+        String destination = "/topic/game/" + gameId + "/board/usables";
+        messagingTemplate.convertAndSend(destination, getItemMsg);
+    }
+
     public static void returnDice(DiceData diceData, Long gameId){
         String destination = "/topic/game/" + gameId + "/board/dice";
         messagingTemplate.convertAndSend(destination, diceData);
@@ -647,6 +647,4 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
         messagingTemplate.convertAndSend(destination,turnActiveData);
     }
-
-
 }

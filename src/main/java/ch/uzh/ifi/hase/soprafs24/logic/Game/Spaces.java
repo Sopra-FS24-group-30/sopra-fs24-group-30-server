@@ -57,13 +57,13 @@ public class Spaces {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoItem();
         currPlayer.addItemNames(it);
-        toUsable(gameFlow);
+        toUsable(gameFlow, currPlayer);
     }
     public void card(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
         String it = GameFlow.randoCard();
         currPlayer.addCardNames(it);
-        toUsable(gameFlow);
+        toUsable(gameFlow, currPlayer);
     }
     public void gambling(GameFlow gameFlow){
         Player[] players = gameFlow.getPlayers();
@@ -82,7 +82,7 @@ public class Spaces {
                 }else {
                     currPlayer.setItemNames(new ArrayList<>());
                 }
-                toUsable(gameFlow);
+                toUsable(gameFlow, currPlayer);
                 break;
             case CARD:
                 if (win) {
@@ -94,7 +94,7 @@ public class Spaces {
                 }else {
                     currPlayer.setCardNames(new ArrayList<>());
                 }
-                toUsable(gameFlow);
+                toUsable(gameFlow, currPlayer);
                 break;
             case CASH:
                 int change;
@@ -233,7 +233,7 @@ public class Spaces {
         }
         currPlayer.addCash(totalChange);
         currPlayer.setItemNames(new ArrayList<>());
-        toUsable(gameFlow);
+        toUsable(gameFlow, currPlayer);
         toCash(currPlayer, totalChange, gameFlow);
     }
     public void getMushroom(GameFlow gameFlow) {
@@ -242,6 +242,8 @@ public class Spaces {
         int x = randomInt(2);
         if (x==0){
             currPlayer.addItemNames("MagicMushroom");//NOSONAR
+            toUsable(gameFlow, currPlayer);
+            return;
         } else{
             for (Player p : currPlayers){
                 if (!p.equals(currPlayer)){
@@ -262,7 +264,7 @@ public class Spaces {
             currPlayer.addCardNames(it);
         }
         currPlayer.addCash(-cash);
-        toUsable(gameFlow);
+        toUsable(gameFlow, currPlayer);
         toCash(currPlayer, -cash, gameFlow);
     }
     public void stealOthersMoney(GameFlow gameFlow) {
@@ -325,16 +327,18 @@ public class Spaces {
             int mateId = currPlayer.getTeammateId().intValue();
             currPlayer.addItemNames("TheBrotherAndCo"); //NOSONAR
             currPlayers[mateId-1].addItemNames("TheBrotherAndCo");
+            toUsable(gameFlow, currPlayer, currPlayers[mateId-1]);
         } else if (x==1){
             int rando = randomInt(GameFlow.allCards.length);
             currPlayer.addCardNames(GameFlow.allCards[rando]);
             int randi = randomInt(GameFlow.allCards.length);
             currPlayer.addCardNames(GameFlow.allCards[randi]);
+            toUsable(gameFlow, currPlayer);
         } else {
             ArrayList<String> goldItems = getItemsByColor().get("gold");
             currPlayer.addItemNames(goldItems.get(randomInt(goldItems.size())));
+            toUsable(gameFlow, currPlayer);
         }
-        toUsable(gameFlow);
     }
     public void gift10Money(GameFlow gameFlow) {
         Player currPlayer = gameFlow.getPlayers()[gameFlow.getTurnPlayerId().intValue()-1];
@@ -361,7 +365,7 @@ public class Spaces {
         currPlayer.addCash(allCash);
         currPlayer.setCardNames(new ArrayList<>());
 
-        toUsable(gameFlow);
+        toUsable(gameFlow, currPlayer);
         toCash(currPlayer, allCash, gameFlow);
     }
     public void getOthersCards(GameFlow gameFlow) {
@@ -431,6 +435,28 @@ public class Spaces {
     private void toWinCondi(Player p1, Player p2, GameFlow gameFlow){
         gameFlow.checkWinCondition(p1);
         gameFlow.checkWinCondition(p2);
+    }
+
+    private void toUsable(GameFlow gameFlow, Player player){
+        Map<String, Object> retour = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
+        response.put("items", player.getItemNames());
+        response.put("cards", player.getCardNames());
+        retour.put(player.getPlayerId().toString(), response);
+        GameWebSocketController.returnUsables(retour, gameFlow.getGameId());
+    }
+
+    private void toUsable(GameFlow gameFlow, Player p1, Player p2){
+        Map<String, Object> retour = new HashMap<>();
+        Map<String, Object> response1 = new HashMap<>();
+        response1.put("items", p1.getItemNames());
+        response1.put("cards", p1.getCardNames());
+        Map<String, Object> response2 = new HashMap<>();
+        response2.put("items", p2.getItemNames());
+        response2.put("cards", p2.getCardNames());
+        retour.put(p1.getPlayerId().toString(), response1);
+        retour.put(p2.getPlayerId().toString(), response2);
+        GameWebSocketController.returnUsables(retour, gameFlow.getGameId());
     }
 
     private void toUsable(GameFlow gameFlow){

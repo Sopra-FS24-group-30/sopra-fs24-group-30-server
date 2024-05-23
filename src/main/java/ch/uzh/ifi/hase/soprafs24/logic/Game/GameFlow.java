@@ -835,7 +835,7 @@ public class GameFlow {
         Long currPosi = posi;
         if (currPosi == 3L || currPosi == 44L){
             player.removeItemNames("TheBrotherAndCo");
-            GameWebSocketController.specItem(toItem(player), getGameId());
+            GameWebSocketController.returnUsables(toItem(player), getGameId());
         }
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
@@ -866,6 +866,7 @@ public class GameFlow {
         player.addLandedAll(currPosi);
 
         while (movies > 0) {
+            setHadJunctionForGoal(false);
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
             nextPosi = Long.parseLong(nextSpaceIds.get(0));
@@ -892,13 +893,15 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        printi();
         if (moves == 0 || getHadJunctionForGoal()) {
+            System.out.println(currentSpace.getOnSpace());
             setHadJunctionForGoal(false);
             (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
+            System.out.println("else false");
             (spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
+        printi();
 
         endOfWalkCheck(player, color, currentSpace);
 
@@ -978,7 +981,7 @@ public class GameFlow {
         }
 
 
-        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
         String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));//NOSONAR
         mappi.put("winners", resWinner);//NOSONAR
         mappi.put("reason", resReason);//NOSONAR
@@ -1001,7 +1004,7 @@ public class GameFlow {
                 winnersUsername.add(currPlayerMate.getUser().getUsername());
                 reason.add(currPlayer.getUser().getUsername());
                 reason.add("JackSparrow");
-                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
                 String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
                 mappi.put("winners", resWinner);
                 mappi.put("reason", resReason);
@@ -1017,7 +1020,7 @@ public class GameFlow {
             winnersUsername.add(players[players[rich.get(0).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
             reason.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             reason.add("maxCash");
-            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
             String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
             mappi.put("winners", resWinner);
             mappi.put("reason", resReason);
@@ -1038,7 +1041,7 @@ public class GameFlow {
             player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
         }
 
-        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
         String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
         mappi.put("winners", resWinner);
         mappi.put("reason", resReason);
@@ -1188,7 +1191,7 @@ public class GameFlow {
     private Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
-        GameWebSocketController.specItem(toItem(player), getGameId());
+        GameWebSocketController.returnUsables(toItem(player), getGameId());
         setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
