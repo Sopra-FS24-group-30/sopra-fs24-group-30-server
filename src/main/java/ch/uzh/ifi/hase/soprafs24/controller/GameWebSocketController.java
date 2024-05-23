@@ -197,8 +197,9 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/board/test")
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
+        JSONObject jsonObject = new JSONObject(msg);
         GameFlow gameFlow = gameFlows.get(gameId);
-        gameFlow.getPlayer(1).addCardNames("G45");
+        gameFlow.getPlayer(jsonObject.getInt("player")).addItemNames("TheBrotherAndCo");
         UsableData usableData = UsableData.prepateData(gameFlow);
         returnUsables(usableData,gameId);
     }
@@ -514,11 +515,12 @@ public class GameWebSocketController {
         GameFlow gameFlow = gameFlows.get(gameId);
         gameFlow.setHadJunction(true);
         gameFlow.setHadJunctionForGoal(false);
-        messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
         if (selectedSpace == 3L || selectedSpace == 44L){
-            Player currplayer = gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()-1);
+            Player currplayer = gameFlow.getActivePlayer();
             currplayer.removeItemNames("TheBrotherAndCo");
+            messagingTemplate.convertAndSend("/topic/game/"+gameId+"/board/usables",UsableData.prepateData(gameFlow));
         }
+        messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }
 
     public static void rollOneDice(Long gameId) { //one die throw
