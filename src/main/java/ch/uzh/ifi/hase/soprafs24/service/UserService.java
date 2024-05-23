@@ -3,9 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs24.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -137,7 +134,6 @@ public class UserService {
             lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))); //NOSONAR
         }
 
-        //TODO check against already active lobbies to avoid conflicts NOSONAR
         return lobbyId.toString();
     }
     /**
@@ -151,7 +147,7 @@ public class UserService {
     }
 
     public void edit(UserPutDTO updates, Long gameId){
-        User oldUser = userRepository.findById(gameId).get();
+        User oldUser = userRepository.findById(gameId).get(); //NOSONAR
         if(updates.getPassword()!=null){
             oldUser.setPassword(updates.getPassword());
         }

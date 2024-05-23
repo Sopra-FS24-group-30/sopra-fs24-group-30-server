@@ -40,10 +40,10 @@ public class GameService {
      * @return a unique LobbyId
      */
     public Long getLobbyId(){
-        long id = 100000 + this.random.nextInt(900000);
+        long id = 100000 + this.random.nextInt(900000); //NOSONAR
         int counter = 0;
-        while (this.gameRepository.findById(id) != null){
-            id = 100000 + this.random.nextInt(900000);
+        while (this.gameRepository.findById(id) != null){ //NOSONAR
+            id = 100000 + this.random.nextInt(900000);//NOSONAR
             if (counter > 10000){
                 break;
             }

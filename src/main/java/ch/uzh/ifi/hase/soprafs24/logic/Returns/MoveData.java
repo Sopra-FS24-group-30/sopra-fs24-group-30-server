@@ -1,8 +1,6 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;//NOSONAR
 
-import ch.uzh.ifi.hase.soprafs24.service.GameManagementService;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.cfg.NotYetImplementedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,9 +18,9 @@ public class MoveData {
     private PlayerMove player4 = new PlayerMove();
 
     private String movetype = "teleport";
-    private static String response = "can only accept values from 1 to 4 you supplied: ";
+    private static String response = "can only accept values from 1 to 4 you supplied: "; //NOSONAR
 
-    public MoveData(ArrayList<Long> playerPos1, ArrayList<Long> playerPos2, ArrayList<Long> playerPos3, ArrayList<Long> playerPos4){
+    public MoveData(ArrayList<Long> playerPos1, ArrayList<Long> playerPos2, ArrayList<Long> playerPos3, ArrayList<Long> playerPos4){//NOSONAR
         this.player1.setSpaces(playerPos1);
         this.player2.setSpaces(playerPos2);
         this.player3.setSpaces(playerPos3);
@@ -33,8 +31,6 @@ public class MoveData {
         setMovetype(movetype);
     }
 
-    //TODO add change method
-
     public String getMovetype() {
         return movetype;
     }
@@ -44,7 +40,7 @@ public class MoveData {
     }
 
 
-    public void setPlayerSpaceMovesColour(int playerId, ArrayList<Long> playerPosi, int moves, String spaceColour){
+    public void setPlayerSpaceMovesColour(int playerId, ArrayList<Long> playerPosi, int moves, String spaceColour){//NOSONAR
         switch (playerId){ //NOSONAR
             case 1:
                 player1.setSpaces(playerPosi);

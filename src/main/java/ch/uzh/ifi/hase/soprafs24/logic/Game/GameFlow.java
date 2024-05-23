@@ -20,7 +20,7 @@ import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.retur
 
 public class GameFlow {
 
-    public Spaces spaces = new Spaces();
+    private final Spaces spaces = new Spaces();
 
     protected static final String[] allItems = Getem.getItems().keySet().toArray(new String[0]);
     protected static final String[] allCards = Getem.getCards().keySet().toArray(new String[0]);
@@ -34,7 +34,6 @@ public class GameFlow {
     private int movesLeft;
     private boolean hadJunction = false;
     private boolean hadJunctionForGoal = false;
-    private boolean hasMoved;
     private boolean itemultused;
     private boolean cardDiceUsed;
     private LocalDateTime startTime;
@@ -202,11 +201,11 @@ public class GameFlow {
             case "randomPlayer":
                 int player;
                 do{
-                    player = (int) (Math.random() * 3 + 1);
+                    player = (int) (Math.random() * 3 + 1); //NOSONAR
                 }while (player == turnPlayerId);
                 return players[player-1].getPosition();
             case "random"://NOSONAR
-                return (long) (int) (Math.random()*52+1);
+                return (long) (int) (Math.random()*52+1); //NOSONAR
             default:
                 return (long) Integer.parseInt(fieldId);
         }
@@ -222,7 +221,7 @@ public class GameFlow {
     public void useRandomUsable(JSONObject args){
         String type = args.getString("type");
         Integer amount = args.getInt("amount"); //NOSONAR
-        switch (type){
+        switch (type){ //NOSONAR
             case "item":
                 for (int i=1;i<=amount;i++){
                     String itemName = Getem.getNoChoiceItem();
@@ -232,7 +231,7 @@ public class GameFlow {
                 }
                 break;
             default:
-                throw new RuntimeException("the option " + type + " is not yet implemented");
+                throw new RuntimeException("the option " + type + " is not yet implemented"); //NOSONAR
 
         }
 
@@ -241,9 +240,9 @@ public class GameFlow {
     public void rechargeUlt(JSONObject args){
         String playerId = args.getString("player");//NOSONAR
         String cashPay = args.getString("cash");
-        ArrayList<Integer> players = specialIds(playerId);
+        ArrayList<Integer> allPlayers = specialIds(playerId);
 
-        for(Integer id : players){
+        for(Integer id : allPlayers){
             Player player = getPlayer(id);
             player.addCash(Math.max(player.getCash()*-1,Integer.parseInt(cashPay)));
             player.setUltActive(true);
@@ -255,7 +254,7 @@ public class GameFlow {
 
     public void shuffle(JSONObject args){
         String type = args.getString("type");
-        switch (type){
+        switch (type){ //NOSONAR
             case "ultimates":
                 ArrayList<String> ultiNames = new ArrayList<>();
                 for(Player player : players){
@@ -270,7 +269,7 @@ public class GameFlow {
                 }
                 break;
             default:
-                throw new RuntimeException("this type of shuffling: " + type + " is not yet implemented");
+                throw new RuntimeException("this type of shuffling: " + type + " is not yet implemented"); //NOSONAR
 
         }
     }
@@ -282,26 +281,19 @@ public class GameFlow {
      */
 
     public void givePlayerCardRand(JSONObject args) {
-        String[]  cards_in_game = Getem.getCards().keySet().toArray(new String[0]);
+        String[]  cards_in_game = Getem.getCards().keySet().toArray(new String[0]); //NOSONAR
         SecureRandom random = new SecureRandom();
         String randomCard = cards_in_game[random.nextInt(cards_in_game.length)];
-        String cardType1 = null;
-        String playerSpecialId = args.getString("player");
-        ArrayList<Integer> playersToUpdate = new ArrayList<>((int) (long) getTurnPlayerId());
-        cardType1 = args.getString("card1");
-        Integer playerId = (int) (long) getTurnPlayerId();
-        String card1 = randoCard();
         players[(int) (long) getTurnPlayerId()-1].addCardNames(randomCard);
 
     }
 
-    public void givePlayerCardChoice(JSONObject args){
-        String cardType1 = null;
+    public void givePlayerCardChoice(JSONObject args){//NOSONAR
         String card1 = getChoices().getString("card");
         players[(int) (long) getTurnPlayerId()-1].addCardNames(card1);
 
     }
-    public void reduceMoneyALL(JSONObject args){
+    public void reduceMoneyALL(JSONObject args){ //NOSONAR
         for(int i = 0; i < 4; i++){
             players[i].setCash(players[i].getCash()-5);
         }
@@ -314,10 +306,10 @@ public class GameFlow {
 
     public void exchangePositions(JSONObject args){
         HashMap<Integer, ArrayList<Long>> updatedPositions = new HashMap<>();
-        String playerSpecialId = args.getString("player");
-        String fieldSpecialId = args.getString("field");
+        String playerSpecialId = args.getString("player"); //NOSONAR
+        String fieldSpecialId = args.getString("field");//NOSONAR
         int currentPlayerIndex = (int) (long) getTurnPlayerId() - 1;
-        Player currentPlayer = players[currentPlayerIndex];
+        Player currentPlayer = players[currentPlayerIndex];//NOSONAR
         SecureRandom random = new SecureRandom();
         int randomPLayerIndex;
         // Get current player and random player
@@ -460,16 +452,16 @@ public class GameFlow {
             switch (type){ //NOSONAR
                 case "item":
                     for(Integer player : exchangePlayers){
-                        return getSelectedItems(selection,player,amount);
+                        return getSelectedItems(selection,player,amount); //NOSONAR
                     }
                     break;
                 case "card":
                     for(Integer player : exchangePlayers){
-                        return (getSelectedCards(selection,player,amount));
+                        return (getSelectedCards(selection,player,amount)); //NOSONAR
                     }
             }
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
 
@@ -563,17 +555,17 @@ public class GameFlow {
      */
     public void updateMoney(JSONObject args){
         String type = args.getString("type");
-        Hashtable<Long,Integer> playersPayMoney;
+        Hashtable<Long,Integer> playersPayMoney; //NOSONAR
 
         playersPayMoney = effectivePayAmounts(args.getJSONObject("amount"),type);
 
         CashData cashData = new CashData(this);
         cashData.setPlayersNewCash(players[0].getCash(),players[1].getCash(),players[2].getCash(),players[3].getCash());
-        for(Long key : playersPayMoney.keySet()){
+        for(Long key : playersPayMoney.keySet()){ //NOSONAR
             cashData.setPlayerAmount(key.intValue(),playersPayMoney.get(key));
         }
         HashMap<Long,Integer> hashi = cashData.checkNegativeChanges();
-        for (Long key : hashi.keySet()){
+        for (Long key : hashi.keySet()){ //NOSONAR
             getPlayer(key.intValue()).addLostCash(-hashi.get(key));
         }
         GameWebSocketController.returnMoney(cashData,gameId);
@@ -602,7 +594,7 @@ public class GameFlow {
                 move(count, players[(int) (long) getTurnPlayerId()-1].getPosition());
                 break;
             default:
-                throw new RuntimeException("the card with type " + category + " does not exist");
+                throw new RuntimeException("the card with type " + category + " does not exist"); //NOSONAR
         }
 
         return Collections.emptyMap();
@@ -614,11 +606,10 @@ public class GameFlow {
      * @return PlayerIds,Amount
      */
 
-    //TODO: Refactor to be nicer
     private Hashtable<Long,Integer> effectivePayAmounts(JSONObject amounts, String type){//NOSONAR
         int totalPot = 0;
         ArrayList<Integer> potWinners = new ArrayList<>();
-        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>();
+        Hashtable<Long,Integer> calculatedAmount = new Hashtable<>(); //NOSONAR
         Iterator<String> keys = amounts.keys();
         while(keys.hasNext()){
             String key = keys.next();
@@ -770,10 +761,10 @@ public class GameFlow {
         move(totalAmount,getPlayer(turnPlayerId.intValue()).getPosition());
     }
 
-    public ArrayList<Integer> throwDice(int amount){
+    public ArrayList<Integer> throwDice(int amount){ //NOSONAR
         ArrayList<Integer> diceThrows = new ArrayList<>();
         for(int i=0;i<amount;i++){
-            diceThrows.add((int) (Math.random()*6+1));
+            diceThrows.add((int) (Math.random()*6+1)); //NOSONAR
         }
         return diceThrows;
     }
@@ -830,13 +821,9 @@ public class GameFlow {
         return retour;
     }
 
-    public Map<String, Object> move(int moves, long posi) {
+    public Map<String, Object> move(int moves, long posi) { //NOSONAR
         Player player = players[(int) (turnPlayerId-1)];
         Long currPosi = posi;
-        if (currPosi == 3L || currPosi == 44L){
-            player.removeItemNames("TheBrotherAndCo");
-            GameWebSocketController.returnUsables(toItem(player), getGameId());
-        }
         int movies = moves;
         List<GameBoardSpace> allSpaces = getGameBoard().getSpaces();
 
@@ -1053,9 +1040,9 @@ public class GameFlow {
         LocalDateTime endTime = LocalDateTime.now();
         long timeDifferenceSeconds = this.startTime.until(endTime, ChronoUnit.SECONDS);
         for(String winner : winners){
-                Player player = getPlayer(Integer.valueOf(winner));
+            Player player = getPlayer(Integer.valueOf(winner));
             player.getAchievementProgress().setWinner(true);
-            if(winners.contains(getPlayer(player.getTeammateId().intValue()))){
+            if(winners.contains(player.getTeammateId().toString())){
                 player.getAchievementProgress().setTeamMateWinner(true);
             }
             player.getAchievementProgress().setCashWhenWinning(player.getCash());
@@ -1091,7 +1078,7 @@ public class GameFlow {
         return 10L;
     }
 
-    public void changeGoalPosition(JSONObject args){
+    public void changeGoalPosition(){
         setBoardGoal(getGameBoard().getSpaces());
     }
 

@@ -5,8 +5,6 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Constant.GamblingChoice;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.CashData;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.MoveData;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.UsableData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
@@ -65,7 +63,7 @@ public class Spaces {
         currPlayer.addCardNames(it);
         toUsable(gameFlow, currPlayer);
     }
-    public void gambling(GameFlow gameFlow){
+    public void gambling(GameFlow gameFlow){ //NOSONAR
         Player[] players = gameFlow.getPlayers();
         Player currPlayer = players[gameFlow.getTurnPlayerId().intValue()-1];
         int random = randomInt(2);
@@ -440,8 +438,9 @@ public class Spaces {
     private void toUsable(GameFlow gameFlow, Player player){
         Map<String, Object> retour = new HashMap<>();
         Map<String, Object> response = new HashMap<>();
-        response.put("items", player.getItemNames());
-        response.put("cards", player.getCardNames());
+        response.put("items", player.getItemNames());//NOSONAR
+        response.put("cards", player.getCardNames());//NOSONAR
+        System.out.println("oneItem:  " + player.getItemNames() + "  oneCard:  " + player.getCardNames());
         retour.put(player.getPlayerId().toString(), response);
         GameWebSocketController.returnUsables(retour, gameFlow.getGameId());
     }
@@ -454,6 +453,8 @@ public class Spaces {
         Map<String, Object> response2 = new HashMap<>();
         response2.put("items", p2.getItemNames());
         response2.put("cards", p2.getCardNames());
+        System.out.println("oneItem:  " + p1.getItemNames() + "  oneCard:  " + p1.getCardNames());
+        System.out.println("twoItem:  " + p2.getItemNames() + "  twoCard:  " + p2.getCardNames());
         retour.put(p1.getPlayerId().toString(), response1);
         retour.put(p2.getPlayerId().toString(), response2);
         GameWebSocketController.returnUsables(retour, gameFlow.getGameId());

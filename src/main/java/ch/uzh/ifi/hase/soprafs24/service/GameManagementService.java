@@ -77,8 +77,6 @@ public class GameManagementService {
         players.add(player);
         game.setPlayers(playerList);
         game.setactive_players(players);
-        System.out.println("These are the active players before:");
-        System.out.println(game.getactive_Players());
 
         allGames.put(gameId, game);
 
@@ -105,7 +103,6 @@ public class GameManagementService {
 
     public Player findPlayerById(Game game, Long playerID) {
         for (Player player : game.getactive_Players()) {
-            System.out.println("Checking player ID: " + player.getPlayerId() + " against " + playerID);
 
             if (player.getPlayerId().equals(playerID)) {
                 return player;
@@ -116,13 +113,9 @@ public class GameManagementService {
 
     public boolean joinGame(Long gameId, String userId) { //NOSONAR
         Game game = findGame(gameId);
-        System.out.println(gameId);
-        System.out.println(userId);
-        System.out.println("all players (before adding): " + game.getPlayers());
         if (game == null){
             throw new IllegalStateException("Game does not exist");
         }else if ((game.getPlayers().size() >= 4) && (!game.getPlayers().contains(userId))){
-            System.out.println("Exception gets thrown here");
             throw new IllegalStateException("Cannot add more players to the game");
         }else if (game.getPlayers().contains(userId)){
             return true;
@@ -132,8 +125,6 @@ public class GameManagementService {
         game.addNEWPlayer(player);
         game.addPlayer(userId); // add player to the game
 
-        System.out.println(gameId);
-        System.out.println("all players (after adding)" + game.getPlayers());
         return true;
     }
 
@@ -229,33 +220,24 @@ public class GameManagementService {
         Player firstPlayer = null;
         Player secondPlayer = null;
 
-        System.out.println("Setting the teams");
         List<Player> playerList = game.getactive_Players();
-        System.out.println("actual player list before parsing: " + playerList);
         for (Player player : playerList) {
-            System.out.println(player.getPlayerName());
             if (player.getPlayerName().equals(player1)) {
-                System.out.println("host" + player);
                 firstPlayer = player;
             }
             else if (player.getPlayerName().equals(player2)) {
-                System.out.println("teammate" + player);
                 secondPlayer = player;
             }
         }
 
         playerList.remove(firstPlayer);
         playerList.remove(secondPlayer);
-        System.out.println("after removing: "+ playerList);
         playerList.add(0, firstPlayer);
         playerList.add(2, secondPlayer);
-        System.out.println("after adding: "+ playerList);
 
         for (int i = 0; i < 4; i++) {
-            System.out.println(playerList.get(i));
             int j = i+1;
             playerList.get(i).setPlayerId((Long.valueOf(j)));
-            System.out.println(playerList.get(i).getPlayerName());
         }
 
         playerList.get(0).setTeammateId(playerList.get(2).getPlayerId());
@@ -283,7 +265,6 @@ public class GameManagementService {
         Map<String, Object> players = new HashMap();
 
         for (Player player: game.getactive_Players()){
-            System.out.println(player.getPlayerName());
             Map<String, Object> dictionary = new HashMap<>();
             dictionary.put("userId", player.getUserId());
             dictionary.put("username", player.getPlayerName());
@@ -294,7 +275,6 @@ public class GameManagementService {
             players.put(Long.toString(player.getPlayerId()), dictionary);
         }
 
-        System.out.println(players);
         return players;
     }
 
@@ -345,7 +325,6 @@ public class GameManagementService {
                 i=i+1;
             }
         }
-        System.out.println(i);
         if(i==4){
             changeGameStatus(gameId, GameStatus.READY);
         }else if(i==3){

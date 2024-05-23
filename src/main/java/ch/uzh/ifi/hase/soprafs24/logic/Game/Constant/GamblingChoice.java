@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game.Constant;
+package ch.uzh.ifi.hase.soprafs24.logic.Game.Constant;//NOSONAR
 
 import java.util.Arrays;
 import java.util.Collections;

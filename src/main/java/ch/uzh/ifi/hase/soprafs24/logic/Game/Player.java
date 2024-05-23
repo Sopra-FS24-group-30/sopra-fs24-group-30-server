@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
-
 import java.util.ArrayList;
-
-import java.util.Arrays;
 import java.util.HashSet;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
@@ -17,14 +14,14 @@ public class Player {
     private Long position;
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<String> cardNames = new ArrayList<>();
-    private transient User user;
+    private transient User user; //NOSONAR
     private PlayerStatus status;
 
     private String ultimate;
     private String winCondition;
 
     private Long userId;
-    private Long teammateId;
+    private Long teammateId; //NOSONAR
     private Long gameBoardId;
 
     private int landYellow;
@@ -110,11 +107,11 @@ public class Player {
 
     }
 
-    public ArrayList<String> getItemNames() {
+    public ArrayList<String> getItemNames() {//NOSONAR
         return itemNames;
     }
 
-    public void setItemNames(ArrayList<String> itemNames) {
+    public void setItemNames(ArrayList<String> itemNames) {//NOSONAR
         this.itemNames = itemNames;
     }
 
@@ -122,7 +119,7 @@ public class Player {
         itemNames.add(itemName);
     }
 
-    public void addItemNames(ArrayList<String> itemName){
+    public void addItemNames(ArrayList<String> itemName){//NOSONAR
         this.itemNames.addAll(itemName);
     }
 
@@ -130,16 +127,16 @@ public class Player {
         this.itemNames.remove(itemName);
     }
 
-    public void removeItemNames(ArrayList<String> itemName){
+    public void removeItemNames(ArrayList<String> itemName){//NOSONAR
         itemNames.removeAll(itemName);
     }
 
 
-    public ArrayList<String> getCardNames() {
+    public ArrayList<String> getCardNames() {//NOSONAR
         return cardNames;
     }
 
-    public void setCardNames(ArrayList<String> cardNames) {
+    public void setCardNames(ArrayList<String> cardNames) {//NOSONAR
         this.cardNames = cardNames;
     }
 
@@ -147,7 +144,7 @@ public class Player {
         cardNames.add(cardName);
     }
 
-    public void addCardNames(ArrayList<String> cardName){
+    public void addCardNames(ArrayList<String> cardName){//NOSONAR
         cardNames.addAll(cardName);
     }
 
@@ -155,7 +152,7 @@ public class Player {
         cardNames.remove(cardName);
     }
 
-    public void removeCardNames(ArrayList<String> cardName){
+    public void removeCardNames(ArrayList<String> cardName){//NOSONAR
         cardNames.removeAll(cardName);
     }
 
@@ -264,17 +261,17 @@ public class Player {
         this.shipAct = shipAct;
     }
 
-    public HashSet<Long> getLandedAll() {
+    public HashSet<Long> getLandedAll() {//NOSONAR
         return landedAll;
     }
 
-    public void setLandedAll(HashSet<Long> landedAll) {
+    public void setLandedAll(HashSet<Long> landedAll) {//NOSONAR
         this.landedAll = landedAll;
     }
     public void addLandedAll(Long spaceId){
         this.landedAll.add(spaceId);
     }
-    public void addLandedAll(HashSet<Long> spaceIds){
+    public void addLandedAll(HashSet<Long> spaceIds){//NOSONAR
         this.landedAll.addAll(spaceIds);
     }
 

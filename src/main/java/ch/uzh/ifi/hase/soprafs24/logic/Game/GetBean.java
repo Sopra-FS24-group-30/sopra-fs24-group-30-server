@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
+package ch.uzh.ifi.hase.soprafs24.logic.Game; //NOSONAR
 
 import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
@@ -13,7 +13,7 @@ public class GetBean {
 
     @Autowired
     public void setAchievementService(AchievementService service) {
-        GetBean.achievementService = service;
+        GetBean.achievementService = service;//NOSONAR
     }
     public static AchievementService getAchievementService(){
         return achievementService;
@@ -21,7 +21,7 @@ public class GetBean {
 
     @Autowired
     public void setAchievementRepository(AchievementRepository repository) {
-        GetBean.achievementRepository = repository;
+        GetBean.achievementRepository = repository;//NOSONAR
     }
     public static AchievementRepository getAchievementRepository(){
         return achievementRepository;

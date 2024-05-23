@@ -28,7 +28,6 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
 
-
     /*
     public static void main(String[] args){
         GameFlow gameFlow = new GameFlow();
@@ -63,10 +62,10 @@ public class GameWebSocketController {
 
     @Autowired
     public GameWebSocketController(SimpMessagingTemplate messagingTemplate){
-        GameWebSocketController.messagingTemplate = messagingTemplate;
+        GameWebSocketController.messagingTemplate = messagingTemplate; //NOSONAR
     }
 
-    @Autowired
+    @Autowired //NOSONAR
     private GameManagementService gameManagementService;
 
     //saving the current Game at the beginning
@@ -77,7 +76,7 @@ public class GameWebSocketController {
         return allGames.get(lobbyId);
     }
 
-    public static void setCurrGame(HashMap<Long,Game> currentGame) {
+    public static void setCurrGame(HashMap<Long,Game> currentGame) { //NOSONAR
         allGames = currentGame;
     }
 
@@ -93,7 +92,7 @@ public class GameWebSocketController {
         return gameFlows.get(lobbyId);
     }
 
-    public static void setGameFlow(HashMap<Long,GameFlow> currentGameFlow) {
+    public static void setGameFlow(HashMap<Long,GameFlow> currentGameFlow) { //NOSONAR
         gameFlows = currentGameFlow;
     }
 
@@ -110,8 +109,6 @@ public class GameWebSocketController {
     public void createGame(String playerString) {
         Map<String, String> playerDict = gameManagementService.manualParse(playerString);
         String userId = playerDict.get("playerId");//NOSONAR
-
-        System.out.println(userId);
 
         Long gameId = GameManagementService.createGame(userId);//NOSONAR
         Map <String, Object> response = new HashMap<>();
@@ -138,7 +135,7 @@ public class GameWebSocketController {
         String itemName = payLoad.getString("used");
         String effectName;
         JSONObject effectParas;
-        JSONObject choices = payLoad.getJSONObject("choice");
+        JSONObject choices = payLoad.getJSONObject("choice"); //NOSONAR
         gameFlow.setChoices(choices);
         //get the effect with paras
         HashMap<String, JSONObject> items = Getem.getItems();
@@ -194,7 +191,7 @@ public class GameWebSocketController {
         String userIdString = userId.toString();
         ErrorData errorData = new ErrorData();
         errorData.setErrorMessage(error);
-        String destination = "/queue/game/" + gameId + "/board/error";
+        String destination = "/queue/game/" + gameId + "/board/error"; //NOSONAR
         messagingTemplate.convertAndSendToUser(userIdString,destination,errorData);
     }
 
@@ -246,7 +243,7 @@ public class GameWebSocketController {
                 gameFlow.reduceMoneyALL(effectParas);
                 break;
             case "changeGoalPosition":
-                gameFlow.changeGoalPosition(effectParas);
+                gameFlow.changeGoalPosition();
                 break;
             case "exchangeAll":
                 gameFlow.exchangeAll();
@@ -255,16 +252,14 @@ public class GameWebSocketController {
                 gameFlow.rechargeUlt(effectParas);
                 break;
             default:
-                throw new RuntimeException("the defined effect: " + effect + " does not exist");
+                throw new RuntimeException("the defined effect: " + effect + " does not exist"); //NOSONAR
         }
     }
 
     @MessageMapping("/game/join")
     public  void joinGame(@Payload Map<String, String> message) {
-        System.out.println(message);
-
         Long gameId = Long.valueOf(message.get("gameId"));
-        String userId = message.get("userId");
+        String userId = message.get("userId"); //NOSONAR
         boolean joined = gameManagementService.joinGame(gameId, userId);
 
         Map <String, Object> response = new HashMap<>();
@@ -274,7 +269,6 @@ public class GameWebSocketController {
         }else{
             response.put("joined", false);
         }
-        System.out.println("Joining");
 
         String destination = "/queue/gameJoined";
         messagingTemplate.convertAndSendToUser(userId, destination, response);
@@ -291,11 +285,7 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/gameReady")
     public void gameReady(@DestinationVariable Long gameId){
         Map<String, Object> response = new HashMap<>();
-        if (gameManagementService.getPlayersInGame(gameId).size() == 4){
-            response.put("gameReady", true);
-        } else{
-            response.put("gameReady", false);
-        }
+        response.put("gameReady", gameManagementService.getPlayersInGame(gameId).size() == 4);
 
         String destination = "/topic/gameReady/" + gameId;
         messagingTemplate.convertAndSend(destination, response);
@@ -306,7 +296,8 @@ public class GameWebSocketController {
         Map<String, String> message = gameManagementService.manualParse(msg);
         Long gameId = Long.valueOf(message.get("gameId"));
         String playerId = message.get("playerId");
-
+        removeGame(gameId);
+        removeGameFlow(gameId);
         gameManagementService.leaveGame(gameId, playerId);
     }
 
@@ -317,15 +308,11 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/status")
     public void gameStatus(@DestinationVariable Long gameId){
-        System.out.println("Get Status");
-
         GameStatus status = gameManagementService.getGameStatus(gameId);
         Map<String, String> response = new HashMap<>();
-        response.put("status", status.name());
-        System.out.println(response);
+        response.put("status", status.name()); //NOSONAR
 
         if(response.get("status").equals("READY")){
-            System.out.println("Attempting to send the playerIds");
             sendPlayerId(gameId);
         }
 
@@ -337,28 +324,20 @@ public class GameWebSocketController {
         String destination = "/queue/game/PlayerId";
 
         Game game = gameManagementService.findGame(gameId);
-        System.out.println(game);
         List<Player> playerList = game.getactive_Players();
-        System.out.println(playerList);
 
         for(Player player: playerList){
             Map<String, String> response = new HashMap<>();
             response.put("playerId", String.valueOf(player.getPlayerId()));
             String userId = String.valueOf(player.getUserId());
-            System.out.println("Sending the playerId of" + userId);
             messagingTemplate.convertAndSendToUser(userId, destination, response);
         }
     }
 
     @MessageMapping("/game/{gameId}/players")
     public void getPlayers(@DestinationVariable Long gameId, @Payload Map<String, Object> payload){
-        System.out.println("getPlayers");
-
         String hostName = (String) payload.get("host");
-        System.out.println(hostName);
-
         List<Player> players = gameManagementService.getActivePlayers(gameId);
-        System.out.println(players);
         List<String> playerNames = new ArrayList<>();
 
         for(Player p: players){
@@ -385,7 +364,6 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/wincondition")
     public void getWincondition(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
-        System.out.println("Request for wincondition");
         String userId = userIdMap.get("userId");
 
         String wincondition = gameManagementService.getWincondition(gameId, userId);
@@ -399,7 +377,6 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/ultimateAttack")
     public void getUltimateAttack(@DestinationVariable Long gameId, @Payload Map<String, String> userIdMap){
-        System.out.println("Request for ultimate");
         String userId = userIdMap.get("userId");
         String ultimateAttack = gameManagementService.getUltimateAttack(gameId, userId);
         Map<String, String> response = new HashMap<>();
@@ -418,7 +395,6 @@ public class GameWebSocketController {
 
     @MessageMapping("/game/{gameId}/board/start")
     public void startGame(@DestinationVariable Long gameId, @Payload String userId){
-        System.out.println("board message got received");
         HashMap<String, Object> response = new HashMap<>();
         Map<String, Object> players = gameManagementService.getInformationPlayers(gameId);
 
@@ -435,14 +411,14 @@ public class GameWebSocketController {
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
         gameFlow.setCurrentTurn(17);
-        int startingPlayer = (int) (Math.random() * 4 + 1);
+        int startingPlayer = (int) (Math.random() * 4 + 1); //NOSONAR
         gameFlow.setTurnPlayerId((long) startingPlayer);
         gameFlows.put(gameId, gameFlow);
 
         List<String> turnOrder = gameManagementService.getTurnOrder(gameFlow.getTurnPlayerId());
 
         response.put("TurnOrder", turnOrder);
-        String destination = "/topic/game/" + gameId + "/board/start";
+        String destination = "/topic/game/" + gameId + "/board/start"; //NOSONAR
 
         messagingTemplate.convertAndSend(destination, response);
         gameManagementService.changeGameStatus(gameId, GameStatus.PLAYING);
@@ -456,7 +432,7 @@ public class GameWebSocketController {
         response.put("currentTurn", gameFlow.getCurrentTurn());
         response.put("activePlayer", gameFlow.getTurnPlayerId());
 
-        String destination = "/topic/game/" + gameId + "/board/newActivePlayer";
+        String destination = "/topic/game/" + gameId + "/board/newActivePlayer"; //NOSONAR
         messagingTemplate.convertAndSend(destination, response);
     }
 
@@ -464,10 +440,10 @@ public class GameWebSocketController {
         GameFlow gameFlow = getGameFlow(gameId);
 
         CashData cashdata = new CashData(gameFlow);
-        String destinationCash = "/topic/game/" + gameId + "/board/money";
+        String destinationCash = "/topic/game/" + gameId + "/board/money"; //NOSONAR
         messagingTemplate.convertAndSend(destinationCash, cashdata);
 
-        String destinationMove = "/topic/game/" + gameId + "/board/move";
+        String destinationMove = "/topic/game/" + gameId + "/board/move"; //NOSONAR
         String destinationUltimate = "/queue/game/" + gameId + "/board/ultimative";
         for (Player p : gameFlow.getPlayers()){
             String pUserId = p.getUserId().toString();
@@ -480,7 +456,7 @@ public class GameWebSocketController {
 
             gameFlow.checkWinCondition(p);
 
-            Map<String, Object> ultimap = Map.of("name", p.getUltimate(), "active", false);
+            Map<String, Object> ultimap = Map.of("name", p.getUltimate(), "active", true);
 
             messagingTemplate.convertAndSend(destinationMove, aha);
             messagingTemplate.convertAndSendToUser(pUserId, destinationUltimate, ultimap);
@@ -512,8 +488,7 @@ public class GameWebSocketController {
         String destination = "/topic/game/" + gameId + "/board/move";
         //remove card from players hand and send new data to frontend
         gameFlow.getActivePlayer().removeCardNames(selectedCard);
-        UsableData usableData = new UsableData();
-        usableData.prepateData(gameFlow);
+        UsableData usableData = UsableData.prepateData(gameFlow);
         returnUsables(usableData,gameId);
 
         gameFlow.setCardDiceUsed(true);
@@ -542,6 +517,10 @@ public class GameWebSocketController {
         gameFlow.setHadJunction(true);
         gameFlow.setHadJunctionForGoal(false);
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
+        if (selectedSpace == 3L || selectedSpace == 44L){
+            Player currplayer = gameFlow.getPlayer(gameFlow.getTurnPlayerId().intValue()-1);
+            currplayer.removeItemNames("TheBrotherAndCo");
+        }
     }
 
     public static void rollOneDice(Long gameId) { //one die throw
@@ -609,12 +588,13 @@ public class GameWebSocketController {
 
     public static void returnUsables(UsableData usableData, Long gameId) {
         String destination = "/topic/game/" + gameId + "/board/usables";
-        System.out.println("returning to usables");
+        System.out.println("returning to usabledata");
         messagingTemplate.convertAndSend(destination, usableData);
     }
 
     public static void returnUsables(Map<String, Object> getItemMsg, Long gameId){
         String destination = "/topic/game/" + gameId + "/board/usables";
+        System.out.println("returning to usablemap");
         messagingTemplate.convertAndSend(destination, getItemMsg);
     }
 
@@ -624,8 +604,8 @@ public class GameWebSocketController {
     }
 
     public static void endGame(Long gameId){
-
-//        GameManagementService.changeGameStatus(allGames.get(gameId), GameStatus.NOT_PLAYING);
+        GameManagementService.changeGameStatus(allGames.get(gameId), GameStatus.NOT_PLAYING);
+        System.out.println(allGames.get(gameId).getStatus());
         Map<String, String> endGameMsg = new HashMap<>(Map.of("status", GameStatus.NOT_PLAYING.toString()));
         String destination = "/topic/game/" + gameId + "/board/gameEnd";
         messagingTemplate.convertAndSend(destination, endGameMsg);

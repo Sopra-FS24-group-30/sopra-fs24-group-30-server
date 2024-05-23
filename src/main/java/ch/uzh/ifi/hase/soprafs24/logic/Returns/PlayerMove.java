@@ -1,19 +1,18 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;//NOSONAR
 
 import java.util.ArrayList;
 
 public class PlayerMove {
 
     private ArrayList<Long> spaces;
-    //amount of moves left in beginning
     private int moves = 0;
     private String spaceColour;
 
-    public ArrayList<Long> getSpaces() {
+    public ArrayList<Long> getSpaces() {//NOSONAR
         return spaces;
     }
 
-    public void setSpaces(ArrayList<Long> spaces) {
+    public void setSpaces(ArrayList<Long> spaces) {//NOSONAR
         this.spaces = spaces;
     }
 

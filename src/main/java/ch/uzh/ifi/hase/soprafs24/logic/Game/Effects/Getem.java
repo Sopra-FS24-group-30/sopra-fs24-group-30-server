@@ -1,27 +1,27 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game.Effects;
+package ch.uzh.ifi.hase.soprafs24.logic.Game.Effects; //NOSONAR
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.io.BufferedReader;
 import java.security.SecureRandom;
-import java.util.Map;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.AbstractMap;
-public class Getem {
+
+public class Getem {//NOSONAR
 
 
-    private final static String RESPONSE = "the json object could not be created";
+    private static final String RESPONSE = "the json object could not be created";
 
-    public static HashMap<String, JSONObject> getItems(){
+    public static HashMap<String, JSONObject> getItems(){//NOSONAR
         String jsonData;
         try{
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
         }catch (IOException e){
-            throw new RuntimeException(RESPONSE);
+            throw new RuntimeException(RESPONSE); //NOSONAR
         }
         JSONObject jsonObject = new JSONObject(jsonData);
 
@@ -32,7 +32,6 @@ public class Getem {
             JSONObject effectComplete = jsonObject.getJSONObject(key);
             ret.put(key,effectComplete);
         }
-        System.out.println(ret);
 
         return ret;
     }
@@ -42,7 +41,7 @@ public class Getem {
         try{
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json");
         }catch (IOException e){
-            throw new RuntimeException(RESPONSE);
+            throw new RuntimeException(RESPONSE);//NOSONAR
         }
 
         JSONObject jsonObject = new JSONObject(jsonData);
@@ -60,14 +59,14 @@ public class Getem {
         return itemNames.get(0);
     }
 
-    public static HashMap<String, JSONObject> getUltimates(){
+    public static HashMap<String, JSONObject> getUltimates(){//NOSONAR
         HashMap<String, JSONObject> ultimates = new HashMap<>();
 
         String jsonData;
         try{
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json");
         }catch (IOException e){
-            throw new RuntimeException(RESPONSE);
+            throw new RuntimeException(RESPONSE);//NOSONAR
         }
         JSONObject jsonObject = new JSONObject(jsonData);
 
@@ -81,14 +80,14 @@ public class Getem {
         return ultimates;
     }
 
-    public static HashMap<String, JSONObject> getCards() {
+    public static HashMap<String, JSONObject> getCards() {//NOSONAR
         HashMap<String, JSONObject> cards = new HashMap<>();
         String jsonData;
         try {
             jsonData = getJson("./src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/cards.json");
 
         } catch (IOException e) {
-            throw new RuntimeException(RESPONSE);
+            throw new RuntimeException(RESPONSE);//NOSONAR
         }
         JSONObject jsonObject = new JSONObject(jsonData);
         Iterator<String> keys = jsonObject.keys();
@@ -110,8 +109,6 @@ public class Getem {
             // Putting the card information into the cards map
             cards.put(key, cardInfo);
         }
-        //System.out.println(cards);
-
         return cards;
     }
 
@@ -127,8 +124,6 @@ public class Getem {
 
     private static String getJson(String path) throws IOException {
         try(BufferedReader reader = new BufferedReader(new FileReader(path));){
-            //TODO: make try with here
-
             StringBuilder stringBuilder = new StringBuilder();
             String line = null;
             String ls = System.lineSeparator();

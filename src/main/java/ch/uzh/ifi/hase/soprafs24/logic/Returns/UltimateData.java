@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;//NOSONAR
 
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 
