@@ -198,10 +198,8 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/test")
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
-        gameFlow.getPlayer(1).addItemNames("MagicMushroom");
+        gameFlow.getPlayer(1).addCardNames("G45");
         UsableData usableData = UsableData.prepateData(gameFlow);
-        System.out.println(gameFlow.getPlayer(1).getItemNames().toString());
-        System.out.println("giving usables");
         returnUsables(usableData,gameId);
     }
 
@@ -476,13 +474,12 @@ public class GameWebSocketController {
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
         }
-        int count;
+        Integer choice;
 
-        JSONObject choice = payload.getJSONObject("choice");
         if(selectedCard.startsWith("G")){
-            count = choice.getInt("count");
+            choice = payload.getInt("choice");
         }else{
-            count = 0;
+            choice = -1;
         }
         JSONObject card = Getem.getCards().get(selectedCard);
         String destination = "/topic/game/" + gameId + "/board/move";
@@ -492,7 +489,8 @@ public class GameWebSocketController {
         returnUsables(usableData,gameId);
 
         gameFlow.setCardDiceUsed(true);
-        messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, count));
+
+        messagingTemplate.convertAndSend(destination, gameFlow.updateCardPositions(card, choice));
     }
 
     @MessageMapping("/game/{gameId}/board/dice")
