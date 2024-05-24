@@ -902,8 +902,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
             GameWebSocketController.endGame(getGameId());
+            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
         return Collections.emptyMap();
