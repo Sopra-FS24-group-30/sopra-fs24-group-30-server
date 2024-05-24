@@ -114,16 +114,6 @@ public class Getem {//NOSONAR
         return cards;
     }
 
-    public static JSONObject getRandomCard() {
-        HashMap<String, JSONObject> cards = getCards();
-        ArrayList<String> keys = new ArrayList<>(cards.keySet());
-        SecureRandom random = new SecureRandom();
-        String randomKey = keys.get(random.nextInt(keys.size()));
-        return cards.get(randomKey);
-    }
-
-
-
     private static String getJson(String path) throws IOException {
         try(BufferedReader reader = new BufferedReader(new FileReader(path));){
             StringBuilder stringBuilder = new StringBuilder();
