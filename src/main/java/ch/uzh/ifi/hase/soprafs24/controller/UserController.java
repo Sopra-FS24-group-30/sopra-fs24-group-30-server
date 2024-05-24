@@ -13,7 +13,7 @@ import java.util.*;
 
 
 @RestController
-@CrossOrigin(origins = "https://sopra-fs24-group-30-client.oa.r.appspot.com/")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
     private final AchievementService achievementService;

@@ -20,7 +20,7 @@ public class WebSocketsConfig implements WebSocketMessageBrokerConfigurer{
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(new CustomHandshakeHandler())
-                .setAllowedOrigins("https://sopra-fs24-group-30-client.oa.r.appspot.com/")
+                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
 }
