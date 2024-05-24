@@ -55,6 +55,8 @@ public class Getem {//NOSONAR
                 itemNames.add(key);
             }
         }
+        //this item can't be "used" actively
+        itemNames.remove("TheBrotherAndCo");
         Collections.shuffle(itemNames);
         return itemNames.get(0);
     }
