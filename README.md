@@ -1,5 +1,33 @@
 # Mario After Party 30
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Technologies](#technologies)
+  - [Voice Chat API](#voice-chat-api)
+  - [Websockets](#websockets)
+- [High-level components](#high-level-components)
+- [Launch and Deployment](#launch-and-deployment)
+- [Setup this Template with your IDE of choice](#setup-this-template-with-your-ide-of-choice)
+  - [IntelliJ](#intellij)
+  - [VS Code](#vs-code)
+- [Building with Gradle](#building-with-gradle)
+  - [Build](#build)
+  - [Run](#run)
+  - [Test](#test)
+  - [Development Mode](#development-mode)
+- [Roadmap](#roadmap)
+- [Game Wiki](#game-wiki)
+  - [Win Conditions](#win-conditions)
+  - [Usables](#usables)
+    - [Ultimate Attack (Phase 1)](#ultimate-attack-phase-1)
+    - [Items (Phase 1)](#items-phase-1)
+    - [Cards (Phase 2)](#cards-phase-2)
+  - [Spaces (Phase 3)](#spaces-phase-3)
+  - [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Authors and Acknoledgement](#authors-and-acknoledgement)
+- [License](#license)
+
 ## Introduction
 
 *Four people, four friends, two vs. two – who will win?*<br>
