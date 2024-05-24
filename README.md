@@ -108,6 +108,22 @@ During a Players Turn there are 3 Phases.
 
 ### Win Conditions
 
+Once you or your Teammate passes the Goal, while having fulfilled the condition, you win.<br>
+If any Player has Jack Sparrow, CAPTAIN Jack Sparrow
+
+| Win Ccndition Name | Condition |
+|---|---|
+| Golden is my … | Land on seven Yellow spaces. |
+| 🛥️ ← this is a ship (it goes Zvvvvvvvvvvv or blubblub) | Move 15 Spaces in one turn, or move 0 Spaces twice in a row. |
+| Explorer of the Seven seas | Pass every Space at least once. |
+| Drunk | Land on a Catnami Space thrice. |
+| Unlucky | Lose a total of 40 Coins. |
+| East Indian Trading Company | As long as you have at least 60 Coins, the Win Condition is fulfilled. If you have less than 60 Coins at any point in time, your Wincondition is no longer fulfilled. |
+| The Marooned | As long as you have exactly 0 Coins, 0 Items and 0 Cards the Win Condition is fulfilled. If you gain any Coins, Items or Cards at any point in time, your Win Condition is no longer fulfilled. |
+| Jack Sparrow, CAPTAIN Jack Sparrow | You win if the other Team wins, and you lose if your Partner wins. If the game ends after 20 Turns, everyone except for your Partner loses. |
+<!-- | Third time's the charm | Pass the goal twice | -->
+<!-- | Ohh shiny | Use one Bronze, Silver and Gold Item, and one Bronze, Silver and Gold Card. | -->
+
 ### Usables
 
 Usables are stuff that the Players can use during their Turn, which may either benefit them, or hinder their opponents.<br>
@@ -118,7 +134,8 @@ Usables can be obtained by landing on special Spaces, or stealing them from othe
 
 #### Ultimate Attack (Phase 1)
 
-Each Player has an Ultimate Attack, which can be used once per Game, at the beginning of ones Turn, instead of using an Item.
+Each Player has an Ultimate Attack, which can be used once per Game, at the beginning of ones Turn, instead of using an Item.<br>
+The starting Player may not use their Ultimate Attack on their first Turn, in order to keep the game balancend.
 
 | Ultimate Name | Effect |
 |---|---|
@@ -178,7 +195,25 @@ The following Cards exist for each category:
 
 ### Spaces (Phase 3)
 
-There are 
+There are 8 different Spaces, which trigger fun effects when landed upon.
+
+| Space Name | Effect when landed upon |
+|---|---|
+| <span style="color:#10107b; background-color:#f2f2f2"> ◉ </span> Blue | Gain 4 Coins |
+| <span style="color:#f70901; background-color:#f2f2f2"> ◉ </span> Small Oops | You or everyone loses 10 Coins, or you get teleported back to your starting space. |
+| <span style="color:#fefffd; background-color:#0a0704"> ◉ </span> Big Oops | Communism, lose 69 Coins, or the positions of all Players get shuffled. |
+| <span style="color:#529c31; background-color:#ecf6e9"> ◉ </span> Item | You receive a random Item. |
+| <span style="color:#529c31; background-color:#ffa5a4"> ◉ </span> Card | You receive a random Card. |
+| <span style="color:#529c31; background-color:#eea805"> ◉ </span> Gambling | Randomly double or lose all of your Coins, Items or Cards. |
+| <span style="color:#529c31; background-color:#0d12c1"> ◉ </span> Catnami | Gain 69 Coins or swap your Win Condition with that of another Player. |
+| <span style="color:#fddc11; background-color:#59270e"> ◉ </span> Yellow | A fun effect happens, depending on which exact Yellow Space was landed upon. A detailed table is visible in `infos.md`. |
+
+| Space Name | Effect when walked over. |
+|---|---|
+| <span style="color:#483115; background-color:#886732"> ▣ </span> Bridge | You receive a random Item. |
+| <span style="color:#b52910; background-color:#fecb67"> × </span> Goal | If your Win Condition is fulfilled, you win the game, otherwise you gain 15 Coins and the Goal moves to a different Space. |
+| <span style="color:#d4750f; background-color:#7e4b0c"> ↔ </span> Junction | Chose the direction in which you want to move. |
+| <span style="color:#b3adab; background-color:#7e4b0c"> ↔ </span> Gate | If you have a The uncle of your sister's cousin, has a brother-in-law, who once worked at Facebook, you may chose in which direction you want to move. If you chose the gated one, you will lose said Item. |
 
 ## Authors and Acknoledgement
 
