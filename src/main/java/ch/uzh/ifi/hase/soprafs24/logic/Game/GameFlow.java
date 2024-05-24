@@ -256,16 +256,14 @@ public class GameFlow {
         String type = args.getString("type");
         switch (type){ //NOSONAR
             case "ultimates":
-                ArrayList<String> ultiNames = new ArrayList<>();
+                ArrayList<String> winConditions = new ArrayList<>();
                 for(Player player : players){
-                    ultiNames.add(player.getUltimate());
+                    winConditions.add(player.getWinCondition());
                 }
-                Collections.shuffle(ultiNames);
+                Collections.shuffle(winConditions);
                 for(int i=0;i<4;i++){
-                    players[i].setUltimate(ultiNames.get(i));
-                    UltimateData ultimateData = new UltimateData();
-                    ultimateData.prepareData(ultiNames.get(i),players[i].isUltActive());
-                    returnUltToPlayer(ultimateData,gameId,players[i].getUserId());
+                    players[i].setWinCondition(winConditions.get(i));
+                    checkWinCondition(players[i]);
                 }
                 break;
             default:
@@ -319,7 +317,7 @@ public class GameFlow {
         Player randomPlayer = players[randomPLayerIndex];
 
         // Store initial positions of the players
-        Long currentPosition = players[(int) (long) getTurnPlayerId()-1].getPosition();
+        Long currentPosition = getActivePlayer().getPosition();
         Long randomPosition = randomPlayer.getPosition();
 
         // Swap positions of the players

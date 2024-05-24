@@ -199,9 +199,9 @@ public class GameWebSocketController {
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         JSONObject jsonObject = new JSONObject(msg);
         GameFlow gameFlow = gameFlows.get(gameId);
-        gameFlow.getPlayer(jsonObject.getInt("player")).addItemNames("TheBrotherAndCo");
-        UsableData usableData = UsableData.prepateData(gameFlow);
-        returnUsables(usableData,gameId);
+        UltimateData ultimateData = new UltimateData();
+        ultimateData.prepareData("BigShuffle",true);
+        returnUltToPlayer(ultimateData,gameId,(long) jsonObject.getInt("player"));
     }
 
 
