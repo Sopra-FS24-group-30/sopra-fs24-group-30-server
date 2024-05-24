@@ -198,10 +198,12 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/test")
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         JSONObject jsonObject = new JSONObject(msg);
+        int playerId = jsonObject.getInt("player");
+        String item = jsonObject.getString("item");
         GameFlow gameFlow = gameFlows.get(gameId);
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.prepareData("BigShuffle",true);
-        returnUltToPlayer(ultimateData,gameId,(long) jsonObject.getInt("player"));
+        System.out.println("reached update");
+        gameFlow.getPlayer(playerId).addItemNames(item);
+        returnUsables(UsableData.prepateData(gameFlow),gameId);
     }
 
 
@@ -409,7 +411,7 @@ public class GameWebSocketController {
 
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
-        gameFlow.setCurrentTurn(17);
+        gameFlow.setCurrentTurn(1);
         int startingPlayer = (int) (Math.random() * 4 + 1); //NOSONAR
         gameFlow.setTurnPlayerId((long) startingPlayer);
         gameFlows.put(gameId, gameFlow);
@@ -620,6 +622,8 @@ public class GameWebSocketController {
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
         String destination = "/queue/game/" + gameId + "/board/ultimative";
+        System.out.println("the name of ultdata is: " + ultimateData.getName());
+        System.out.println("the ult is active: " + ultimateData.getActive());
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 

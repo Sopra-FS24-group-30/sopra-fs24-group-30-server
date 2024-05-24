@@ -349,11 +349,10 @@ public class GameFlow {
             fieldIds.add(getField(fieldSpecialId,player));
             updatedPositions.put(player,fieldIds);
             players[player-1].setPosition(fieldIds.get(0));
+            MoveData moveData1 = new MoveData();
+            moveData1.setPlayerSpaceMovesColour(player,fieldIds,0,null);
+            GameWebSocketController.returnMoves(moveData1.getPlayerMoveMap(player),gameId);
         }
-
-        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
-
-        GameWebSocketController.returnMoves(moveData,gameId);
     }
 
 
@@ -437,10 +436,14 @@ public class GameFlow {
     private void updateUsables(int playerId, ArrayList<String> usables, String type){
         switch (type){ //NOSONAR
             case "item":
-                players[playerId-1].addItemNames(usables);
+                for (String u : usables){
+                    players[playerId-1].addItemNames(u);
+                }
                 break;
             case "card":
-                players[playerId-1].addCardNames(usables);
+                for (String u : usables){
+                    players[playerId-1].addCardNames(u);
+                }
                 break;
         }
     }
@@ -634,10 +637,10 @@ public class GameFlow {
                             calculatedAmount.put(Long.valueOf(id),amount);
                             break;
                         case "relative":
-                            int toPayRelative = (int) (players[id-1].getCash() / 100.0 * amount);
+                            int toPayRelative = getMaxPay(id,(int) (players[id-1].getCash() / 100.0 * amount));
                             totalPot += toPayRelative;
                             players[id-1].setCash(players[id-1].getCash()+toPayRelative);
-                            calculatedAmount.put(Long.valueOf(id),amount);
+                            calculatedAmount.put(Long.valueOf(id),toPayRelative);
                             break;
                     }
                 }else{
@@ -852,13 +855,14 @@ public class GameFlow {
         }
 
         //check if game is over, or player gets cash, in case the player moves 0
-        if ((moves==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
+        if ((movies==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
         player.addLandedAll(currPosi);
 
         while (movies > 0) {
+            setHadJunctionForGoal(false);
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
             nextPosi = Long.parseLong(nextSpaceIds.get(0));
@@ -885,7 +889,6 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        printi();
         if (moves == 0 || getHadJunctionForGoal()) {
             setHadJunctionForGoal(false);
             (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
@@ -899,8 +902,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverMaxTurns(findMostCash(players)));
+            GameWebSocketController.endGame(getGameId());
         }
 
         return Collections.emptyMap();
@@ -1082,7 +1085,7 @@ public class GameFlow {
     }
 
     public void changeGoalPosition(){
-        setBoardGoal(getGameBoard().getSpaces());
+        GameWebSocketController.changeGoal(getGameBoard().getSpaces(), getGameId());
     }
 
     public Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){
@@ -1092,7 +1095,7 @@ public class GameFlow {
         Long newGoal;
         do{
             newGoal = (long) (Math.random() * 8 + 1); //NOSONAR
-        } while (newGoal.equals(oldGoal.getSpaceId()));
+        } while (newGoal.equals(oldGoal.getSpaceId()) || newGoal == 2L || newGoal == 3L);
         findSpaceById(spaces, newGoal).setIsGoal(true); //NOSONAR
         response.put("result", newGoal);
         return response;
