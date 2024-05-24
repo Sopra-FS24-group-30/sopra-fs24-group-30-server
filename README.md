@@ -195,6 +195,7 @@ If you love coding and want to make this awesome game more awesome this list of 
     - the methods are called by the handleEffects method of the GameWebSocketController. If you add a completely new effect make sure to add it there.
   - [Items](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json) & [Ultimates](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json)
     - here are all the defined [Items](#items-phase-1) and ultimates
+    - In the Client, an Item needs a Picture, which is called `<ItemName>.png` and is stored in `src\assets\usables`.<br>Additional data, inlcuding choices, are to be defined in `usables.json`, located in `src\assets\data`.<br> In the `choices` key, acceptable values are: `otherPlayerId`, `playerId`, or an Array with 2 or 4 Values.<br> Cards, Ultimates and Win Conditions work much the same way, except that the data is saved in `wincondition.json` and `ultimates.json` respectively.
 
 ## Game Wiki
 
