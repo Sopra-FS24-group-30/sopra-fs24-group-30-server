@@ -436,10 +436,14 @@ public class GameFlow {
     private void updateUsables(int playerId, ArrayList<String> usables, String type){
         switch (type){ //NOSONAR
             case "item":
-                players[playerId-1].addItemNames(usables);
+                for (String u : usables){
+                    players[playerId-1].addItemNames(u);
+                }
                 break;
             case "card":
-                players[playerId-1].addCardNames(usables);
+                for (String u : usables){
+                    players[playerId-1].addCardNames(u);
+                }
                 break;
         }
     }
@@ -851,13 +855,14 @@ public class GameFlow {
         }
 
         //check if game is over, or player gets cash, in case the player moves 0
-        if ((moves==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
+        if ((movies==0 || getHadJunctionForGoal()) && "BlueGoal".equals(color) && Boolean.TRUE.equals(currentSpace.getIsGoal())){
             return checkGoalGameOver(color, player, listi, movies, moves, allSpaces);
         }
 
         player.addLandedAll(currPosi);
 
         while (movies > 0) {
+            setHadJunctionForGoal(false);
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
             nextPosi = Long.parseLong(nextSpaceIds.get(0));
@@ -884,7 +889,6 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
-        printi();
         if (moves == 0 || getHadJunctionForGoal()) {
             setHadJunctionForGoal(false);
             (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
@@ -898,8 +902,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            GameWebSocketController.endGame(getGameId());
             setWinMsg(doGameOverMaxTurns(findMostCash(players)));
+            GameWebSocketController.endGame(getGameId());
         }
 
         return Collections.emptyMap();
@@ -1091,7 +1095,7 @@ public class GameFlow {
         Long newGoal;
         do{
             newGoal = (long) (Math.random() * 8 + 1); //NOSONAR
-        } while (newGoal.equals(oldGoal.getSpaceId()));
+        } while (newGoal.equals(oldGoal.getSpaceId()) || newGoal == 2L || newGoal == 3L);
         findSpaceById(spaces, newGoal).setIsGoal(true); //NOSONAR
         response.put("result", newGoal);
         return response;

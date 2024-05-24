@@ -162,4 +162,78 @@ public class MoveData {
     public void setPlayer4(PlayerMove player4) {
         this.player4 = player4;
     }
+    public Map<String, Object> getPlayerMoveMap(int playerId1, int playerId2, int playerId3, int playerId4) {
+        Map<String, Object> playerDataMap = new HashMap<>();
+        playerDataMap.put("movementType", getMovetype());
+        switch (playerId1) {
+            case 1:
+                playerDataMap.put(Integer.toString(playerId1), player1);
+                break;
+            case 2:
+                playerDataMap.put(Integer.toString(playerId1), player2);
+                break;
+            case 3:
+                playerDataMap.put(Integer.toString(playerId1), player3);
+                break;
+            case 4:
+                playerDataMap.put(Integer.toString(playerId1), player4);
+                break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
+        }
+
+        switch (playerId2) {
+            case 1:
+                playerDataMap.put(Integer.toString(playerId2), player1);
+                break;
+            case 2:
+                playerDataMap.put(Integer.toString(playerId2), player2);
+                break;
+            case 3:
+                playerDataMap.put(Integer.toString(playerId2), player3);
+                break;
+            case 4:
+                playerDataMap.put(Integer.toString(playerId2), player4);
+                break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
+        }
+
+        switch (playerId3) {
+            case 1:
+                playerDataMap.put(Integer.toString(playerId3), player1);
+                break;
+            case 2:
+                playerDataMap.put(Integer.toString(playerId3), player2);
+                break;
+            case 3:
+                playerDataMap.put(Integer.toString(playerId3), player3);
+                break;
+            case 4:
+                playerDataMap.put(Integer.toString(playerId3), player4);
+                break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
+        }
+
+        switch (playerId4) {
+            case 1:
+                playerDataMap.put(Integer.toString(playerId4), player1);
+                break;
+            case 2:
+                playerDataMap.put(Integer.toString(playerId4), player2);
+                break;
+            case 3:
+                playerDataMap.put(Integer.toString(playerId4), player3);
+                break;
+            case 4:
+                playerDataMap.put(Integer.toString(playerId4), player4);
+                break;
+            default:
+                throw new IllegalArgumentException(response + playerId2);
+        }
+
+        return playerDataMap;
+    }
+
 }
