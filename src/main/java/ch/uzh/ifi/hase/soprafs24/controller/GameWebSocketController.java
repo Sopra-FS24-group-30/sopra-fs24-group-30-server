@@ -411,7 +411,7 @@ public class GameWebSocketController {
 
         gameFlow.setGameId(gameId);
         gameFlow.setGameBoard();
-        gameFlow.setCurrentTurn(17);
+        gameFlow.setCurrentTurn(1);
         int startingPlayer = (int) (Math.random() * 4 + 1); //NOSONAR
         gameFlow.setTurnPlayerId((long) startingPlayer);
         gameFlows.put(gameId, gameFlow);
