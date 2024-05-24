@@ -22,12 +22,13 @@ connected with the websockets, and his session as well as user ID is being safed
 
 ## Launch and Deployment
 
-Important Information about Spring Boot
+Important infomration about SpringBoot:
+Spring Boot simplifies the process of creating and deploying Spring applications by providing a range of features designed to reduce configuration and setup time. This application makes use of this framework. For further information, you can check out this links:
 
-    Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
-    Guides: http://spring.io/guides
-        Building a RESTful Web Service: http://spring.io/guides/gs/rest-service/
-        Building REST services with Spring: https://spring.io/guides/tutorials/rest/
+-   Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
+-   Guides: http://spring.io/guides
+    -   Building a RESTful Web Service: http://spring.io/guides/gs/rest-service/
+    -   Building REST services with Spring: https://spring.io/guides/tutorials/rest/
         
 ## Setup this Template with your IDE of choice
 Download your IDE of choice (e.g., [IntelliJ](https://www.jetbrains.com/idea/download/), [Visual Studio Code](https://code.visualstudio.com/), or [Eclipse](http://www.eclipse.org/downloads/)). Make sure Java 17 is installed on your system (for Windows, please make sure your `JAVA_HOME` environment variable is set to the correct version of Java).<!---->
@@ -49,7 +50,7 @@ The following extensions can help you get started more easily:
 **Note:** You'll need to build the project first with Gradle, just click on the `build` command in the _Gradle Tasks_ extension. Then check the _Spring Boot Dashboard_ extension if it already shows `soprafs24` and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
 
 ## Building with Gradle
-You can use the local Gradle Wrapper to build the application (You can click on it, instead of typing the commands manually).
+Gradle is a build automation tool that supports a wide range of project types and build processes. It simplifies dependency management, supports incremental builds and build caching. You can use the local Gradle Wrapper to build the application (You can click on them, instead of typing the commands manually).
 -   macOS: `./gradlew`
 -   Linux: `./gradlew`
 -   Windows: `./gradlew.bat`
@@ -57,7 +58,7 @@ You can use the local Gradle Wrapper to build the application (You can click on 
 More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
 
 ### Build
-
+To initiate the build or the run commands you click on them here, so you don't have to type them. 
 ```bash
 ./gradlew build
 ```
@@ -78,7 +79,7 @@ By visiting `localhost:8080` in your browser, you can verify that the server is 
 
 ### Development Mode
 You can start the backend in development mode, this will automatically trigger a new build and reload the application
-once the content of a file has been changed.
+once the content of a file has been changed. This will make the coding process significantly easier.
 
 Start two terminal windows and run:
 
