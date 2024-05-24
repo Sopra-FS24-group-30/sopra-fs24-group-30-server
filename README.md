@@ -128,23 +128,23 @@ More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguid
 
 ### Build
 
-    ```bash
-    ./gradlew build
-    ```
+```bash
+./gradlew build
+```
 
 ### Run
 
-    ```bash
-    ./gradlew bootRun
-    ```
+```bash
+./gradlew bootRun
+```
 
 By visiting `localhost:8080` in your browser, you can verify that the server is running.
 
 ### Test
 
-    ```bash
-    ./gradlew test
-    ```
+```bash
+./gradlew test
+```
 
 ### Development Mode
 
