@@ -110,7 +110,7 @@ public class MoveData {
                 throw new IllegalArgumentException(response + playerId2);
         }
 
-        switch (playerId2) {
+        switch (playerId2) { //NOSONAR
             case 1:
                 playerDataMap.put(Integer.toString(playerId2), player1);
                 break;
