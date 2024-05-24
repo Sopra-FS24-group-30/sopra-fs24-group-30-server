@@ -27,7 +27,7 @@ import java.util.stream.*;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-
+import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.Collections;
@@ -38,7 +38,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 @SpringBootTest
 public class GameFlowTest {
 
@@ -716,6 +717,20 @@ public class GameFlowTest {
     }
 
     @Test
+    public void TestCardPosition3() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        GameWebSocketController.addGameFlow(gameFlow.getGameId(), gameFlow);
+        Player[] players = gameFlow.getPlayers();
+        players[0].setPosition(27L);
+        JSONObject card = Getem.getCards().get("B123");
+        JSONObject choices = new JSONObject();
+        gameFlow.updateCardPositions(card, -1);
+        long position = players[0].getPosition();
+        assertTrue(position == 28L || position == 29L);
+
+    }
+
+    @Test
     void testDinoChickyNuggyMakesUltUsableCanPay() {
         GameFlow gameFlow = basicGameFlowSetup();
         gameFlow.getPlayer(1).setUltActive(false);
@@ -853,6 +868,150 @@ public class GameFlowTest {
         assertTrue(result.get(0) >= 1 && result.get(0) <= 6);
         assertTrue(result.get(1) >= 1 && result.get(1) <= 6);
     }
+
+    @Test
+    public void testBoardGoal() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        GameBoard gameBoard = new GameBoard();
+
+        assertEquals(10L, gameFlow.findGoal(gameBoard.getSpaces()));
+
+    }
+
+    @Test
+    public void testBoardGoalj() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        GameBoard gameBoard = new GameBoard();
+        Map<String, Long> response = new HashMap<>();
+
+        Map<String, Long> BoardGoal = gameFlow.setBoardGoal(gameBoard.getSpaces());
+        response.put("goal", 10L);
+        assertNotEquals(response, BoardGoal);
+
+    }
+
+    @Test
+    public void testBoardGoalji() {
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        GameBoard gameBoard = new GameBoard();
+        Map<String, Long> response = new HashMap<>();
+        gameFlow.changeGoalPosition();
+        assertEquals(10L, gameFlow.findGoal(gameBoard.getSpaces()));
+
+    }
+
+    @Test
+    public void Junction(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        gameFlow.setHadJunction(true);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        gameFlow.setStartTime(currentDateTime);
+        assertEquals(true, gameFlow.getHadJunction());
+        assertEquals(currentDateTime, gameFlow.getStartTime());
+    }
+
+    @Test
+    public void TESTtoItem(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        Map<String, Object> response = new HashMap<>();
+        response.put("items", players[0].getItemNames());
+        response.put("cards", players[0].getCardNames());
+        assertNotEquals(response, gameFlow.toItem(players[0]));
+    }
+
+    @Test
+    public void TESTtoMoney(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
+        response.put("newAmountofMoney", 110);
+        response.put("changeAmountOfMoney", 10);
+        String playerId = Long.toString(players[0].getPlayerId());
+        result.put(playerId, response);
+        players[0].setCash(100);
+        Map<String, Object> lmao = gameFlow.toMoney(players[0], 10);
+        assertNotEquals(response, lmao);
+    }
+
+    @Test
+    public void TESTupdateTurns(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        JSONObject choices1 = new JSONObject("{\"newTurnNumber\": \"4\"}");
+        gameFlow.updateTurns(choices1);
+        assertEquals(4, gameFlow.getCurrentTurn());
+    }
+
+    @Test
+    public void TESTshuffle() {
+        JSONObject choices1 = new JSONObject("{\"type\": \"card\"}");
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            gameFlow.shuffle(choices1);
+        });
+
+
+    }
+
+    @Test
+    public void TESTshuffle2() {
+        JSONObject choices1 = new JSONObject("{\"type\": \"ultimates\"}");
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        players[0].setWinCondition("Shiny");
+        players[1].setWinCondition("Shiny");
+        players[2].setWinCondition("Shiny");
+        players[3].setWinCondition("Shiny");
+        gameFlow.shuffle(choices1);
+        assertEquals("Shiny", players[0].getWinCondition());
+
+
+    }
+
+    @Test
+    public void TESTuseRandomUsable() {
+        JSONObject choices1 = new JSONObject("{\"type\": \"card\", \"amount\": 2}");
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            gameFlow.useRandomUsable(choices1);
+        });
+
+    }
+
+    @Test
+    public void TestToJunction() {
+        JSONObject choices1 = new JSONObject("{\"type\": \"card\", \"amount\": 2}");
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        Long currSpace = players[0].getPosition();
+        List<String> nextUnlock = new ArrayList<>();
+        List<String> nextLock = new ArrayList<>();
+        nextUnlock.add("10L");
+        nextLock.add("20L");
+        Map<String, Object> response = new HashMap<>();
+        response.put("nextLockedSpaces", nextLock);
+        response.put("nextUnlockedSpaces", nextUnlock);
+        response.put("playerId", players[0].getPlayerId());
+        response.put("currentSpace", currSpace);
+        assertEquals(response.toString(), gameFlow.toJunction(players[0], currSpace, nextUnlock, nextLock).toString());
+
+    }
+/*
+    @Test
+    public void TESTuseRandomUsable(){
+        GameFlow gameFlow = extensiveGameFlowSetup();
+        Player[] players = gameFlow.getPlayers();
+        JSONObject choices1 = new JSONObject("{\"type\": \"item\",\"amount\": 4}");
+        gameFlow.useRandomUsable(choices1);
+        assertEquals(2, players[0].getItemNames().size());
+    }
+*/
 
 
 }
