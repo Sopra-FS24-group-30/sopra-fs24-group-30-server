@@ -1081,7 +1081,7 @@ public class GameFlow {
     }
 
     public void changeGoalPosition(){
-        setBoardGoal(getGameBoard().getSpaces());
+        GameWebSocketController.changeGoal(getGameBoard().getSpaces(), getGameId());
     }
 
     public Map<String, Long> setBoardGoal(List<GameBoardSpace> spaces){

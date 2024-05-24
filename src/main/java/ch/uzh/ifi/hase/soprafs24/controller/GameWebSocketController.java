@@ -201,7 +201,8 @@ public class GameWebSocketController {
         int playerId = jsonObject.getInt("player");
         GameFlow gameFlow = gameFlows.get(gameId);
         System.out.println("reached update");
-        gameFlow.getPlayer(playerId).addItemNames("");
+        gameFlow.getPlayer(playerId).addItemNames("MeowYou");
+        returnUsables(UsableData.prepateData(gameFlow),gameId);
     }
 
 
