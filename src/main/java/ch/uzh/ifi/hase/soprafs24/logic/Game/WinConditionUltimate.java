@@ -12,7 +12,6 @@ public class WinConditionUltimate { //NOSONAR
         allWinConditions.add("Marooned");
         allWinConditions.add("Golden");
         allWinConditions.add("Drunk");
-//        allWinConditions.add("ThirdTime");
         allWinConditions.add("Company");
         allWinConditions.add("Ship");
         allWinConditions.add("Explorer");

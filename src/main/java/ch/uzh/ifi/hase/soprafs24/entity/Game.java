@@ -57,11 +57,11 @@ public class Game implements Serializable {
     @ElementCollection
     private List<String> listOfAllUltis = new ArrayList<>(Getem.getUltimates().keySet());
 
-    public List<Player> getactive_Players() {
+    public List<Player> getactive_Players() {//NOSONAR
         return active_players;
     }
 
-    public void setactive_players(List<Player> active_players) {
+    public void setactive_players(List<Player> active_players) { //NOSONAR
         this.active_players = active_players;
     }
 

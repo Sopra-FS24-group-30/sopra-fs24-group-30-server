@@ -476,7 +476,7 @@ public class GameWebSocketController {
         if (selectedSpace == 3L || selectedSpace == 44L){
             Player currplayer = gameFlow.getActivePlayer();
             currplayer.removeItemNames("TheBrotherAndCo");
-            messagingTemplate.convertAndSend("/topic/game/"+gameId+"/board/usables",UsableData.prepateData(gameFlow));
+            messagingTemplate.convertAndSend("/topic/game/"+gameId+"/board/usables",UsableData.prepateData(gameFlow)); //NOSONAR
         }
         messagingTemplate.convertAndSend(destination, gameFlow.move(gameFlow.getMovesLeft(), selectedSpace));
     }

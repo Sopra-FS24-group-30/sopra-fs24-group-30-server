@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -69,4 +70,14 @@ UserServiceTest {
         assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser));
     }
 
+    @Test
+    void testLogin(){
+        User saved = userService.createUser(testUser);
+        testUser.setStatus(UserStatus.OFFLINE);
+
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(testUser));
+        Mockito.when(userRepository.findByUsername(Mockito.anyString())).thenReturn(Optional.ofNullable(testUser));
+        User logedIn = userService.login(testUser);
+        assertSame(logedIn.getStatus(), UserStatus.ONLINE);
+    }
 }
