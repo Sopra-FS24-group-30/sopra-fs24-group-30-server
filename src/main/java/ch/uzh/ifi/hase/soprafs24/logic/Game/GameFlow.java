@@ -250,7 +250,7 @@ public class GameFlow {
             player.addCash(hasToPay);
             CashData cashData = new CashData();
             cashData.setupCashDataCurrent(this);
-            cashData.setPlayerAmount(Integer.parseInt(playerId),hasToPay);
+            cashData.setPlayerAmount(id,hasToPay);
             returnMoney(cashData,gameId);
             player.setUltActive(true);
             UltimateData ultimateData = new UltimateData();
