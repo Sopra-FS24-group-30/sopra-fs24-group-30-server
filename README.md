@@ -25,7 +25,7 @@
     - [Cards (Phase 2)](#cards-phase-2)
   - [Spaces (Phase 3)](#spaces-phase-3)
   - [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Authors and Acknoledgement](#authors-and-acknoledgement)
+- [Authors and Acknowledgement](#authors-and-acknowledgement)
 - [License](#license)
 
 ## Introduction
