@@ -336,9 +336,9 @@ The following shortcuts are available on the Board.
 | Return | Toggles an Overlay, showing which way Players move. |
 | Esc | Disables said Overlay. |
 
-## Authors and Acknoledgement
+## Authors and Acknowledgement
 
-- **[Céline Mai Anh Ziegler](https://github.com/CelineZi)**
+- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
 - [Ambros Eberhard](https://github.com/ambros02)
 - [Carlos Hernandez](https://github.com/KarlGrossGROSS)
 - [Thi Tam Gian Nguyen](https://github.com/tamtam-27)
@@ -348,5 +348,4 @@ We want to thank our teaching assistant [Marco Leder](https://github.com/marcole
 
 ## License
 
-The Code is licensed under the Apache 2.0 License.<br>
-<!-- Insert Images © Client -->
+The Code is licensed under the [Apache 2.0 License](./LICENSE).
