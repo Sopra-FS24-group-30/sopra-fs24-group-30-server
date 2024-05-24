@@ -199,9 +199,10 @@ public class GameWebSocketController {
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         JSONObject jsonObject = new JSONObject(msg);
         int playerId = jsonObject.getInt("player");
+        String item = jsonObject.getString("item");
         GameFlow gameFlow = gameFlows.get(gameId);
         System.out.println("reached update");
-        gameFlow.getPlayer(playerId).addItemNames("MeowYou");
+        gameFlow.getPlayer(playerId).addItemNames(item);
         returnUsables(UsableData.prepateData(gameFlow),gameId);
     }
 
@@ -621,6 +622,8 @@ public class GameWebSocketController {
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
         String destination = "/queue/game/" + gameId + "/board/ultimative";
+        System.out.println("the name of ultdata is: " + ultimateData.getName());
+        System.out.println("the ult is active: " + ultimateData.getActive());
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 
