@@ -231,8 +231,6 @@ public class SpacesTest {
         spaces.black(gameFlow);
 
         for(Player player : gameFlow.getPlayers()){
-            System.out.println(player.getPlayerId());
-            System.out.println(player.getCash());
             assertEquals(200,player.getCash());
         }
     }
