@@ -167,6 +167,7 @@ public class GameWebSocketController {
             sendError("you already used your ultimate, recharge with Dino Chicky Nuggie",gameId,gameFlow.getActivePlayer().getUserId());
             return;
         }
+
         //extract Info from message
         String usable = payLoad.getString("used");
         JSONObject choices = payLoad.getJSONObject("choice");
@@ -201,9 +202,10 @@ public class GameWebSocketController {
         int playerId = jsonObject.getInt("player");
         String item = jsonObject.getString("item");
         GameFlow gameFlow = gameFlows.get(gameId);
-        System.out.println("reached update");
-        gameFlow.getPlayer(playerId).addItemNames(item);
-        returnUsables(UsableData.prepateData(gameFlow),gameId);
+        UltimateData ultimateData = new UltimateData();
+        ultimateData.setName("Chameleon");
+        ultimateData.setActive(true);
+        returnUltToPlayer(ultimateData,gameId,(long)playerId);
     }
 
 
@@ -229,6 +231,7 @@ public class GameWebSocketController {
                 gameFlow.updateTurns(effectParas);
                 break;
             case "useRandomUsable":
+                System.out.println("Chameleon reached his effect");
                 gameFlow.useRandomUsable(effectParas);
                 break;
             case "givePlayerCardRand":
@@ -504,7 +507,6 @@ public class GameWebSocketController {
             sendError("you already used a card or rolled the dice this turn",gameId,gameFlow.getActivePlayer().getUserId());
             return;
         }
-        System.out.println("Received message and now getting dice: ");
         rollOneDice(gameId);
         gameFlow.setCardDiceUsed(true);
         move(gameId);
@@ -590,13 +592,11 @@ public class GameWebSocketController {
 
     public static void returnUsables(UsableData usableData, Long gameId) {
         String destination = "/topic/game/" + gameId + "/board/usables";
-        System.out.println("returning to usabledata");
         messagingTemplate.convertAndSend(destination, usableData);
     }
 
     public static void returnUsables(Map<String, Object> getItemMsg, Long gameId){
         String destination = "/topic/game/" + gameId + "/board/usables";
-        System.out.println("returning to usablemap");
         messagingTemplate.convertAndSend(destination, getItemMsg);
     }
 
@@ -607,7 +607,6 @@ public class GameWebSocketController {
 
     public static void endGame(Long gameId){
         GameManagementService.changeGameStatus(allGames.get(gameId), GameStatus.NOT_PLAYING);
-        System.out.println(allGames.get(gameId).getStatus());
         Map<String, String> endGameMsg = new HashMap<>(Map.of("status", GameStatus.NOT_PLAYING.toString()));
         String destination = "/topic/game/" + gameId + "/board/gameEnd";
         messagingTemplate.convertAndSend(destination, endGameMsg);
@@ -622,8 +621,6 @@ public class GameWebSocketController {
 
     public static void returnUltToPlayer(UltimateData ultimateData, Long gameId, Long userId){
         String destination = "/queue/game/" + gameId + "/board/ultimative";
-        System.out.println("the name of ultdata is: " + ultimateData.getName());
-        System.out.println("the ult is active: " + ultimateData.getActive());
         messagingTemplate.convertAndSendToUser(userId.toString(),destination,ultimateData);
     }
 

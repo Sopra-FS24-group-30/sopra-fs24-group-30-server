@@ -73,18 +73,18 @@ If you love coding and want to make this awesome game more awesome this list of 
 
 ## Keybinds
 
-| Button pressed | Effect |
+| Key pressed | Effect |
 |---|---|
-| M |  |
-| . |  |
-| , |  |
-| $ |  |
-| R |  |
-| C | Changes the Skins of the Players to a new Palette (• • • •) |
-| Shift+C | Changes the Skins of the Players to a new Palette (• • • •) |
-| X |  |
-| Return |  |
-| Esc |  |
+| M | Mutes onself in the Voice Chat. |
+| , | Zooms the board in. |
+| . | Zooms the board out. |
+| R | Resets the zoom level of the Board. |
+| $ | Toggles the Board skin. |
+| C | Changes the skins of the Players to the following palette: 🩵 💚 💛 ❤️ |
+| Shift+C | Changes the skins of the Players to the following palette: 🩷 💜 🧡 🤍 |
+| X | Toggles the visibility of Status Messages (e.g. on which Space a Player landed). |
+| Return | Toggles an Overlay, showing which way Players move. |
+| Esc | Disables said Overlay. |
 
 ## License
 
