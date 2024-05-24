@@ -167,18 +167,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userIdString,destination,errorData);
     }
 
-    @MessageMapping("/game/{gameId}/board/test")
-    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
-        JSONObject jsonObject = new JSONObject(msg);
-        int playerId = jsonObject.getInt("player");
-        String item = jsonObject.getString("item");
-        GameFlow gameFlow = gameFlows.get(gameId);
-
-        gameFlow.getPlayer(playerId).addItemNames(item);
-        returnUsables(UsableData.prepateData(gameFlow),gameId);
-    }
-
-
     public static void handleEffects(String effect, JSONObject effectParas, Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
         switch (effect){
