@@ -31,6 +31,10 @@ public class MoveData {
         setMovetype(movetype);
     }
 
+    public MoveData() {
+
+    }
+
     public String getMovetype() {
         return movetype;
     }
@@ -126,4 +130,36 @@ public class MoveData {
         return playerDataMap;
     }
 
+
+    public PlayerMove getPlayer1() {
+        return player1;
+    }
+
+    public void setPlayer1(PlayerMove player1) {
+        this.player1 = player1;
+    }
+
+    public PlayerMove getPlayer2() {
+        return player2;
+    }
+
+    public void setPlayer2(PlayerMove player2) {
+        this.player2 = player2;
+    }
+
+    public PlayerMove getPlayer3() {
+        return player3;
+    }
+
+    public void setPlayer3(PlayerMove player3) {
+        this.player3 = player3;
+    }
+
+    public PlayerMove getPlayer4() {
+        return player4;
+    }
+
+    public void setPlayer4(PlayerMove player4) {
+        this.player4 = player4;
+    }
 }

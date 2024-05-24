@@ -198,10 +198,10 @@ public class GameWebSocketController {
     @MessageMapping("/game/{gameId}/board/test")
     public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
         JSONObject jsonObject = new JSONObject(msg);
+        int playerId = jsonObject.getInt("player");
         GameFlow gameFlow = gameFlows.get(gameId);
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.prepareData("BigShuffle",true);
-        returnUltToPlayer(ultimateData,gameId,(long) jsonObject.getInt("player"));
+        System.out.println("reached update");
+        gameFlow.getPlayer(playerId).addItemNames("");
     }
 
 

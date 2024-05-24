@@ -349,11 +349,10 @@ public class GameFlow {
             fieldIds.add(getField(fieldSpecialId,player));
             updatedPositions.put(player,fieldIds);
             players[player-1].setPosition(fieldIds.get(0));
+            MoveData moveData1 = new MoveData();
+            moveData1.setPlayerSpaceMovesColour(player,fieldIds,0,null);
+            GameWebSocketController.returnMoves(moveData1.getPlayerMoveMap(player),gameId);
         }
-
-        MoveData moveData = new MoveData(updatedPositions.get(1),updatedPositions.get(2),updatedPositions.get(3),updatedPositions.get(4));
-
-        GameWebSocketController.returnMoves(moveData,gameId);
     }
 
 
@@ -634,10 +633,10 @@ public class GameFlow {
                             calculatedAmount.put(Long.valueOf(id),amount);
                             break;
                         case "relative":
-                            int toPayRelative = (int) (players[id-1].getCash() / 100.0 * amount);
+                            int toPayRelative = getMaxPay(id,(int) (players[id-1].getCash() / 100.0 * amount));
                             totalPot += toPayRelative;
                             players[id-1].setCash(players[id-1].getCash()+toPayRelative);
-                            calculatedAmount.put(Long.valueOf(id),amount);
+                            calculatedAmount.put(Long.valueOf(id),toPayRelative);
                             break;
                     }
                 }else{
