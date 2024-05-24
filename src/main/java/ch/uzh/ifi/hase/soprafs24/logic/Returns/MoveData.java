@@ -71,7 +71,7 @@ public class MoveData {
 
     public Map<String, Object> getPlayerMoveMap(int playerId) {
         Map<String, Object> playerDataMap = new HashMap<>();
-        playerDataMap.put("movementType", getMovetype());
+        playerDataMap.put("movementType", getMovetype()); //NOSONAR
         switch (playerId) {
             case 1:
                 playerDataMap.put(Integer.toString(playerId), player1);
