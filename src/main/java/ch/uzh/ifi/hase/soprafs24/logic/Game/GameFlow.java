@@ -923,7 +923,7 @@ public class GameFlow {
      * GameOver related functions
      *
      */
-    private Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
+    public Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
         setMovesLeft(movies);
         if (player.getCanWin()) {
             GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
@@ -1161,7 +1161,7 @@ public class GameFlow {
         }
     }
 
-    private Map<String, Object> caseJunction(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
+    public Map<String, Object> caseJunction(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
         List<String> unlock = nextSpace.getNext();
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
@@ -1188,7 +1188,7 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-    private Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
+    public Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.returnUsables(toItem(player), getGameId());
@@ -1224,7 +1224,7 @@ public class GameFlow {
         return retour;
     }
 
-    private Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
+    public Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
         Map<String, Object> response = new HashMap<>();
         response.put("playerId", player.getPlayerId().toString());
         response.put("currentSpace", currSpace);
@@ -1233,7 +1233,7 @@ public class GameFlow {
         return response;
     }
 
-    private Map<String, Object> toItem(Player player){
+    public Map<String, Object> toItem(Player player){
         Map<String, Object> retour = new HashMap<>();
         Map<String, Object> response = new HashMap<>();
         String randItem = randoItem();
@@ -1252,7 +1252,7 @@ public class GameFlow {
         return retour;
     }
 
-    private Map<String, Object> toMoney(Player player, int change) {
+    public Map<String, Object> toMoney(Player player, int change) {
         Map<String, Object> response = new HashMap<>();
         Map<String, Integer> details = new HashMap<>();
         int newAmount = Math.max(player.getCash()+change, 0);
@@ -1262,11 +1262,13 @@ public class GameFlow {
         response.put(player.getPlayerId().toString(), details);
         return response;
     }
-
+/*
     private void printi(){
         System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash()); //NOSONAR
         System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition() + "  LostCash: " + players[1].getLostCash());
         System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
         System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
     }
+
+ */
 }
