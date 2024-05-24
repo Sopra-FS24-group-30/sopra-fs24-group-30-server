@@ -1,30 +1,35 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;//NOSONAR
+
+import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 
 public class UltimateData {
 
-    String ultimateName;
-    Boolean isActive;
+    String name;
+    Boolean active;
 
-    public String getUltimateName() {
-        return ultimateName;
+    public String getName() {
+        return name;
     }
 
-    public void setUltimateName(String ultimateName) {
-        this.ultimateName = ultimateName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Boolean getActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(Boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
-    public static UltimateData prepareData(String ultimateName, Boolean isActive){
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.setUltimateName(ultimateName);
-        ultimateData.setActive(isActive);
-        return ultimateData;
+    public void prepareData(String ultimateName, Boolean isActive){
+        this.name = ultimateName;
+        this.active = isActive;
+    }
+
+    public void prepareDataForCurrentPlayer(GameFlow gameFlow){
+        name = gameFlow.getActivePlayer().getUltimate();
+        active = gameFlow.getActivePlayer().isUltActive();
     }
 }

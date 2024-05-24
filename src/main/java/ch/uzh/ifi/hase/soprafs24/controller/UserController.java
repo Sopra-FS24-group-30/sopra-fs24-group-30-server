@@ -31,6 +31,13 @@ public class UserController {
         User user = this.userService.login(loginUser);
         return DTOMapper.INSTANCE.convertUserToUserPostDTO(user);
     }
+
+    @PutMapping("/logout/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(@PathVariable Long userId) {
+        this.userService.logout(userId);
+    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     private UserPostDTO createUser(@RequestBody UserPostDTO UserPostDTO){//NOSONAR

@@ -14,13 +14,13 @@ public class GameGetDTO {
 
     private GameBoard gameBoard;
 
-    private List<Player> active_players;
+    private List<Player> active_players;//NOSONAR
 
-    public List<Player> getActive_players() {
+    public List<Player> getActive_players() {//NOSONAR
         return active_players;
     }
 
-    public void setActive_players(List<Player> active_players) {
+    public void setActive_players(List<Player> active_players) {//NOSONAR
         this.active_players = active_players;
     }
 

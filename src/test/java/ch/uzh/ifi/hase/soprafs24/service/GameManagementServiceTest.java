@@ -18,7 +18,6 @@ import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.service.GameService;
 
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -271,17 +270,17 @@ public class GameManagementServiceTest {
     void test_lobbyPlayers(){
         Game game = createGameWithPlayers();
 
-        List<String> playerIds = new ArrayList<>();
-        playerIds.add("1");
+        List<Object> expected = new ArrayList<>();
 
-        game.setPlayers(playerIds);
-        game.addPlayer("3");
-        game.addPlayer("2");
+        for(int i=1; i<=4; i++){
+            HashMap<String, Object> dict = new HashMap<>();
+            String name = "player " +i;
+            dict.put("username", name);
+            dict.put("id", (long) i);
+            expected.add(dict);
+        }
 
-        playerIds.add("3");
-        playerIds.add("2");
-
-        assertEquals(playerIds, gameManagementService.getPlayersInGame(game.getId()));
+        assertEquals(expected, gameManagementService.lobbyPlayers(game.getId()));
     }
 
     @Test
@@ -378,8 +377,7 @@ public class GameManagementServiceTest {
 
         Player player = new Player();
         player.setUserId((long)2);
-        player.setAchievementProgress(new AchievementProgress(2L), new GameWebSocketController.GameTimer());
-        player.getAchievementProgress().setGameTimer(new GameWebSocketController.GameTimer());
+        player.setAchievementProgress(new AchievementProgress(2L));
         player.setPlayerName("user");
         player.setPlayerId((long)2);
         player.setStatus(PlayerStatus.NOT_PLAYING);

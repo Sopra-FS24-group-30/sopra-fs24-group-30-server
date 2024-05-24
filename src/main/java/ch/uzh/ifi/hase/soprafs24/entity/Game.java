@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Player;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs24.logic.Game.WinConditionUltimate;
@@ -113,16 +112,16 @@ public class Game implements Serializable {
         this.players = playerList;
     }
 
-    public void addPlayer(String Id){
-        this.players.add(Id);
+    public void addPlayer(String id){
+        this.players.add(id);
     }
 
     public List<String> getPlayers() {
         return players;
     }
 
-    public void removePlayer(String Id){
-        this.players.remove(Id);
+    public void removePlayer(String id){
+        this.players.remove(id);
     }
 
     public List<String> getListOfAllCondition() {

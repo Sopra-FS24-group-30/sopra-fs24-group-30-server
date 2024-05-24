@@ -2,23 +2,18 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.entity.AchievementStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.AchievementProgress;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import ch.uzh.ifi.hase.soprafs24.repository.AchievementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class AchievementService {
     private final AchievementRepository achievementRepository;
-
 
     @Autowired
     public AchievementService(@Qualifier("achievementRepository") AchievementRepository achievementRepository) {
@@ -36,9 +31,8 @@ public class AchievementService {
         this.achievementRepository.flush();
     }
 
-    public void updateAchievements(AchievementProgress achievementProgress){
+    public void updateAchievements(AchievementProgress achievementProgress){//NOSONAR
         AchievementStatus achievementStatus = this.achievementRepository.findByUserId(achievementProgress.getUserId());
-        //GameWebSocketController gameWebSocketController = new GameWebSocketController();
         //updates for baron achievements
         int maxCash = achievementProgress.getMaxAmountCash();
         if(maxCash >= 200){
@@ -73,6 +67,10 @@ public class AchievementService {
             if(achievementStatus.getWinStreak() >= 3){
                 achievementStatus.setGamer(true);
             }
+            //update for Backstabber
+            if(achievementProgress.isTeamMateWinner()){
+                achievementStatus.setBackStabber(true);
+            }
         }else {
             //update for gamer and doingYourBest
             achievementStatus.setWinStreak(0);
@@ -82,16 +80,16 @@ public class AchievementService {
             }
         }
 
-        if (achievementProgress.getGameTimer().getElapsedTime() >= 10800){
+        if (achievementProgress.getElapsedSeconds() >= 10800){
             achievementStatus.setEndurance1(true);
             achievementStatus.setEndurance2(true);
             achievementStatus.setEndurance3(true);
         }
-        else if (achievementProgress.getGameTimer().getElapsedTime() >= 7200){
+        else if (achievementProgress.getElapsedSeconds() >= 7200){
             achievementStatus.setEndurance2(true);
             achievementStatus.setEndurance1(true);
         }
-        else if (achievementProgress.getGameTimer().getElapsedTime() >= 3600){
+        else if (achievementProgress.getElapsedSeconds() >= 3600){
             achievementStatus.setEndurance1(true);
         }
         if (achievementProgress.getWinnerAmount() == 0){

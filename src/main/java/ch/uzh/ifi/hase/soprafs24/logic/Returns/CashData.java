@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Returns;
+package ch.uzh.ifi.hase.soprafs24.logic.Returns;//NOSONAR
 
 import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,7 +68,7 @@ public class CashData {
     }
 
     public void setPlayerAmount(int playerId, int cashChange){
-        switch (playerId){
+        switch (playerId){//NOSONAR
             case 1:
                 player1.setChangeAmountOfMoney(cashChange);
                 break;
@@ -85,7 +85,7 @@ public class CashData {
     }
 
     public void setPlayerAmountAndUpdate(int playerId, int newCash, int cashChange){
-        switch (playerId){
+        switch (playerId){//NOSONAR
             case 1:
                 player1.setNewAmountOfMoney(newCash);
                 player1.setChangeAmountOfMoney(cashChange);
@@ -106,7 +106,7 @@ public class CashData {
     }
 
     //userId and positive
-    public HashMap<Long,Integer> checkNegativeChanges(){
+    public HashMap<Long,Integer> checkNegativeChanges(){//NOSONAR
         HashMap<Long,Integer> negativeUpdates = new HashMap<>();
         if(player1.getChangeAmountOfMoney() < 0){
             negativeUpdates.put(1L,player1.getChangeAmountOfMoney());

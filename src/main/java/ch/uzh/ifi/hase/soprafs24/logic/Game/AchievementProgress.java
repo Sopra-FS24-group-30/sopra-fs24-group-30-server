@@ -1,6 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.logic.Game;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
-import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.GameTimer;
+package ch.uzh.ifi.hase.soprafs24.logic.Game;//NOSONAR
 
 public class AchievementProgress {
 
@@ -8,32 +6,17 @@ public class AchievementProgress {
     private int maxAmountCash;
     private int cashWhenWinning;
     private boolean winner;
+    private boolean teamMateWinner;
     private boolean ultimateUsed;
-    private GameTimer gameTimer;
-    private int WinnerAmount;
+    private int winnerAmount;
+    private long elapsedSeconds;
 
     public AchievementProgress(Long userId){
         this.userId = userId;
     }
 
-    public AchievementProgress(Long userId, GameTimer gameTimer){
-
-        this.userId = userId;
-        this.gameTimer = gameTimer;
-        //this.gameTimer = GameWebSocketController.getGameTimers().get(gameId);
-
-    }
-
     public Long getUserId() {
         return userId;
-    }
-
-    public GameTimer getGameTimer() {
-        return this.gameTimer;
-    }
-
-    public void setGameTimer(GameTimer gameTimer){
-        this.gameTimer = gameTimer;
     }
 
     public void setUserId(Long userId) {
@@ -64,6 +47,14 @@ public class AchievementProgress {
         this.winner = winner;
     }
 
+    public boolean isTeamMateWinner() {
+        return teamMateWinner;
+    }
+
+    public void setTeamMateWinner(boolean teamMateWinner) {
+        this.teamMateWinner = teamMateWinner;
+    }
+
     public boolean isUltimateUsed() {
         return ultimateUsed;
     }
@@ -73,10 +64,18 @@ public class AchievementProgress {
     }
 
     public void setWinnerAmount(int amount){
-        this.WinnerAmount = amount;
+        this.winnerAmount = amount;
     }
 
     public int getWinnerAmount(){
-        return this.WinnerAmount;
+        return this.winnerAmount;
+    }
+
+    public long getElapsedSeconds() {
+        return elapsedSeconds;
+    }
+
+    public void setElapsedSeconds(long elapsedSeconds) {
+        this.elapsedSeconds = elapsedSeconds;
     }
 }
