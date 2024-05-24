@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnMoney;
 import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnUltToPlayer;
 
 
@@ -227,7 +228,8 @@ public class GameFlow {
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
                     System.out.println("item USed: " + itemName);
-                    GameWebSocketController.handleItems("{\"itemUsed\": \"" + itemName + "\", \"choices\": {}}",gameId);
+                    this.setItemultused(false); //this is because this gets called by chameleon so it is already set to true but we need to run the item
+                    GameWebSocketController.handleItems("{\"used\": \"" + itemName + "\", \"choice\": {}}",gameId);
                 }
                 break;
             default:
@@ -244,7 +246,12 @@ public class GameFlow {
 
         for(Integer id : allPlayers){
             Player player = getPlayer(id);
-            player.addCash(Math.max(player.getCash()*-1,Integer.parseInt(cashPay)));
+            int hasToPay = Math.max(player.getCash()*-1,Integer.parseInt(cashPay));
+            player.addCash(hasToPay);
+            CashData cashData = new CashData();
+            cashData.setupCashDataCurrent(this);
+            cashData.setPlayerAmount(id,hasToPay);
+            returnMoney(cashData,gameId);
             player.setUltActive(true);
             UltimateData ultimateData = new UltimateData();
             ultimateData.prepareDataForCurrentPlayer(this);
@@ -902,8 +909,8 @@ public class GameFlow {
 
         //check if Game is over
         if (currentTurn >= 21){
-            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
             GameWebSocketController.endGame(getGameId());
+            setWinMsg(doGameOverMaxTurns(findMostCash(players)));
         }
 
         return Collections.emptyMap();
