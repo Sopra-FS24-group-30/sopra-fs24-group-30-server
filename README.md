@@ -47,6 +47,10 @@ Click [here](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client) 
 ## Technologies
 
 ### Voice Chat API
+The voice chat lets people communicate in realtime. It features a global and a team chat. In the global chat everyone can hear each
+other while the team chat is exclusive for the team. The voice chat was implemented with an external api called [agora](https://www.agora.io/en/).
+It uses websockets for the connection. To ensure no conflicts the userId is used for the userId and the channels are made up of a combination of words
+and the lobbyId. This ensures that all players which are in a different game have unique channels.
 
 ### Websockets
 
@@ -86,7 +90,8 @@ The Server consists of several components that are working together:
 
 ## Launch and Deployment
 
-Important Information about Spring Boot
+Important infomration about SpringBoot:
+Spring Boot simplifies the process of creating and deploying Spring applications by providing a range of features designed to reduce configuration and setup time. This application makes use of this framework. For further information, you can check out this links:
 
     Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
     Guides: http://spring.io/guides
@@ -117,17 +122,15 @@ The following extensions can help you get started more easily:
 **Note:** You'll need to build the project first with Gradle, just click on the `build` command in the *Gradle Tasks* extension. Then check the *Spring Boot Dashboard* extension if it already shows `soprafs24` and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
 
 ## Building with Gradle
-
-You can use the local Gradle Wrapper to build the application (You can click on it, instead of typing the commands manually).
-
-- macOS: `./gradlew`
-- Linux: `./gradlew`
-- Windows: `./gradlew.bat`
+Gradle is a build automation tool that supports a wide range of project types and build processes. It simplifies dependency management, supports incremental builds and build caching. You can use the local Gradle Wrapper to build the application.
+-   macOS: `./gradlew`
+-   Linux: `./gradlew`
+-   Windows: `./gradlew.bat`
 
 More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
 
 ### Build
-
+To initiate the build or the run commands you click on them here, so you don't have to type them. 
 ```bash
 ./gradlew build
 ```
@@ -149,7 +152,7 @@ By visiting `localhost:8080` in your browser, you can verify that the server is 
 ### Development Mode
 
 You can start the backend in development mode, this will automatically trigger a new build and reload the application
-once the content of a file has been changed.
+once the content of a file has been changed. This will make the coding process significantly easier.
 
 Start two terminal windows and run:
 
