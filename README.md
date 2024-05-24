@@ -63,8 +63,7 @@ If you love coding and want to make this awesome game more awesome this list of 
   - [Items](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json) & [Ultimates](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json)
     - here are all the defined items and ultimates
 
-
-## Items, Cards, Spaces, Effects, etc.
+## Items, Cards, Spaces, Effects, etc
 
 (Marius)
 
