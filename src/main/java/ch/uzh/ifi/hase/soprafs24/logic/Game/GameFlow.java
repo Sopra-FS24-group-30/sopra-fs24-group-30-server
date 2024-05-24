@@ -492,6 +492,9 @@ public class GameFlow {
             return returnItems;
         }
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
+        if(playerItems.isEmpty()){
+            return returnItems;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 int limit = Math.min(amount,playerItems.size());
@@ -534,6 +537,9 @@ public class GameFlow {
             return returnCards;
         }
         ArrayList<String> playerCards = players[playerid-1].getCardNames();
+        if(playerCards.isEmpty()){
+            return returnCards;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){

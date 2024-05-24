@@ -68,7 +68,7 @@ public class AchievementService {
                 achievementStatus.setGamer(true);
             }
             //update for Backstabber
-            if(achievementProgress.isTeamMateWinner()){
+            if(!achievementProgress.isTeamMateWinner()){
                 achievementStatus.setBackStabber(true);
             }
         }else {
