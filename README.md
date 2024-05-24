@@ -133,10 +133,6 @@ If you want to avoid running all tests with every change, use the following comm
 
 `./gradlew build --continuous -xtest`
 
-## Illustrations
-
-(Céline)
-
 ## Roadmap
 
 If you love coding and want to make this awesome game more awesome this list of possible features offers some inspiration.
