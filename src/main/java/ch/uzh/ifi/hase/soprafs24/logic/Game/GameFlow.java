@@ -5,15 +5,12 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
-import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
-import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
 import org.json.JSONObject;
 import org.json.*;
 import java.util.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
 import java.util.stream.Collectors;
 
 import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.*;
@@ -358,9 +355,6 @@ public class GameFlow {
     }
 
 
-    //TODO: add support for giving items to multiple people as of now can only exchange with one
-    //TODO: get the itemNames to be exchanged
-
     /**
      * exchange usables between players
      */
@@ -473,8 +467,6 @@ public class GameFlow {
         return new ArrayList<>();
     }
 
-
-    //TODO: give infos to frontend what was removed
 
     /**
      * remove the items from the player and give the items gained this way back in a list
@@ -746,7 +738,6 @@ public class GameFlow {
      * @param definition parameters for givePlayerDiceEffect
      * @return the dice throws
      */
-    //TODO: call move with total
     public void givePlayerDice(JSONObject definition){
 
         int diceCount = definition.getInt("dice");
