@@ -25,7 +25,6 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    //TODO add security here NOSONAR
     private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){ //NOSONAR
         User loginUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User user = this.userService.login(loginUser);

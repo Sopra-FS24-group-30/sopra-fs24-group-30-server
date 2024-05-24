@@ -28,35 +28,6 @@ import java.util.ArrayList;
 public class GameWebSocketController {
 
 
-    /*
-    public static void main(String[] args){
-        GameFlow gameFlow = new GameFlow();
-        for(int i=1; i<=4; i++){
-            Player p = new Player();
-            p.setPlayerId((long) i);
-            p.setUserId((long) i);
-            p.setAchievementProgress(new AchievementProgress((long) i));
-            p.setCash(100);
-            p.setPosition(30L);
-            ArrayList<String> itemNames = new ArrayList<>();
-            itemNames.add("OnlyFansSub");
-            p.addItemNames(itemNames);
-            gameFlow.addPlayer(p);
-        }
-        gameFlow.setTurnPlayerId(1L);
-        gameFlow.setGameId(123456L);
-        gameFlows.put(123456L,gameFlow);
-        handleUltimate("{\"ultimateUsed\": \"Chameleon\",\"choice\": {}}",123456L);
-        System.out.println("player 1");
-        System.out.println("cash: " + gameFlow.getPlayer(1).getCash());
-        System.out.println("items" + gameFlow.getPlayer(1).getItemNames());
-        System.out.println("player 2");
-        System.out.println("cash: " + gameFlow.getPlayer(2).getCash());
-        System.out.println("items" + gameFlow.getPlayer(2).getItemNames());
-    }
-    */
-
-
 
     private static SimpMessagingTemplate messagingTemplate;
 
@@ -196,19 +167,6 @@ public class GameWebSocketController {
         messagingTemplate.convertAndSendToUser(userIdString,destination,errorData);
     }
 
-    @MessageMapping("/game/{gameId}/board/test")
-    public static void tes(String msg, @DestinationVariable("gameId") Long gameId){
-        JSONObject jsonObject = new JSONObject(msg);
-        int playerId = jsonObject.getInt("player");
-        String item = jsonObject.getString("item");
-        GameFlow gameFlow = gameFlows.get(gameId);
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.setName("Chameleon");
-        ultimateData.setActive(true);
-        returnUltToPlayer(ultimateData,gameId,(long)playerId);
-    }
-
-
     public static void handleEffects(String effect, JSONObject effectParas, Long gameId){
         GameFlow gameFlow = gameFlows.get(gameId);
         switch (effect){
@@ -231,14 +189,10 @@ public class GameWebSocketController {
                 gameFlow.updateTurns(effectParas);
                 break;
             case "useRandomUsable":
-                System.out.println("Chameleon reached his effect");
                 gameFlow.useRandomUsable(effectParas);
                 break;
             case "givePlayerCardRand":
                 gameFlow.givePlayerCardRand(effectParas);
-                break;
-            case "givePlayerCardChoice":
-                gameFlow.givePlayerCardChoice(effectParas);
                 break;
             case "exchangePositions":
                 gameFlow.exchangePositions(effectParas);

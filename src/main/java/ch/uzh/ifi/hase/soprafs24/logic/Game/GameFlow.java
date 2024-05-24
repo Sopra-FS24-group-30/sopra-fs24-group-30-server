@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
+import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
 import org.json.JSONObject;
 import org.json.*;
 import java.util.*;
@@ -15,8 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnMoney;
-import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnUltToPlayer;
+import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.*;
 
 
 public class GameFlow {
@@ -227,7 +227,6 @@ public class GameFlow {
                 for (int i=1;i<=amount;i++){
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
-                    System.out.println("item USed: " + itemName);
                     this.setItemultused(false); //this is because this gets called by chameleon so it is already set to true but we need to run the item
                     GameWebSocketController.handleItems("{\"used\": \"" + itemName + "\", \"choice\": {}}",gameId);
                 }
@@ -290,14 +289,10 @@ public class GameFlow {
         SecureRandom random = new SecureRandom();
         String randomCard = cards_in_game[random.nextInt(cards_in_game.length)];
         players[(int) (long) getTurnPlayerId()-1].addCardNames(randomCard);
+        returnUsables(UsableData.prepateData(this),getGameId());
 
     }
 
-    public void givePlayerCardChoice(JSONObject args){//NOSONAR
-        String card1 = getChoices().getString("card");
-        players[(int) (long) getTurnPlayerId()-1].addCardNames(card1);
-
-    }
     public void reduceMoneyALL(JSONObject args){ //NOSONAR
         for(int i = 0; i < 4; i++){
             players[i].setCash(players[i].getCash()-5);
@@ -428,9 +423,7 @@ public class GameFlow {
             updateUsables(playerId,giveUsables,giveType);
         }
 
-        UsableData usableData = new UsableData();
-        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
-        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        UsableData usableData = UsableData.prepateData(this);
         GameWebSocketController.returnUsables(usableData,gameId);
     }
 
@@ -496,6 +489,9 @@ public class GameFlow {
             return returnItems;
         }
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
+        if(playerItems.isEmpty()){
+            return returnItems;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 int limit = Math.min(amount,playerItems.size());
@@ -538,6 +534,9 @@ public class GameFlow {
             return returnCards;
         }
         ArrayList<String> playerCards = players[playerid-1].getCardNames();
+        if(playerCards.isEmpty()){
+            return returnCards;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
@@ -594,8 +593,6 @@ public class GameFlow {
             case "Silver":
                 int moves = movesArray.getInt(0);
                 Long playerId = getTurnPlayerId();
-                System.out.println(playerId);
-                System.out.println(moves);
                 move(moves, players[(int) (long) playerId-1].getPosition());
                 break;
             case "Bronze":
@@ -923,7 +920,7 @@ public class GameFlow {
      * GameOver related functions
      *
      */
-    private Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
+    public Map<String, Object> checkGoalGameOver(String color, Player player, List<Long> listi, int movies, int moves, List<GameBoardSpace> allSpaces){
         setMovesLeft(movies);
         if (player.getCanWin()) {
             GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
@@ -1161,7 +1158,7 @@ public class GameFlow {
         }
     }
 
-    private Map<String, Object> caseJunction(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
+    public Map<String, Object> caseJunction(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
         List<String> unlock = nextSpace.getNext();
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);
@@ -1188,23 +1185,13 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-    private Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
+    public Map<String, Object> caseSpecialItem(Player player, int movies, int moves, String color, List<Long> listi){
         setMovesLeft(movies);
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
         GameWebSocketController.returnUsables(toItem(player), getGameId());
         setHadJunctionForGoal(false);
         return move(getMovesLeft(), player.getPosition());
     }
-
-
-    //TODO call when game is over and add winner status to achievementProgress
-    public void updateAchievements(){
-        for(Player player : players){
-            AchievementService achievementService =  GetBean.getAchievementService();
-            achievementService.updateAchievements(player.getAchievementProgress());
-        }
-    }
-
 
     /**
      * Helper for representing ws message dictionary
@@ -1224,7 +1211,7 @@ public class GameFlow {
         return retour;
     }
 
-    private Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
+    public Map<String, Object> toJunction(Player player, Long currSpace, List<String> nextUnlock, List<String> nextLock){
         Map<String, Object> response = new HashMap<>();
         response.put("playerId", player.getPlayerId().toString());
         response.put("currentSpace", currSpace);
@@ -1233,7 +1220,7 @@ public class GameFlow {
         return response;
     }
 
-    private Map<String, Object> toItem(Player player){
+    public Map<String, Object> toItem(Player player){
         Map<String, Object> retour = new HashMap<>();
         Map<String, Object> response = new HashMap<>();
         String randItem = randoItem();
@@ -1252,7 +1239,7 @@ public class GameFlow {
         return retour;
     }
 
-    private Map<String, Object> toMoney(Player player, int change) {
+    public Map<String, Object> toMoney(Player player, int change) {
         Map<String, Object> response = new HashMap<>();
         Map<String, Integer> details = new HashMap<>();
         int newAmount = Math.max(player.getCash()+change, 0);
@@ -1263,10 +1250,4 @@ public class GameFlow {
         return response;
     }
 
-    private void printi(){
-        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash()); //NOSONAR
-        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition() + "  LostCash: " + players[1].getLostCash());
-        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
-        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
-    }
 }

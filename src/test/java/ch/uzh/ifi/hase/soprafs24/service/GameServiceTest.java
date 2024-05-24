@@ -11,6 +11,8 @@ import ch.uzh.ifi.hase.soprafs24.entity.User;
 
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -48,5 +50,19 @@ public class GameServiceTest {
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, ()->gameService.createPlayerForGame(user, 4, game), "Expected createPlayerForGame to throw but it didn't");
         assertEquals("Cannot add more players to the game. The game is full.", exception.getMessage());
+    }
+
+    @Test
+    void setupGame(){
+        Game game =  gameService.setUpGame();
+        assertNotNull(game.getGameBoard());
+        assertEquals(game.getactive_Players(),new ArrayList<>());
+    }
+
+    @Test
+    void createGame(){
+        Long lobbyId = gameService.createGame("1");
+        assertTrue(lobbyId >= 100000);
+        assertTrue(lobbyId <= 999999);
     }
 }

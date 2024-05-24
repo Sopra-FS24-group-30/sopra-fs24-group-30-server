@@ -519,7 +519,7 @@ public class AchievementServiceTest {
 
         GameFlow gameFlow = basicGameFlowSetup();
         gameFlow.getPlayer(1).getAchievementProgress().setWinner(true);
-        gameFlow.getPlayer(1).getAchievementProgress().setTeamMateWinner(true);
+        gameFlow.getPlayer(1).getAchievementProgress().setTeamMateWinner(false);
 
         achievementService.updateAchievements(gameFlow.getPlayer(1).getAchievementProgress());
 
