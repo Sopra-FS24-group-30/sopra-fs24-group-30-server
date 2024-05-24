@@ -240,7 +240,7 @@ The following shortcuts are available on the Board.
 
 ## Authors and Acknoledgement
 
-- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
+- **[Céline Mai Anh Ziegler](https://github.com/CelineZi)**
 - [Ambros Eberhard](https://github.com/ambros02)
 - [Carlos Hernandez](https://github.com/KarlGrossGROSS)
 - [Thi Tam Gian Nguyen](https://github.com/tamtam-27)
@@ -248,12 +248,7 @@ The following shortcuts are available on the Board.
 
 We want to thank our teaching assistant [Marco Leder](https://github.com/marcoleder) for the support during the semester.
 
-
 ## License
 
 The Code is licensed under the Apache 2.0 License.<br>
 <!-- Insert Images © Client -->
-
-## Layout/Design
-
-(Marius)
