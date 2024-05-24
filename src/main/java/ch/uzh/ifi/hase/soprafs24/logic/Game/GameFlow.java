@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
 import org.json.JSONObject;
 import org.json.*;
-
+import java.util.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -402,6 +402,14 @@ public class GameFlow {
         String getType = getInfos.getString("type");
         String getSelection = getInfos.getString("selection");
         Integer getAmount = getInfos.getInt("amount");
+
+        if (giveAmount == 100){
+            giveAmount = players[(int) (long) getTurnPlayerId()-1].getCardNames().size();
+        }
+
+        if (getAmount == 100){
+            getAmount = players[getPlayers.get(0) -1].getItemNames().size();
+        }
 
         giveUsables.addAll(getType(givePlayers, giveType, giveSelection, giveAmount));
         getUsables.addAll(getType(getPlayers, getType, getSelection, getAmount));
@@ -851,7 +859,6 @@ public class GameFlow {
         player.addLandedAll(currPosi);
 
         while (movies > 0) {
-            setHadJunctionForGoal(false);
             currentSpace = findSpaceById(allSpaces, currPosi);
             nextSpaceIds = currentSpace.getNext(); //NOSONAR
             nextPosi = Long.parseLong(nextSpaceIds.get(0));
@@ -878,15 +885,13 @@ public class GameFlow {
 
         GameWebSocketController.returnMoves(toMove(player, listi, moves, color), getGameId());
 
+        printi();
         if (moves == 0 || getHadJunctionForGoal()) {
-            System.out.println(currentSpace.getOnSpace());
             setHadJunctionForGoal(false);
             (spaces.runLandOns.get(currentSpace.getOnSpace())).apply(this); //NOSONAR
         } else{
-            System.out.println("else false");
             (spaces.runLandOns.get(nextSpace.getOnSpace())).apply(this); //NOSONAR
         }
-        printi();
 
         endOfWalkCheck(player, color, currentSpace);
 
@@ -966,7 +971,7 @@ public class GameFlow {
         }
 
 
-        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
         String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));//NOSONAR
         mappi.put("winners", resWinner);//NOSONAR
         mappi.put("reason", resReason);//NOSONAR
@@ -989,7 +994,7 @@ public class GameFlow {
                 winnersUsername.add(currPlayerMate.getUser().getUsername());
                 reason.add(currPlayer.getUser().getUsername());
                 reason.add("JackSparrow");
-                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
+                String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
                 String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
                 mappi.put("winners", resWinner);
                 mappi.put("reason", resReason);
@@ -1005,7 +1010,7 @@ public class GameFlow {
             winnersUsername.add(players[players[rich.get(0).intValue() - 1].getTeammateId().intValue()].getUser().getUsername());
             reason.add(getPlayer(rich.get(0).intValue()).getUser().getUsername());
             reason.add("maxCash");
-            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
             String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
             mappi.put("winners", resWinner);
             mappi.put("reason", resReason);
@@ -1026,7 +1031,7 @@ public class GameFlow {
             player.getAchievementProgress().setWinnerAmount(sizeOfWinners);
         }
 
-        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(", "));
+        String resWinner = winnersUsername.stream().map(String::valueOf).collect(Collectors.joining(","));
         String resReason = reason.stream().map(String::valueOf).collect(Collectors.joining(" has "));
         mappi.put("winners", resWinner);
         mappi.put("reason", resReason);
@@ -1155,7 +1160,7 @@ public class GameFlow {
         return Collections.emptyMap();
     }
 
-    private Map<String, Object> caseGate(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
+    public Map<String, Object> caseGate(Player player, GameBoardSpace nextSpace, int movies, int moves, String color, Long currPosi, List<Long> listi){
         List<String> unlock = new ArrayList<>();
         List<String> lock = new ArrayList<>();
         setMovesLeft(movies);

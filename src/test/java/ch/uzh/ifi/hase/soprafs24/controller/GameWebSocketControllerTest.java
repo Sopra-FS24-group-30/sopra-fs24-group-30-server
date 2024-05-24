@@ -302,4 +302,5 @@ public class GameWebSocketControllerTest {
 
         assertEquals(0,gameFlow.getPlayer(1).getCardNames().size());
     }
+
 }
