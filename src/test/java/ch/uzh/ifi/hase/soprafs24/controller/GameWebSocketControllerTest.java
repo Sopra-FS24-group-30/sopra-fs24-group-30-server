@@ -455,6 +455,27 @@ public class GameWebSocketControllerTest {
         assertEquals(GameStatus.NOT_PLAYING.toString(), game.getStatus().toString());
     }
 
+    @Test
+    public void testRollDice() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        Long gameId = 1L;
+        GameWebSocketController.addGameFlow(gameId, gameFlow);
+        GameWebSocketController.rollOneDice(gameId);
+    }
+
+    @Test
+    public void TESTreturnMoney() {
+        GameFlow gameFlow = basicGameFlowSetup();
+        Map<String, Object> map = new HashMap<>();
+        map.put("amount", 100);
+        Game game = new Game();
+        game.setId(1L);
+        GameWebSocketController.addGameFlow(1L, gameFlow);
+        GameWebSocketController.returnMoney(map, 1L);
+
+
+    }
+
 
 /*
     @Test
