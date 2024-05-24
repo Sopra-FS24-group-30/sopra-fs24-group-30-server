@@ -84,20 +84,20 @@ If you love coding and want to make this awesome game more awesome this list of 
 
 - ### Items & Ultimates
 
-    The game is yet limited to usage of items, which have a single choice. Giving the option of selecting multiple players e.g. could lead to
-  new and possibly entertaining items.
+    The game is yet limited to usage of [Items](#items-phase-1), which have a single choice. Giving the option of selecting multiple players e.g. could lead to
+  new and possibly entertaining [Items](#items-phase-1).
 
     For insipration you can have a look [here](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client/blob/main/Infos.md).
   
-    To understand how items are implemented have a look at
+    To understand how [Items](#items-phase-1) are implemented have a look at
   - [GameWebSocketController](src/main/java/ch/uzh/ifi/hase/soprafs24/controller/GameWebSocketController.java)
-    - here the items arrive from the frontend, the message is processed and then an effect is triggered with the handleEffects method.
+    - here the [Items](#items-phase-1) arrive from the frontend, the message is processed and then an effect is triggered with the handleEffects method.
     - look for the handleUltimate and handleItems methods
   - [GameFlow](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/GameFlow.java)
     - here the effects are evaluated and the status of the game gets updated
     - the methods are called by the handleEffects method of the GameWebSocketController. If you add a completely new effect make sure to add it there.
   - [Items](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json) & [Ultimates](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json)
-    - here are all the defined items and ultimates
+    - here are all the defined [Items](#items-phase-1) and ultimates
 
 ## Game Wiki
 
@@ -105,8 +105,8 @@ The aim of the Game is to either pass the Goal, while having fulfilled your Win 
 
 During a Players Turn there are 3 Phases.
 
-1. (Optional) Playing an Item or using ones Ultimate Attack.
-2. Rolling the Dice or using a Card.
+1. (Optional) Playing an [Item](#items-phase-1) or using ones [Ultimate Attack](#ultimate-attack-phase-1).
+2. Rolling the Dice or using a [Card](#cards-phase-2).
 3. Movement Phase, where everything except for Junctions is done automatically for the Player.
 
 ### Win Conditions
@@ -116,63 +116,63 @@ If any Player has Jack Sparrow, CAPTAIN Jack Sparrow
 
 | Win Ccndition Name | Condition |
 |---|---|
-| Golden is my … | Land on seven Yellow spaces. |
-| 🛥️ ← this is a ship (it goes Zvvvvvvvvvvv or blubblub) | Move 15 Spaces in one turn, or move 0 Spaces twice in a row. |
-| Explorer of the Seven seas | Pass every Space at least once. |
-| Drunk | Land on a Catnami Space thrice. |
+| Golden is my … | Land on seven Yellow [Spaces](#spaces-phase-3). |
+| 🛥️ ← this is a ship (it goes Zvvvvvvvvvvv or blubblub) | Move 15 [Spaces](#spaces-phase-3) in one turn, or move 0 [Spaces](#spaces-phase-3) twice in a row. |
+| Explorer of the Seven seas | Pass every [Space](#spaces-phase-3) at least once. |
+| Drunk | Land on a Catnami [Space](#spaces-phase-3) thrice. |
 | Unlucky | Lose a total of 40 Coins. |
 | East Indian Trading Company | As long as you have at least 60 Coins, the Win Condition is fulfilled. If you have less than 60 Coins at any point in time, your Wincondition is no longer fulfilled. |
-| The Marooned | As long as you have exactly 0 Coins, 0 Items and 0 Cards the Win Condition is fulfilled. If you gain any Coins, Items or Cards at any point in time, your Win Condition is no longer fulfilled. |
+| The Marooned | As long as you have exactly 0 Coins, 0 [Items](#items-phase-1) and 0 [Cards](#cards-phase-2) the Win Condition is fulfilled. If you gain any Coins, [Items](#items-phase-1) or [Cards](#cards-phase-2) at any point in time, your Win Condition is no longer fulfilled. |
 | Jack Sparrow, CAPTAIN Jack Sparrow | You win if the other Team wins, and you lose if your Partner wins. If the game ends after 20 Turns, everyone except for your Partner loses. |
 <!-- | Third time's the charm | Pass the goal twice | -->
-<!-- | Ohh shiny | Use one Bronze, Silver and Gold Item, and one Bronze, Silver and Gold Card. | -->
+<!-- | Ohh shiny | Use one Bronze, Silver and Gold [Item](#items-phase-1), and one Bronze, Silver and Gold [Card](#cards-phase-2). | -->
 
 ### Usables
 
 Usables are stuff that the Players can use during their Turn, which may either benefit them, or hinder their opponents.<br>
-Usables are split into 3 categorys. Ultimate Attacks, Items and Cards.<br>
-The Ultimate Attack, or Items can be used exclusively in Phase 1, the Cards in Phase 2.<br>
+Usables are split into 3 categorys. [Ultimate Attacks](#ultimate-attack-phase-1), [Items](#items-phase-1) and [Cards](#cards-phase-2).<br>
+The [Ultimate Attack](#ultimate-attack-phase-1), or [Items](#items-phase-1) can be used exclusively in Phase 1, the [Cards](#cards-phase-2) in Phase 2.<br>
 Using Usables is optional, Phase 1 can be skipped, and in Phase 2 a Dice can be rolled.<br>
-Usables can be obtained by landing on special Spaces, or stealing them from other Players.
+Usables can be obtained by landing on special [Spaces](#spaces-phase-3), or stealing them from other Players.
 
 #### Ultimate Attack (Phase 1)
 
-Each Player has an Ultimate Attack, which can be used once per Game, at the beginning of ones Turn, instead of using an Item.<br>
-The starting Player may not use their Ultimate Attack on their first Turn, in order to keep the game balancend.
+Each Player has an [Ultimate Attack](#ultimate-attack-phase-1), which can be used once per Game, at the beginning of ones Turn, instead of using an [Item](#items-phase-1).<br>
+The starting Player may not use their [Ultimate Attack](#ultimate-attack-phase-1) on their first Turn, in order to keep the game balancend.
 
 | Ultimate Name | Effect |
 |---|---|
 | The Big Shuffle | The Win-Conditions of all Players get shuffled (It is possible to receive the one you originally had) |
 | Pickpocket | Steal half of the Coins of all other players (including your teammate). |
-| Fresh start :) | All other Players get teleported back to their starting Space. |
-| /tp | Move to a random Space on the board (fun). |
-| Nothing (Maybe you should've taken another Card?) | Nothing happens (still prevents using an Item). |
-<!-- | Chameleon | Use the effect of any Item in the game. | -->
+| Fresh start :) | All other Players get teleported back to their starting [Space](#spaces-phase-3). |
+| /tp | Move to a random [Space](#spaces-phase-3) on the board (fun). |
+| Nothing (Maybe you should've taken another [Card](#cards-phase-2)?) | Nothing happens (still prevents using an [Item](#items-phase-1)). |
+<!-- | Chameleon | Use the effect of any [Item](#items-phase-1) in the game. | -->
 <!-- | Stop? | The game terminates after 5 more turns. (Round Counter gets set to 15 after this turn ends) | -->
 
 #### Items (Phase 1)
 
-Each Player can use one Item per Turn.<br>
-Just like Items, Cards are split into <span style="color:#ffe600">Gold</span>, <span style="color:#AAAAAA">Silver</span> and <span style="color:#d97504">Bronze</span> ones, which is an indication of its general power level, but is purely cosmetic.<br>
-Some Items cause the Player to automatically skip the second Phase.
+Each Player can use one [Item](#items-phase-1) per Turn.<br>
+Just like [Items](#items-phase-1), [Cards](#cards-phase-2) are split into <span style="color:#ffe600">Gold</span>, <span style="color:#AAAAAA">Silver</span> and <span style="color:#d97504">Bronze</span> ones, which is an indication of its general power level, but is purely cosmetic.<br>
+Some [Items](#items-phase-1) cause the Player to automatically skip the second Phase.
 
 | Item Name | Effect | Notes |
 |---|---|---|
 | Magic Mushroom | This turn you roll 2 dice. If you roll doubles: +10 Coins. | Skips Phase 2. |
-| The uncle of your sister's cousin, has a brother-in-law, who once worked at Facebook | Use this item to enter a gate. This item gets used automatically at a gate, if you choose to pass the gate. | Cannot be used during Phase 1. |
+| The uncle of your sister's cousin, has a brother-in-law, who once worked at Facebook | Use this [Item](#items-phase-1) to enter a gate. This [Item](#items-phase-1) gets used automatically at a gate, if you choose to pass the gate. | Cannot be used during Phase 1. |
 | Peace I'm out | Teleport to a random other player. | |
-| Ice cream treasure chest  | Steal a random card from a player of your choosing. | |
-| OwO what's this | You receive a random card. | |
+| Ice cream treasure chest  | Steal a random [Card](#cards-phase-2) from a player of your choosing. | |
+| OwO what's this | You receive a random [Card](#cards-phase-2). | |
 | Super Magic Mushroom | This turn you roll 3 dice. If you roll triplets: +30 Coins. | Skips Phase 2. |
-| Treasure chest | Steal a random Item from a player of your choice. | |
+| Treasure chest | Steal a random [Item](#items-phase-1) from a player of your choice. | |
 | Meow you in particular | The goal moves to a different spot. | |
 | Steering a submarine using an Xbox Controller | Every player (including yourself) loses 5 Coins. | |
 | Ultra Magic Mushroom | This turn you roll 4 dice. If you roll quadruplets: +69 Coins. | Skips Phase 2. |
-| Best Trade deal in the history of Trade deals maybe ever | Give another player of your choosing all of your cards, and steal all of their items in return. | |
-| (Almost) all your Items are belong to mine | Steal 4 random items from a player of your choice. | |
+| Best Trade deal in the history of Trade deals maybe ever | Give another player of your choosing all of your [Cards](#cards-phase-2), and steal all of their [Items](#items-phase-1) in return. | |
+| (Almost) all your Items are belong to mine | Steal 4 random [Items](#items-phase-1) from a player of your choice. | |
 | Only-Fans Subscription | Steal 7 Coins from every other player (even your Teammate) | |
 | Dino Chicky Nuggie | −20 Coins, your ultimate becomes usable again. | |
-<!-- | Two (Regular) Mushrooms | This turn you move twice as many spaces. | -->
+<!-- | Two (Regular) Mushrooms | This turn you move twice as many [Spaces](#spaces-phase-3). | -->
 <!-- | Stick | If you pass a player this turn, steal 15 Coins from them. | -->
 <!-- | Meow it I'm out | Switch places with a random other player. | -->
 <!-- | Bad Wifi | Chose a player, they get muted for 1 turn (2 if it was your teammate) | -->
@@ -181,14 +181,14 @@ Some Items cause the Player to automatically skip the second Phase.
 
 #### Cards (Phase 2)
 
-Instead of Rolling a Player may instead play a Card, and move a certain amount of Spaces.<br>
-Just like Items, Cards are split into <span style="color:#ffe600">Gold</span>, <span style="color:#AAAAAA">Silver</span> and <span style="color:#d97504">Bronze</span> ones.<br>
+Instead of Rolling a Player may instead play a [Card](#cards-phase-2), and move a certain amount of [Spaces](#spaces-phase-3).<br>
+Just like [Items](#items-phase-1), [Cards](#cards-phase-2) are split into <span style="color:#ffe600">Gold</span>, <span style="color:#AAAAAA">Silver</span> and <span style="color:#d97504">Bronze</span> ones.<br>
 
-- <span style="color:#ffe600">Gold</span> Cards allow you to choose one of several numbers and move that many Spaces.  
-- <span style="color:#AAAAAA">Silver</span> Cards have a single number, and have you move that many Spaces.
-- <span style="color:#d97504">Bronze</span> Cards have multiple numbers on them, and you randomly move as many Spaces as one of those numbers.  
+- <span style="color:#ffe600">Gold</span> [Cards](#cards-phase-2) allow you to choose one of several numbers and move that many [Spaces](#spaces-phase-3).  
+- <span style="color:#AAAAAA">Silver</span> [Cards](#cards-phase-2) have a single number, and have you move that many [Spaces](#spaces-phase-3).
+- <span style="color:#d97504">Bronze</span> [Cards](#cards-phase-2) have multiple numbers on them, and you randomly move as many [Spaces](#spaces-phase-3) as one of those numbers.  
   
-The following Cards exist for each category:
+The following [Cards](#cards-phase-2) exist for each category:
 
 | Category | Cards |
 |---|---|
@@ -198,27 +198,27 @@ The following Cards exist for each category:
 
 ### Spaces (Phase 3)
 
-There are 8 different Spaces, which trigger fun effects when landed upon.
+There are 8 different [Spaces](#spaces-phase-3), which trigger fun effects when landed upon.
 
 | Space Name | Effect when landed upon |
 |---|---|
 | <span style="color:#10107b; background-color:#f2f2f2"> ◉ </span> Blue | Gain 4 Coins |
-| <span style="color:#f70901; background-color:#f2f2f2"> ◉ </span> Small Oops | You or everyone loses 10 Coins, or you get teleported back to your starting space. |
+| <span style="color:#f70901; background-color:#f2f2f2"> ◉ </span> Small Oops | You or everyone loses 10 Coins, or you get teleported back to your starting [Space](#spaces-phase-3). |
 | <span style="color:#fefffd; background-color:#0a0704"> ◉ </span> Big Oops | Communism, lose 69 Coins, or the positions of all Players get shuffled. |
-| <span style="color:#529c31; background-color:#ecf6e9"> ◉ </span> Item | You receive a random Item. |
-| <span style="color:#529c31; background-color:#ffa5a4"> ◉ </span> Card | You receive a random Card. |
-| <span style="color:#529c31; background-color:#eea805"> ◉ </span> Gambling | Randomly double or lose all of your Coins, Items or Cards. |
+| <span style="color:#529c31; background-color:#ecf6e9"> ◉ </span> Item | You receive a random [Item](#items-phase-1). |
+| <span style="color:#529c31; background-color:#ffa5a4"> ◉ </span> Card | You receive a random [Card](#cards-phase-2). |
+| <span style="color:#529c31; background-color:#eea805"> ◉ </span> Gambling | Randomly double or lose all of your Coins, [Items](#items-phase-1) or [Cards](#cards-phase-2). |
 | <span style="color:#529c31; background-color:#0d12c1"> ◉ </span> Catnami | Gain 69 Coins or swap your Win Condition with that of another Player. |
-| <span style="color:#fddc11; background-color:#59270e"> ◉ </span> Yellow | A fun effect happens, depending on which exact Yellow Space was landed upon. A detailed table is visible in `infos.md`. |
+| <span style="color:#fddc11; background-color:#59270e"> ◉ </span> Yellow | A fun effect happens, depending on which exact Yellow [Space](#spaces-phase-3) was landed upon. A detailed table is visible in `infos.md`. |
 
-There are 4 different walkover Spaces, which trigger fun effects when walked over.
+There are 4 different walkover [Spaces](#spaces-phase-3), which trigger fun effects when walked over.
 
 | Space Name | Effect when walked over. |
 |---|---|
-| <span style="color:#483115; background-color:#886732"> ▣ </span> Bridge | You receive a random Item. |
-| <span style="color:#b52910; background-color:#fecb67"> × </span> Goal | If your Win Condition is fulfilled, you win the game, otherwise you gain 15 Coins and the Goal moves to a different Space. Covers a Blue Space. |
+| <span style="color:#483115; background-color:#886732"> ▣ </span> Bridge | You receive a random [Item](#items-phase-1). |
+| <span style="color:#b52910; background-color:#fecb67"> × </span> Goal | If your Win Condition is fulfilled, you win the game, otherwise you gain 15 Coins and the Goal moves to a different [Space](#spaces-phase-3). Covers a Blue [Space](#spaces-phase-3). |
 | <span style="color:#d4750f; background-color:#7e4b0c"> ↔ </span> Junction | Chose the direction in which you want to move. |
-| <span style="color:#b3adab; background-color:#7e4b0c"> ↔ </span> Gate | If you have a The uncle of your sister's cousin, has a brother-in-law, who once worked at Facebook, you may chose in which direction you want to move. If you chose the gated one, you will lose said Item. |
+| <span style="color:#b3adab; background-color:#7e4b0c"> ↔ </span> Gate | If you have a The uncle of your sister's cousin, has a brother-in-law, who once worked at Facebook, you may chose in which direction you want to move. If you chose the gated one, you will lose said [Item](#items-phase-1). |
 
 ### Keyboard Shortcuts
 
@@ -234,7 +234,7 @@ The following shortcuts are available on the Board.
 | $ | Toggles the Board skin. |
 | C | Changes the skins of the Players to the standard palette (<span style="color:#ff555d">Red</span>, <span style="color:#fff155">Yellow</span>, <span style="color:#82ff55">Green</span>, <span style="color:#55d9ff">Blue</span>) |
 | Shift+C | Changes the skins of the Players to the alternative palette (<span style="color:#9500e5">Purple</span>, <span style="color:#ff8db2">Pink</span>, <span style="color:#ff8701">Orange</span>, <span style="color:#ffffff">White</span>) |
-| X | Toggles the visibility of Status Messages (e.g. on which Space a Player landed). |
+| X | Toggles the visibility of Status Messages (e.g. on which [Space](#spaces-phase-3) a Player landed). |
 | Return | Toggles an Overlay, showing which way Players move. |
 | Esc | Disables said Overlay. |
 
