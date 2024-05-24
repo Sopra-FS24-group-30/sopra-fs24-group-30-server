@@ -146,7 +146,7 @@ The starting Player may not use their [Ultimate Attack](#ultimate-attack-phase-1
 | Pickpocket | Steal half of the Coins of all other players (including your teammate). |
 | Fresh start :) | All other Players get teleported back to their starting [Space](#spaces-phase-3). |
 | /tp | Move to a random [Space](#spaces-phase-3) on the board (fun). |
-| Nothing (Maybe you should've taken another [Card](#cards-phase-2)?) | Nothing happens (still prevents using an [Item](#items-phase-1)). |
+| Nothing (Maybe you should've taken another Card?) | Nothing happens (still prevents using an [Item](#items-phase-1)). |
 <!-- | Chameleon | Use the effect of any [Item](#items-phase-1) in the game. | -->
 <!-- | Stop? | The game terminates after 5 more turns. (Round Counter gets set to 15 after this turn ends) | -->
 
@@ -240,11 +240,11 @@ The following shortcuts are available on the Board.
 
 ## Authors and Acknoledgement
 
+- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
 - [Ambros Eberhard](https://github.com/ambros02)
 - [Carlos Hernandez](https://github.com/KarlGrossGROSS)
-- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
 - [Thi Tam Gian Nguyen](https://github.com/tamtam-27)
-- [Marius Decurtins](https://github.com/MetaKnightEX)
+- [MetaKnightEX](https://github.com/MetaKnightEX)
 
 We want to thank our teaching assistant [Marco Leder](https://github.com/marcoleder) for the support during the semester.
 
