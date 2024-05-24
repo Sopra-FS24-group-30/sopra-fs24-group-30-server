@@ -470,7 +470,7 @@ public class Spaces {
     }
 
     private void toMoveTp(Player player, GameFlow gameFlow){
-        MoveData moveData = new MoveData("teleport");
+        MoveData moveData = new MoveData("teleport");//NOSONAR
         ArrayList<Long> posiArr = new ArrayList<>(Arrays.asList(player.getPosition()));
         moveData.setPlayerSpaceMovesColour(player.getPlayerId().intValue(), posiArr, 0, null);
         Map<String, Object> oneMoveData = moveData.getPlayerMoveMap(player.getPlayerId().intValue());

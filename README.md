@@ -25,7 +25,7 @@
     - [Cards (Phase 2)](#cards-phase-2)
   - [Spaces (Phase 3)](#spaces-phase-3)
   - [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Authors and Acknoledgement](#authors-and-acknoledgement)
+- [Authors and Acknowledgement](#authors-and-acknowledgement)
 - [License](#license)
 
 ## Introduction
@@ -198,6 +198,7 @@ If you love coding and want to make this awesome game more awesome this list of 
     - the methods are called by the handleEffects method of the GameWebSocketController. If you add a completely new effect make sure to add it there.
   - [Items](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/items.json) & [Ultimates](src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Effects/ultimates.json)
     - here are all the defined [Items](#items-phase-1) and ultimates
+    - In the Client, an Item needs a Picture, which is called `<ItemName>.png` and is stored in `src\assets\usables`.<br>Additional data, inlcuding choices, are to be defined in `usables.json`, located in `src\assets\data`.<br> In the `choices` key, acceptable values are: `otherPlayerId`, `playerId`, or an Array with 2 or 4 Values.<br> Cards, Ultimates and Win Conditions work much the same way, except that the data is saved in `wincondition.json` and `ultimates.json` respectively.
 
 ## Game Wiki
 
@@ -309,7 +310,7 @@ There are 8 different [Spaces](#spaces-phase-3), which trigger fun effects when 
 | <span style="color:#529c31; background-color:#ffa5a4"> ◉ </span> Card | You receive a random [Card](#cards-phase-2). |
 | <span style="color:#529c31; background-color:#eea805"> ◉ </span> Gambling | Randomly double or lose all of your Coins, [Items](#items-phase-1) or [Cards](#cards-phase-2). |
 | <span style="color:#529c31; background-color:#0d12c1"> ◉ </span> Catnami | Gain 69 Coins or swap your Win Condition with that of another Player. |
-| <span style="color:#fddc11; background-color:#59270e"> ◉ </span> Yellow | A fun effect happens, depending on which exact Yellow [Space](#spaces-phase-3) was landed upon. A detailed table is visible in `infos.md`. |
+| <span style="color:#fddc11; background-color:#59270e"> ◉ </span> Yellow | A fun effect happens, depending on which exact Yellow [Space](#spaces-phase-3) was landed upon. A detailed table is visible in `infos.md` in the client repository (Certain data may be not be up to date). |
 
 There are 4 different walkover [Spaces](#spaces-phase-3), which trigger fun effects when walked over.
 
@@ -338,9 +339,9 @@ The following shortcuts are available on the Board.
 | Return | Toggles an Overlay, showing which way Players move. |
 | Esc | Disables said Overlay. |
 
-## Authors and Acknoledgement
+## Authors and Acknowledgement
 
-- **[Céline Mai Anh Ziegler](https://github.com/CelineZi)**
+- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
 - [Ambros Eberhard](https://github.com/ambros02)
 - [Carlos Hernandez](https://github.com/KarlGrossGROSS)
 - [Thi Tam Gian Nguyen](https://github.com/tamtam-27)
@@ -350,5 +351,4 @@ We want to thank our teaching assistant [Marco Leder](https://github.com/marcole
 
 ## License
 
-The Code is licensed under the Apache 2.0 License.<br>
-<!-- Insert Images © Client -->
+The Code is licensed under the [Apache 2.0 License](./LICENSE).

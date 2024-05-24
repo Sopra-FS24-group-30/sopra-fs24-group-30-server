@@ -1,8 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.logic.Game;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.GameFlow;
-import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController;
 import ch.uzh.ifi.hase.soprafs24.constant.GameBoardStatus;
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.service.*;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -10,36 +9,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
-import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
+
+import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.GetemTest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.*;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.entity.Game;
 import ch.uzh.ifi.hase.soprafs24.entity.GameBoard;
-import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+
 @SpringBootTest
 public class GameFlowTest {
 

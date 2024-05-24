@@ -402,4 +402,11 @@ public class GameManagementServiceTest {
 
         assertEquals(expected, gameManagementService.getTurnOrder((long) 3));
     }
+
+    @Test
+    void testManualParse(){
+
+        Map<String,String> parsed =  gameManagementService.manualParse("{a:\"\\b");
+        assertEquals(parsed.get("a"),"b");
+    }
 }

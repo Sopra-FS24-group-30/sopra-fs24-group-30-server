@@ -15,7 +15,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 
 @Service
@@ -27,30 +26,6 @@ public class UserService {
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    /**
-     * get the token of a given user to authenticate
-     * @param username
-     * @param password
-     * @return the token of the user
-     */
-    public String getUserToken(String username, String password){
-        Optional<User> foundUser = this.userRepository.findByUsername(username);
-        if (foundUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("the username %s does not exist",username));
-        }
-        User actualUser = foundUser.get();
-        if (!password.equals(actualUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the password is incorrect");
-        }
-        if(actualUser.getStatus().equals(UserStatus.ONLINE)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"the user is already online");
-        }else{
-            actualUser.setStatus(UserStatus.ONLINE);
-        }
-
-        return actualUser.getToken();
     }
 
     public User login(User loginUser) {
@@ -124,18 +99,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /**
-     * create a new lobbyId and return it
-     * @return a unique LobbyId
-     */
-    public String getLobbyId(){
-        StringBuilder lobbyId = new StringBuilder();
-        for(int i=0; i<6;i++){
-            lobbyId.append(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))); //NOSONAR
-        }
-
-        return lobbyId.toString();
-    }
     /**
     *create a game and add the players to it, so they can join the game and no one else
      * @return if successful returns true
