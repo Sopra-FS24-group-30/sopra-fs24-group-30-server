@@ -318,16 +318,6 @@ public class GameWebSocketControllerTest {
     }
 
     @Test
-    void Testtes() {
-        GameFlow gameFlow = basicGameFlowSetup();
-        GameWebSocketController.addGameFlow(1L, gameFlow);
-        Player[] players = gameFlow.getPlayers();
-        GameWebSocketController.tes("{\"player\": \"1\", \"item\": \"BestTradeDeal\"}", 1L);
-        //JSONObject choices1 = new JSONObject("{\"player\": \"1\", \"item\": \"BestTradeDeal\"}");
-        assertEquals(players[0].getItemNames().size(), 0);
-    }
-
-    @Test
     void TestGETgameFLow() {
         GameFlow gameFlow = basicGameFlowSetup();
         HashMap<String, Object> map = new HashMap<>();

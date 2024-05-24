@@ -227,7 +227,6 @@ public class GameFlow {
                 for (int i=1;i<=amount;i++){
                     String itemName = Getem.getNoChoiceItem();
                     getPlayer(turnPlayerId.intValue()).addItemNames("itemName");
-                    System.out.println("item USed: " + itemName);
                     this.setItemultused(false); //this is because this gets called by chameleon so it is already set to true but we need to run the item
                     GameWebSocketController.handleItems("{\"used\": \"" + itemName + "\", \"choice\": {}}",gameId);
                 }
@@ -418,11 +417,9 @@ public class GameFlow {
 
 
         for(int playerId : givePlayers){
-            System.out.println("giving player: " + playerId);
             updateUsables(playerId,getUsables,getType);
         }
         for(int playerId : getPlayers){
-            System.out.println("getting player " + playerId);
             updateUsables(playerId,giveUsables,giveType);
         }
 
@@ -492,6 +489,9 @@ public class GameFlow {
             return returnItems;
         }
         ArrayList<String> playerItems = players[playerid-1].getItemNames();
+        if(playerItems.isEmpty()){
+            return returnItems;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 int limit = Math.min(amount,playerItems.size());
@@ -534,6 +534,9 @@ public class GameFlow {
             return returnCards;
         }
         ArrayList<String> playerCards = players[playerid-1].getCardNames();
+        if(playerCards.isEmpty()){
+            return returnCards;
+        }
         switch(selection){ //NOSONAR
             case "random":
                 for(int i = 0; i<amount;i++){
@@ -590,8 +593,6 @@ public class GameFlow {
             case "Silver":
                 int moves = movesArray.getInt(0);
                 Long playerId = getTurnPlayerId();
-                System.out.println(playerId);
-                System.out.println(moves);
                 move(moves, players[(int) (long) playerId-1].getPosition());
                 break;
             case "Bronze":
@@ -1192,16 +1193,6 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-
-    //TODO call when game is over and add winner status to achievementProgress
-    public void updateAchievements(){
-        for(Player player : players){
-            AchievementService achievementService =  GetBean.getAchievementService();
-            achievementService.updateAchievements(player.getAchievementProgress());
-        }
-    }
-
-
     /**
      * Helper for representing ws message dictionary
      * in case when move ends
@@ -1258,13 +1249,5 @@ public class GameFlow {
         response.put(player.getPlayerId().toString(), details);
         return response;
     }
-/*
-    private void printi(){
-        System.out.println("P1:  Items: " + players[0].getItemNames() + "  Cards: " + players[0].getCardNames() + "  Cash: " + players[0].getCash() + "  Space: " + players[0].getPosition() + "  WinCondi: " + players[0].getWinCondition() + "  LostCash: " + players[0].getLostCash()); //NOSONAR
-        System.out.println("P2:  Items: " + players[1].getItemNames() + "  Cards: " + players[1].getCardNames() + "  Cash: " + players[1].getCash() + "  Space: " + players[1].getPosition() + "  WinCondi: " + players[1].getWinCondition() + "  LostCash: " + players[1].getLostCash());
-        System.out.println("P3:  Items: " + players[2].getItemNames() + "  Cards: " + players[2].getCardNames() + "  Cash: " + players[2].getCash() + "  Space: " + players[2].getPosition() + "  WinCondi: " + players[2].getWinCondition() + "  LostCash: " + players[2].getLostCash());
-        System.out.println("P4:  Items: " + players[3].getItemNames() + "  Cards: " + players[3].getCardNames() + "  Cash: " + players[3].getCash() + "  Space: " + players[3].getPosition() + "  WinCondi: " + players[3].getWinCondition() + "  LostCash: " + players[3].getLostCash());
-    }
 
- */
 }

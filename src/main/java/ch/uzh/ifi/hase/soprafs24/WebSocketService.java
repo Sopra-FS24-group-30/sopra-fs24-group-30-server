@@ -19,7 +19,6 @@ public class WebSocketService {
     public void registerUserSession(String userId, String sessionId) {
         userSessionMap.put(userId, sessionId);
         sessionIdUserMap.put(sessionId, userId);
-        System.out.println("Registered session: user ID " + userId + " with session ID " + sessionId);
     }
 
     /**
@@ -32,9 +31,7 @@ public class WebSocketService {
         if (userId != null) {
             userSessionMap.remove(userId);
             sessionIdUserMap.remove(sessionId);
-            System.out.println("Removed session: user ID " + userId + " with session ID " + sessionId);
         } else {
-            System.out.println("No session found with ID " + sessionId + " to remove.");
         }
     }
 

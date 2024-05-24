@@ -11,7 +11,7 @@
   "XboxController": { "reduceMoneyALL" : {} },
   "MeowYou": { "changeGoalPosition":  {}},
   "TheBrotherAndCo": {},
-  "BestTradeDeal": {"exchange": {"give": {"player": "current","type": "card","selection": "random", "amount": 2}, "get": {"player": "choice","type": "item","selection": "random", "amount": 2}}},
+  "BestTradeDeal": {"exchange": {"give": {"player": "current","type": "card","selection": "all", "amount": 0}, "get": {"player": "choice","type": "item","selection": "all", "amount": 0}}},
   "ItemsAreBelongToMe": {"exchange": {"give": {"player": "current","type": "","selection": "", "amount": 0}, "get": {"player": "choice","type": "item","selection": "random","amount": 4}}},
   "ChickyNuggie": {"rechargeUlt":  {"player": "current", "cash":  "-20"}}
 }

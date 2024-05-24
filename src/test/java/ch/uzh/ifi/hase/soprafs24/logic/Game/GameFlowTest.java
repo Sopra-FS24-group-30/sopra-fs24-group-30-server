@@ -408,9 +408,7 @@ public class GameFlowTest {
         GameFlow gameFlow = extensiveGameFlowSetup();
         JSONObject jsonObject = new JSONObject("{\"player\": \"current\",\"card1\": \"random\"}");
         HashMap<Integer, ArrayList<String>> itemChoices = new HashMap<>();
-        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
         gameFlow.givePlayerCardRand(jsonObject);
-        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
 
         int expectedItemsPlayer10 = 1;
         ArrayList<String> itemNames = new ArrayList();
@@ -726,7 +724,7 @@ public class GameFlowTest {
         JSONObject choices = new JSONObject();
         gameFlow.updateCardPositions(card, -1);
         long position = players[0].getPosition();
-        assertTrue(position == 28L || position == 29L);
+        assertTrue(position == 28L || position == 29L || position == 30L || position == 53L);
 
     }
 

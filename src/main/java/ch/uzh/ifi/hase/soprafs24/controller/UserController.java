@@ -13,7 +13,7 @@ import java.util.*;
 
 
 @RestController
-@CrossOrigin(origins = "https://sopra-fs24-group-30-client.oa.r.appspot.com/")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
     private final AchievementService achievementService;
@@ -25,7 +25,6 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    //TODO add security here NOSONAR
     private UserPostDTO login(@RequestBody UserPostDTO userPostDTO){ //NOSONAR
         User loginUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User user = this.userService.login(loginUser);
