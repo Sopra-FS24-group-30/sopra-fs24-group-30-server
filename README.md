@@ -1,6 +1,20 @@
-# Sopra Group 30 Readme
+# Mario After Party
 
 ## Introduction
+
+*Four people, four friends, two vs. two – who will win?*<br>
+Mario After Party is an online board game, where you play in teams of two against each other. Your goal as a team? Beat the other one! But how?
+The simplest way is by gaining money by walking over the goal. Whoever has the highest amount of money at the end, wins the game, but winning that way is boring...
+Therefore, each player gets a unique WinCondition at the beginning. You can throw a die during your turn and move closer to the goal. 
+Once you or your teammate reaches the goal with the fulfilled WinCondition, the game terminates.
+
+In addition to the WinCondition, each player gets a unique Ultimate that can be used once over the course of the game. They can modify the game state in your favor. Or not. 
+Anyways... you can also collect usables throughout the game and use them during your turn. Usables have a less significant effect than Ultimates. 
+But same as Ultimates, usables might be beneficial for you, or they might not.
+Really, just be prepared for anything that can happen to your Money, your collected usables, or even You.
+
+With that being said, find yourself three friends and enjoy the game [here](https://sopra-fs24-group-30-client.oa.r.appspot.com/register) :)<br>
+Click [here](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-client) if you want to check out the Client side.
 
 ## Technologies
 
@@ -18,7 +32,26 @@ connected with the websockets, and his session as well as user ID is being safed
 
 ## High-level components
 
-(Ta)
+The Server consists of several components that are working together:
+
+- ### Controller
+    We have two main controllers for handeling the communication between client and server.
+    The [UserController](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/UserController.java) 
+    manages the REST communication. This way, users can log in and see other peoples profiles.
+    The [GameWebSocketController](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/GameWebSocketController.java)
+    manages the websocket communication. This way, the players can interact in real-time.
+
+- ### Service
+    There is a [UserService](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/UserService.java) for User specific tasks such as login and logout.
+    The [GameService](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/GameService.java) and 
+    [GameManagementService](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/GameService.java) handle game related functionalities such as creating and setting up the game.
+    The [AchievementService](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/AchievementService.java) will save the Achievements to the corresponding User.
+
+- ### Logic
+    This is the main component of our game. Everything game related happens in here. The [GameFlow](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/GameFlow.java)
+    will keep track of the game progress and update its state accordingly. A [Player](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Player.java)
+    stores its own information, keeping track of their WinConditionProgress for example, and also link to the [User](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/entity/User.java)entity
+    for updating their achievements via server.
 
 ## Launch and Deployment
 
