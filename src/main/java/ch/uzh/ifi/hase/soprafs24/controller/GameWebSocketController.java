@@ -202,10 +202,9 @@ public class GameWebSocketController {
         int playerId = jsonObject.getInt("player");
         String item = jsonObject.getString("item");
         GameFlow gameFlow = gameFlows.get(gameId);
-        UltimateData ultimateData = new UltimateData();
-        ultimateData.setName("Chameleon");
-        ultimateData.setActive(true);
-        returnUltToPlayer(ultimateData,gameId,(long)playerId);
+
+        gameFlow.getPlayer(playerId).addItemNames(item);
+        returnUsables(UsableData.prepateData(gameFlow),gameId);
     }
 
 
@@ -231,14 +230,10 @@ public class GameWebSocketController {
                 gameFlow.updateTurns(effectParas);
                 break;
             case "useRandomUsable":
-                System.out.println("Chameleon reached his effect");
                 gameFlow.useRandomUsable(effectParas);
                 break;
             case "givePlayerCardRand":
                 gameFlow.givePlayerCardRand(effectParas);
-                break;
-            case "givePlayerCardChoice":
-                gameFlow.givePlayerCardChoice(effectParas);
                 break;
             case "exchangePositions":
                 gameFlow.exchangePositions(effectParas);

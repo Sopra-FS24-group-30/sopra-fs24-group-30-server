@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs24.entity.GameBoardSpace;
 import ch.uzh.ifi.hase.soprafs24.logic.Game.Effects.Getem;
 import ch.uzh.ifi.hase.soprafs24.logic.Returns.*;
 import ch.uzh.ifi.hase.soprafs24.service.AchievementService;
+import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
 import org.json.JSONObject;
 import org.json.*;
 import java.util.*;
@@ -15,8 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnMoney;
-import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.returnUltToPlayer;
+import static ch.uzh.ifi.hase.soprafs24.controller.GameWebSocketController.*;
 
 
 public class GameFlow {
@@ -250,7 +250,7 @@ public class GameFlow {
             player.addCash(hasToPay);
             CashData cashData = new CashData();
             cashData.setupCashDataCurrent(this);
-            cashData.setPlayerAmount(Integer.parseInt(playerId),hasToPay);
+            cashData.setPlayerAmount(id,hasToPay);
             returnMoney(cashData,gameId);
             player.setUltActive(true);
             UltimateData ultimateData = new UltimateData();
@@ -290,14 +290,10 @@ public class GameFlow {
         SecureRandom random = new SecureRandom();
         String randomCard = cards_in_game[random.nextInt(cards_in_game.length)];
         players[(int) (long) getTurnPlayerId()-1].addCardNames(randomCard);
+        returnUsables(UsableData.prepateData(this),getGameId());
 
     }
 
-    public void givePlayerCardChoice(JSONObject args){//NOSONAR
-        String card1 = getChoices().getString("card");
-        players[(int) (long) getTurnPlayerId()-1].addCardNames(card1);
-
-    }
     public void reduceMoneyALL(JSONObject args){ //NOSONAR
         for(int i = 0; i < 4; i++){
             players[i].setCash(players[i].getCash()-5);
@@ -422,15 +418,15 @@ public class GameFlow {
 
 
         for(int playerId : givePlayers){
+            System.out.println("giving player: " + playerId);
             updateUsables(playerId,getUsables,getType);
         }
         for(int playerId : getPlayers){
+            System.out.println("getting player " + playerId);
             updateUsables(playerId,giveUsables,giveType);
         }
 
-        UsableData usableData = new UsableData();
-        usableData.setItems(players[0].getItemNames(),players[1].getItemNames(),players[2].getItemNames(),players[3].getItemNames());
-        usableData.setCards(players[0].getCardNames(),players[1].getCardNames(),players[2].getCardNames(),players[3].getCardNames());
+        UsableData usableData = UsableData.prepateData(this);
         GameWebSocketController.returnUsables(usableData,gameId);
     }
 

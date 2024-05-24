@@ -421,27 +421,7 @@ public class GameFlowTest {
         //assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
     }
 
-    @Test
-    public void testgiveCardChoice() {
-        GameFlow gameFlow = extensiveGameFlowSetup();
-        JSONObject jsonObject = new JSONObject("{\"player\": \"current\",\"card\": \"choice\"}");
-        HashMap<Integer, ArrayList<String>> itemChoices = new HashMap<>();
-        System.out.println(gameFlow.getPlayer(1).getCardNames().size());
-        JSONObject choices1 = new JSONObject("{\"card\": \"S2\"}");
-        gameFlow.setChoices(choices1);
-        String cardvalue = gameFlow.getChoices().getString("card");
-        gameFlow.givePlayerCardChoice(jsonObject);
 
-        ArrayList<String> expectedItemsPlayer10 = new ArrayList<>();
-        expectedItemsPlayer10.add("S2");
-        ArrayList<String> itemNames = new ArrayList();
-        ;
-
-        ArrayList<String> expectedItemsPlayer3 = new ArrayList<>();
-        ArrayList<String> expectedCardsPlayer1 = new ArrayList<>();
-        assertEquals(expectedItemsPlayer10, gameFlow.getPlayer(1).getCardNames());
-        //assertEquals(new ArrayList<String>(),gameFlow.getPlayer(2).getItemNames());
-    }
 
     @Test
     public void ExchangePlayerPositions() {
