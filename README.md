@@ -54,7 +54,7 @@ The Server consists of several components that are working together:
     This is the main component of our game. Everything game related happens in here. The [GameFlow](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/GameFlow.java)
     will keep track of the game progress and update its state accordingly. A [Player](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/logic/Game/Player.java)
     stores its own information, keeping track of their WinConditionProgress for example, and also link to the [User](https://github.com/Sopra-FS24-group-30/sopra-fs24-group-30-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/entity/User.java)entity
-    for updating their achievements via server.
+    for updating their achievements via service.
 
 ## Launch and Deployment
 
@@ -240,7 +240,14 @@ The following shortcuts are available on the Board.
 
 ## Authors and Acknoledgement
 
-(Marius)
+- [Ambros Eberhard](https://github.com/ambros02)
+- [Carlos Hernandez](https://github.com/KarlGrossGROSS)
+- [Céline Mai Anh Ziegler](https://github.com/CelineZi)
+- [Thi Tam Gian Nguyen](https://github.com/tamtam-27)
+- [Marius Decurtins](https://github.com/MetaKnightEX)
+
+We want to thank our teaching assistant [Marco Leder](https://github.com/marcoleder) for the support during the semester.
+
 
 ## License
 
