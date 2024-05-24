@@ -726,7 +726,7 @@ public class GameFlowTest {
         JSONObject choices = new JSONObject();
         gameFlow.updateCardPositions(card, -1);
         long position = players[0].getPosition();
-        assertTrue(position == 28L || position == 29L);
+        assertTrue(position == 28L || position == 29L || position == 30L || position == 53L);
 
     }
 

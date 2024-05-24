@@ -1192,16 +1192,6 @@ public class GameFlow {
         return move(getMovesLeft(), player.getPosition());
     }
 
-
-    //TODO call when game is over and add winner status to achievementProgress
-    public void updateAchievements(){
-        for(Player player : players){
-            AchievementService achievementService =  GetBean.getAchievementService();
-            achievementService.updateAchievements(player.getAchievementProgress());
-        }
-    }
-
-
     /**
      * Helper for representing ws message dictionary
      * in case when move ends
