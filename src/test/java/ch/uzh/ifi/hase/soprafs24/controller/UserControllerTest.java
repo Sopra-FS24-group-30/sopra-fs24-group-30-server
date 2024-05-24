@@ -124,4 +124,22 @@ public class UserControllerTest {
                     String.format("The request body could not be created.%s", e.toString()));
         }
     }
+
+    @Test
+    public void login_success() throws Exception {
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("testExistingUsername");
+
+        User user = new User();
+        user.setUsername("test");
+
+        given(userService.login(any())).willReturn(user);
+
+        MockHttpServletRequestBuilder postRequest = post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk());
+    }
 }
